@@ -16,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 
 
@@ -33,8 +32,8 @@ public class Message {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="sender_id")
 	private UserProfile sender;
-	@Column(nullable = false)
-	@Lob
+	
+	@Column(columnDefinition = "TEXT",nullable = false)
 	private String message;
 	@CreationTimestamp
 	private LocalDateTime sentAt;
