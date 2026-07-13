@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="${query != null and !#strings.isEmpty(query)} ? ${query} + ' — Knowly Search' : 'Find Experts — Knowly'">Find Experts — Knowly</title>
+  <meta name="description" content="Search experts on Knowly and find people who can help you learn."/>
+  <th:block th:replace="~{fragments/styles :: styles('Search.css')}"></th:block>
+ 
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     NAVBAR  (same pattern as all Knowly pages)
+══════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+      <span class="brand-blue"><b>Know</b></span
+      ><span class="brand-green"><b>ly</b></span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a th:href="@{/home}">Home</a></li>
+      <li><a th:href="@{/search}" class="nav-active">Search Experts</a></li>
+      <li><a th:href="@{/helping}">Helping</a></li>
+      <li><a th:href="@{/learning}">Learning</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a
+        th:href="@{/notifications}"
+        class="nav-icon-btn"
+        aria-label="Notifications"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          aria-hidden="true"
+        >
+          <path
+            d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M13.7 21a2 2 0 01-3.4 0"
+            stroke-linecap="round"
+          />
+        </svg>
+      </a>
+      <a th:href="@{/profile}" class="avatar avatar-md" id="navAvatar" aria-label="My profile">
+        <span class="avatar-initial" th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name,0,1).toUpperCase() : 'K'}">K</span>
+      </a>
+    </div>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <ul class="nav-mobile" id="navMobile">
+    <li><a th:href="@{/home}">Home</a></li>
+    <li><a th:href="@{/search}">Search Experts</a></li>
+    <li><a th:href="@{/helping}">Helping</a></li>
+    <li><a th:href="@{/learning}">Learning</a></li>
+    <li><a th:href="@{/profile}">My profile</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATE 1 — LANDING (query is empty)
+════════════════════════════════════════════════════════════ -->
+<main class="s-landing"
+      th:if="${query == null or #strings.isEmpty(query)}">
+
+  <!-- Ambient blobs -->
+  <div class="s-blobs" aria-hidden="true">
+    <div class="s-blob s-blob-1"></div>
+    <div class="s-blob s-blob-2"></div>
+    <div class="s-blob s-blob-3"></div>
+  </div>
+
+  <div class="s-landing-inner">
+
+    <!-- Badge -->
+    <span class="s-badge">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="none"
+           stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.5"/>
+        <path d="M8 5v3l2 2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Explore Experts
+    </span>
+
+    <!-- Heading -->
+    <h1 class="s-landing-heading">
+      Find the
+      <span class="s-gradient-text">Right Expert</span>
+    </h1>
+
+    <p class="s-landing-sub">
+      Search skills and discover people who can help you learn, grow and achieve more.
+    </p>
+
+    <!-- Search box -->
+    <form class="s-search-form" th:action="@{/search}" method="get" role="search">
+      <div class="s-search-box" id="sSearchBox">
+        <svg class="s-search-ico" viewBox="0 0 20 20" fill="none"
+             width="20" height="20" aria-hidden="true">
+          <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.7"/>
+          <path d="M16 16l-3.5-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+        <input type="text" name="query" id="sLandingInput"
+               class="s-search-input"
+               placeholder="Search Java, Cooking, Legal, Finance..."
+               autocomplete="off"
+               aria-label="Search experts by skill or topic"/>
+        <button type="submit" class="s-search-btn">
+          <span>Search</span>
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+
+    <!-- Popular skill chips -->
+    <div class="s-popular">
+      <span class="s-popular-label">Popular:</span>
+      <div class="s-chips">
+        <a th:href="@{/search(query='Java')}"          class="s-chip">Java</a>
+        <a th:href="@{/search(query='Python')}"        class="s-chip">Python</a>
+        <a th:href="@{/search(query='Spring Boot')}"   class="s-chip">Spring Boot</a>
+        <a th:href="@{/search(query='Cooking')}"       class="s-chip">Cooking</a>
+        <a th:href="@{/search(query='Finance')}"       class="s-chip">Finance</a>
+        <a th:href="@{/search(query='Agriculture')}"   class="s-chip">Agriculture</a>
+        <a th:href="@{/search(query='Legal')}"         class="s-chip">Legal</a>
+        <a th:href="@{/search(query='AI')}"            class="s-chip s-chip-hot">AI</a>
+      </div>
+    </div>
+
+    <!-- Feature cards -->
+    <div class="s-features">
+      <div class="s-feat-card">
+        <div class="s-feat-icon s-feat-icon-blue">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+               stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M12 2l8 3.5v5c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11v-5L12 2z"
+                  stroke-linejoin="round"/>
+            <path d="M9 12l2 2 4-4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="s-feat-title">Verified Experts</h3>
+        <p class="s-feat-desc">Every expert is reviewed and scored by the community.</p>
+      </div>
+
+      <div class="s-feat-card">
+        <div class="s-feat-icon s-feat-icon-green">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+               stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M2 9l10-5 10 5-10 5L2 9z" stroke-linejoin="round"/>
+            <path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="s-feat-title">Quality Learning</h3>
+        <p class="s-feat-desc">Real experience, not textbooks. Learn from people who've done it.</p>
+      </div>
+
+      <div class="s-feat-card">
+        <div class="s-feat-icon s-feat-icon-teal">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+               stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M4 5h16v11H8l-4 4V5z" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="s-feat-title">Connect Easily</h3>
+        <p class="s-feat-desc">One click to start a conversation with the right person.</p>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATE 2 — RESULTS
+════════════════════════════════════════════════════════════ -->
+<main class="s-results-page"
+      th:if="${query != null and !#strings.isEmpty(query) and dtos != null and !dtos.isEmpty()}">
+
+  <!-- Compact search header -->
+  <div class="s-results-header">
+    <div class="s-results-header-inner">
+      <form class="s-compact-form" th:action="@{/search}" method="get" role="search">
+        <div class="s-compact-box" id="sCompactBox">
+          <svg class="s-search-ico" viewBox="0 0 20 20" fill="none"
+               width="18" height="18" aria-hidden="true">
+            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M16 16l-3.5-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <input type="text" name="query" id="sResultInput"
+                 class="s-search-input"
+                 th:value="${query}"
+                 placeholder="Search experts..."
+                 autocomplete="off"
+                 aria-label="Search experts"/>
+          <button type="submit" class="s-search-btn">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="s-results-body">
+
+    <!-- Results meta bar -->
+    <div class="s-meta-bar">
+      <div class="s-meta-left">
+        <p class="s-result-count">
+          <span th:text="${dtos.size()}">0</span>
+          <span th:text="${dtos.size() == 1} ? ' Expert Found' : ' Experts Found'"> Experts Found</span>
+        </p>
+        <p class="s-result-for">
+          Showing results for
+          <strong th:text="'&quot;' + ${query} + '&quot;'">"Java"</strong>
+        </p>
+      </div>
+      <div class="s-meta-right">
+        <label class="s-sort-label" for="sSortSelect">Sort by</label>
+        <select class="s-sort-select" id="sSortSelect" aria-label="Sort results">
+          <option value="score">Highest Expert Score</option>
+          <option value="experience">Highest Experience</option>
+          <option value="certifications">Most Certifications</option>
+          <option value="newest">Newest</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         EXPERT CARDS
+         Entire card is clickable via data-url + Search.js
+         (intentionally NOT wrapped in an <a> — see Search.js)
+    ═══════════════════════════════════════════════════════════ -->
+    <ul class="s-expert-list">
+      <li class="s-expert-card"
+          th:each="dto : ${dtos}"
+          tabindex="0"
+          role="link"
+          th:attr="data-url=@{/experts/{id}(id=${dto.id})},
+                   data-score=${dto.overallRating != null} ? ${dto.overallRating} : 0,
+                   data-certifications=${dto.certificationCount != null} ? ${dto.certificationCount} : 0,
+                   aria-label='View profile of ' + ${dto.name}">
+
+        <!-- ── SECTION 1: Avatar ── -->
+        <div class="s-card-avatar-col" aria-hidden="true">
+          <div class="s-card-avatar">
+            <img th:if="${dto.profilePicturepath != null}"
+                 th:src="@{'/uploads/profile/' + ${dto.profilePicturepath}}"
+                 th:alt="${dto.name}"
+                 class="s-card-avatar-img"
+                 loading="lazy"/>
+            <span class="s-card-avatar-letter"
+                  th:unless="${dto.profilePicturepath != null}"
+                  th:text="${dto.name != null and !#strings.isEmpty(dto.name) ? #strings.substring(dto.name,0,1).toUpperCase() : 'A'}">A</span>
+          </div>
+        </div>
+
+        <!-- ── SECTION 2: Expert Info ── -->
+        <div class="s-card-info">
+
+          <!-- Name -->
+          <h2 class="s-card-name" th:text="${dto.name}">Expert Name</h2>
+
+          <!-- Location -->
+          <p class="s-card-location"
+             th:if="${dto.location != null and !#strings.isEmpty(dto.location)}">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none"
+                 stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M8 14S2 9.5 2 5.5a6 6 0 0112 0C14 9.5 8 14 8 14z" stroke-linejoin="round"/>
+              <circle cx="8" cy="5.5" r="1.8"/>
+            </svg>
+            <span th:text="${dto.location}">City</span>
+          </p>
+
+          <!-- Bio (2-line clamp) -->
+          <p class="s-card-bio"
+             th:if="${dto.bio != null and !#strings.isEmpty(dto.bio)}"
+             th:text="${#strings.abbreviate(dto.bio, 160)}">Bio text here…</p>
+
+          <!-- Skill chips with years -->
+         
+
+          <!-- Stats row: education + certifications -->
+          <ul class="s-card-stats">
+            <li class="s-card-stat"
+                th:if="${dto.educationCount != null and dto.educationCount > 0}">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"
+                   stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M1 6l7-3.5L15 6l-7 3.5L1 6z" stroke-linejoin="round"/>
+                <path d="M4 7.3v3.5C4 12.3 5.8 13.5 8 13.5s4-1.2 4-2.7V7.3" stroke-linecap="round"/>
+              </svg>
+              <span th:text="${dto.educationCount} + ' Education'">2 Education</span>
+            </li>
+            <li class="s-card-stat"
+                th:if="${dto.certificationCount != null and dto.certificationCount > 0}">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none"
+                   stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M8 1l1.8 4.8H15l-4 2.9 1.5 4.7L8 10.5l-4.5 2.9 1.5-4.7L1 5.8h5.2z"
+                      stroke-linejoin="round"/>
+              </svg>
+              <span th:text="${dto.certificationCount} + ' Certifications'">3 Certifications</span>
+            </li>
+          </ul>
+
+        </div><!-- /.s-card-info -->
+        <div class="s-card-skills">
+		<h4 class="s-skills-title">Skills</h4>
+         <div class="s-skills-list"
+     th:if="${dto.skills != null and !dto.skills.isEmpty()}">
+
+   <div class="s-skill-item"
+     th:each="skill,iter : ${dto.skills}"
+     th:if="${iter.index < 3}">
+
+    <div class="s-skill-top">
+
+        <span class="s-skill-name"
+              th:text="${skill.name}">
+            Java
+        </span>
+
+        <div class="s-mini-progress">
+
+            <div class="s-mini-progress-fill"
+                 th:style="'width:'+${skill.skillScore}+'%'">
+            </div>
+
+        </div>
+
+        <span class="s-skill-score"
+              th:text="${#numbers.formatDecimal(skill.skillScore,1,0)}">
+            82
+        </span>
+
+    </div>
+</div>
+
+    <div class="s-skill-more"
+         th:if="${dto.skills.size() > 3}"
+         th:text="'+' + (${dto.skills.size()}-3) + ' More Skills'">
+        +2 More Skills
+    </div>
+
+</div>
+	</div>
+
+        <!-- ── SECTION 3: Expert Score (compact) ── -->
+        <div class="s-card-score" aria-label="Expert Score">
+
+          <p class="s-score-label">Expert Score</p>
+
+          <!-- Compact ring -->
+          <div class="s-score-circle-wrap">
+            <svg class="s-score-ring" viewBox="0 0 64 64" aria-hidden="true">
+              <circle class="s-ring-bg"   cx="32" cy="32" r="26" fill="none" stroke-width="5.5"/>
+              <circle class="s-ring-fill" cx="32" cy="32" r="26" fill="none" stroke-width="5.5"
+                      th:attr="data-pct=${dto.overallRating != null} ? ${dto.overallRating} : 0"
+                      style="stroke-dasharray: 0 163.4"/>
+            </svg>
+            <div class="s-score-num">
+              <span class="s-score-val"
+                    th:text="${dto.overallRating != null} ? ${dto.overallRating} : '—'">92</span>
+              <span class="s-score-sym">%</span>
+            </div>
+          </div>
+
+          <!-- Badge label -->
+          <span class="s-score-badge"
+                th:text="${dto.overallRating != null and dto.overallRating >= 90} ? 'Excellent' :
+                          (${dto.overallRating != null and dto.overallRating >= 75} ? 'Very Good' :
+                          (${dto.overallRating != null and dto.overallRating >= 60} ? 'Good' : 'Rising'))">
+            Excellent
+          </span>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATE 3 — NO RESULTS
+════════════════════════════════════════════════════════════ -->
+<main class="s-no-results"
+      th:if="${query != null and !#strings.isEmpty(query) and (dtos == null or dtos.isEmpty())}">
+
+  <!-- Compact search stays visible -->
+  <div class="s-results-header">
+    <div class="s-results-header-inner">
+      <form class="s-compact-form" th:action="@{/search}" method="get" role="search">
+        <div class="s-compact-box" id="sEmptyBox">
+          <svg class="s-search-ico" viewBox="0 0 20 20" fill="none"
+               width="18" height="18" aria-hidden="true">
+            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M16 16l-3.5-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          <input type="text" name="query" id="sEmptyInput"
+                 class="s-search-input"
+                 th:value="${query}"
+                 placeholder="Try a different search..."
+                 autocomplete="off"
+                 aria-label="Search again"/>
+          <button type="submit" class="s-search-btn">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="s-empty-body">
+    <!-- Illustration -->
+    <div class="s-empty-illustration" aria-hidden="true">
+      <svg viewBox="0 0 160 160" width="140" height="140" fill="none">
+        <circle cx="80" cy="80" r="70" fill="#EFF6FF"/>
+        <circle cx="72" cy="72" r="28" stroke="#2563EB" stroke-width="5" fill="none"/>
+        <path d="M92 92l22 22" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
+        <path d="M62 72h20M72 62v20" stroke="#10B981" stroke-width="3.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <h2 class="s-empty-heading">No Experts Found</h2>
+    <p class="s-empty-sub">
+      We couldn't find anyone matching
+      <strong th:text="'&quot;' + ${query} + '&quot;'">"your search"</strong>
+    </p>
+    <p class="s-empty-hint">Try different keywords or browse all available skills below.</p>
+
+    <div class="s-empty-chips">
+      <a th:href="@{/search(query='Java')}"        class="s-chip">Java</a>
+      <a th:href="@{/search(query='Python')}"      class="s-chip">Python</a>
+      <a th:href="@{/search(query='Cooking')}"     class="s-chip">Cooking</a>
+      <a th:href="@{/search(query='Finance')}"     class="s-chip">Finance</a>
+      <a th:href="@{/search(query='Legal')}"       class="s-chip">Legal</a>
+      <a th:href="@{/search(query='Agriculture')}" class="s-chip">Agriculture</a>
+    </div>
+
+    <div class="s-empty-actions">
+      <a th:href="@{/experts}" class="s-btn-primary">Explore Experts</a>
+      <a th:href="@{/search}"  class="s-btn-outline">Back to Search</a>
+    </div>
+  </div>
+</main>
+<script th:src="@{/js/Search.js}"></script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Education | Knowly</title>
+    <th:block th:replace="~{fragments/styles :: styles('Projectedit.css')}"></th:block>
+  </head>
+  <body>
+    <!-- ═════════════════════════════════════════════════════ -->
+    <!-- NAVBAR -->
+    <!-- ═════════════════════════════════════════════════════ -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-inner">
+        <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+          <span class="brand-blue"><b>Know</b></span
+          ><span class="brand-green"><b>ly</b></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a th:href="@{/home}">Home</a></li>
+          <li><a th:href="@{/search}">Search Experts</a></li>
+          <li><a th:href="@{/helping}">Helping</a></li>
+          <li><a th:href="@{/learning}">Learning</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a
+            th:href="@{/notifications}"
+            class="nav-icon-btn"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
+            </svg>
+            <span class="nav-badge" id="notifBadge" style="display: none"
+              >0</span
+            >
+          </a>
+            <a
+            th:href="@{/profile}"
+            class="avatar avatar-md"
+            id="navAvatar"
+            aria-label="My profile"
+          >
+            <img
+              th:if="${profile != null and profile.profilePicturepath != null and !#strings.isEmpty(profile.profilePicturepath)}"
+              th:src="@{/uploads/profile/{file}(file=${profile.profilePicturepath})}"
+              class="avatar-img"
+              alt="My profile picture"
+            />
+            <span
+              class="avatar-initial"
+              th:if="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              th:text="${profile.user.name != null and !#strings.isEmpty(profile.user.name) ? #strings.substring(profile.user.name,0,1).toUpperCase() : 'K'}"
+              >K</span
+            >
+            <span
+              class="avatar-initial"
+              th:unless="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              >K</span>
+          </a>
+        </div>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <ul class="nav-mobile" id="navMobile">
+        <li><a th:href="@{/home}">Home</a></li>
+        <li><a th:href="@{/search}">Search Experts</a></li>
+        <li><a th:href="@{/helping}">Helping</a></li>
+        <li><a th:href="@{/learning}">Learning</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <header class="top-bar">
+        <div>
+          <h1>Manage Education</h1>
+          <p>
+            Add your academic background so people can understand your formal
+            training and credentials.
+          </p>
+        </div>
+        <a th:href="@{/profile}" class="back-btn">← Back to Profile</a>
+      </header>
+
+      <section class="top-actions">
+        <div class="search-box">
+          <input
+            id="eduSearch"
+            type="text"
+            placeholder="Search education records..."
+          />
+        </div>
+        <div class="actions">
+          <select id="eduSort">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="school">School</option>
+          </select>
+          <button type="button" class="primary-btn" id="addEducationBtn">
+            + Add Education
+          </button>
+        </div>
+      </section>
+
+      <section class="projects-grid" id="educationGrid">
+        <article
+          class="project-card"
+          th:each="education : ${educationList}"
+          th:data-id="${education.id}"
+          th:data-institution="${education.institution}"
+          th:data-degree="${education.degree}"
+          th:data-field-of-study="${education.fieldOfStudy}"
+          th:data-start-year="${education.startYear}"
+          th:data-end-year="${education.endYear}"
+          th:data-description="${education.description}"
+          th:data-created="${education.createdAt}"
+        >
+          <div class="project-card-header">
+            <div>
+              <h2 th:text="${education.degree}">Degree</h2>
+              <p class="project-role" th:text="${education.institution}">
+                Institution
+              </p>
+            </div>
+            <div class="project-actions">
+              <button type="button" class="edit-btn">Edit</button>
+              <button type="button" class="delete-btn">Delete</button>
+            </div>
+          </div>
+          <p class="project-description" th:text="${education.fieldOfStudy}">
+            Field of study
+          </p>
+          <div class="project-meta">
+            <span class="date-pill">
+              <span th:text="${education.startYear}">2020</span>
+              <span class="date-separator">•</span>
+              <span th:text="${education.endYear != null ? education.endYear : 'Present'}">2024</span>
+            </span>
+          </div>
+        </article>
+      </section>
+
+      <div
+        class="empty-state empty-state--education"
+        id="emptyState"
+        th:if="${#lists.isEmpty(educationList)}"
+      >
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 9l10-5 10 5-10 5L2 9z" stroke-linejoin="round"/>
+            <path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2 class="empty-state-title">No education records added yet</h2>
+        <p class="empty-state-description">
+          Add your education history to help people understand your background.
+        </p>
+        <div class="empty-state-action">
+          <button type="button" class="primary-btn" id="emptyAddEducationBtn">
+            + Add Education
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="educationModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Add Education</h2>
+          <button type="button" class="close-btn" id="closeModal">×</button>
+        </div>
+        <form
+          id="educationForm"
+          th:action="@{/profile/edit/education}"
+          method="post"
+          novalidate
+        >
+          <input type="hidden" id="educationId" name="id" />
+
+          <div class="field form-group">
+            <label class="field__label" for="institution">Institution</label>
+            <input
+              class="field__input"
+              type="text"
+              id="institution"
+              name="institution"
+              required
+            />
+          </div>
+          <div class="field form-group">
+            <label class="field__label" for="degree">Degree</label>
+            <input
+              class="field__input"
+              type="text"
+              id="degree"
+              name="degree"
+              required
+            />
+          </div>
+          <div class="field form-group">
+            <label class="field__label" for="fieldOfStudy"
+              >Field of Study</label
+            >
+            <input
+              class="field__input"
+              type="text"
+              id="fieldOfStudy"
+              name="fieldOfStudy"
+            />
+          </div>
+          <div class="field form-group">
+            <label class="field__label" for="startYear">Start Year</label>
+            <input
+              class="field__input"
+              type="number"
+              id="startYear"
+              name="startYear"
+              min="1900"
+              max="2100"
+            />
+          </div>
+          <div class="field form-group">
+            <label class="field__label" for="endYear">End Year</label>
+            <input
+              class="field__input"
+              type="number"
+              id="endYear"
+              name="endYear"
+              min="1900"
+              max="2100"
+            />
+          </div>
+          <div class="field form-group">
+            <label class="field__label" for="description">Description</label>
+            <textarea
+              class="field__input"
+              rows="5"
+              id="description"
+              name="description"
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancelEducation">
+              Cancel
+            </button>
+            <button type="submit" class="primary-btn">Save Education</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <form
+      id="deleteEducationForm"
+      th:action="@{/profile/edit/education/delete}"
+      method="post"
+    >
+      <input type="hidden" id="deleteEducationId" name="educationId" />
+    </form>
+
+    <div
+      id="toastRoot"
+      class="toast-root"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <script th:src="@{/js/toast.js}"></script>
+    <script th:src="@{/js/Educationedit.js}"></script>
+  </body>
+</html>

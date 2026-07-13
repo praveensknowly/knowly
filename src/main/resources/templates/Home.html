@@ -1,0 +1,970 @@
+<!doctype html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home — Knowly</title>
+    <meta
+      name="description"
+      content="Your Knowly dashboard — learn, share and connect."
+    />
+    <th:block th:replace="~{fragments/styles :: styles('Home.css')}"></th:block>
+  </head>
+  <body>
+    <!-- ═══════════════════════════════════════════════════
+     NAVBAR  (same pattern as all Knowly pages)
+════════════════════════════════════════════════════ -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-inner">
+        <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+          <span class="brand-blue"><b>Know</b></span
+          ><span class="brand-green"><b>ly</b></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a th:href="@{/home}" class="nav-active">Home</a></li>
+          <li><a th:href="@{/search}">Search Experts</a></li>
+          <li><a th:href="@{/helping}">Helping</a></li>
+          <li><a th:href="@{/learning}">Learning</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a
+            th:href="@{/notifications}"
+            class="nav-icon-btn"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
+            </svg>
+            <span class="nav-badge" id="notifBadge" style="display: none"
+              >0</span
+            >
+          </a>
+            <a
+            th:href="@{/profile}"
+            class="avatar avatar-md"
+            id="navAvatar"
+            aria-label="My profile"
+          >
+            <img
+              th:if="${profile != null and profile.profilePicturepath != null and !#strings.isEmpty(profile.profilePicturepath)}"
+              th:src="@{/uploads/profile/{file}(file=${profile.profilePicturepath})}"
+              class="avatar-img"
+              alt="My profile picture"
+            />
+            <span
+              class="avatar-initial"
+              th:if="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              th:text="${profile.user.name != null and !#strings.isEmpty(profile.user.name) ? #strings.substring(profile.user.name,0,1).toUpperCase() : 'K'}"
+              >K</span
+            >
+            <span
+              class="avatar-initial"
+              th:unless="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              >K</span>
+          </a>
+        </div>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <ul class="nav-mobile" id="navMobile">
+        <li><a th:href="@{/home}">Home</a></li>
+        <li><a th:href="@{/search}">Search Experts</a></li>
+        <li><a th:href="@{/helping}">Helping</a></li>
+        <li><a th:href="@{/learning}">Learning</a></li>
+        <li><a th:href="@{/profile}">My Profile</a></li>
+      </ul>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════
+     PAGE BODY
+════════════════════════════════════════════════════ -->
+    <main class="home-page">
+      <div class="home-inner">
+        <!-- LEFT COLUMN -->
+        <div class="col-main">
+          <!-- ─────────────────────────────────────────────
+           1. WELCOME HERO
+      ────────────────────────────────────────────── -->
+          <section class="hero-card reveal" id="heroSection">
+            <div class="hero-decor" aria-hidden="true">
+              <div class="hero-blob"></div>
+              <div class="hero-blob hero-blob-2"></div>
+            </div>
+
+            <div class="hero-text">
+              <p class="hero-greeting" id="greetingText">Good morning,</p>
+              <h1
+                class="hero-name"
+                th:text="${profile != null and profile.user != null ? profile.user.name : 'Guest'}"
+              >
+                Arjun
+              </h1>
+              <p class="hero-tagline">
+                What would you like to learn or share today?
+              </p>
+            </div>
+
+            <form
+              class="hero-search-form"
+              th:action="@{/search}"
+              method="get"
+              role="search"
+            >
+              <div class="hero-search-box">
+                <svg
+                  class="search-icon"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="9"
+                    cy="9"
+                    r="6.5"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                  />
+                  <path
+                    d="M18 18L14 14"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  name="name"
+                  class="hero-search-input"
+                  placeholder="Search people, experts, skills or topics..."
+                  aria-label="Search people, experts, skills or topics"
+                />
+                <button type="submit" class="hero-search-btn">Search</button>
+              </div>
+            </form>
+          </section>
+
+          <!-- ─────────────────────────────────────────────
+           2. TRENDING SKILLS
+      ────────────────────────────────────────────── -->
+          <section class="home-card reveal" style="--d: 1">
+            <div class="card-head">
+              <h2 class="card-title">Trending Skills</h2>
+              <a th:href="@{/search}" class="card-link">Explore all →</a>
+            </div>
+            <div class="trending-chips">
+              <!-- If backend provides trendingSkills list, iterate; else static fallback -->
+              <th:block
+                th:if="${trendingSkills != null and !trendingSkills.isEmpty()}"
+              >
+                <a
+                  th:each="ts : ${trendingSkills}"
+                  th:href="@{/search(query=${ts.name})}"
+                  th:text="${ts.name}"
+                  class="trend-chip"
+                  >Java</a
+                >
+              </th:block>
+              <th:block
+                th:unless="${trendingSkills != null and !trendingSkills.isEmpty()}"
+              >
+                <a th:href="@{/search(query='Java')}" class="trend-chip"
+                  >Java</a
+                >
+                <a th:href="@{/search(query='Spring Boot')}" class="trend-chip"
+                  >Spring Boot</a
+                >
+                <a th:href="@{/search(query='Python')}" class="trend-chip"
+                  >Python</a
+                >
+                <a
+                  th:href="@{/search(query='AI')}"
+                  class="trend-chip trend-chip-hot"
+                  >AI</a
+                >
+                <a
+                  th:href="@{/search(query='Machine Learning')}"
+                  class="trend-chip trend-chip-hot"
+                  >Machine Learning</a
+                >
+                <a
+                  th:href="@{/search(query='Embedded Systems')}"
+                  class="trend-chip"
+                  >Embedded Systems</a
+                >
+                <a th:href="@{/search(query='Docker')}" class="trend-chip"
+                  >Docker</a
+                >
+                <a th:href="@{/search(query='Cloud')}" class="trend-chip"
+                  >Cloud</a
+                >
+                <a th:href="@{/search(query='React')}" class="trend-chip"
+                  >React</a
+                >
+                <a th:href="@{/search(query='Data Science')}" class="trend-chip"
+                  >Data Science</a
+                >
+              </th:block>
+            </div>
+          </section>
+
+          <!-- ─────────────────────────────────────────────
+           3. RECOMMENDED EXPERTS
+      ────────────────────────────────────────────── -->
+          <section class="home-card reveal" style="--d: 2">
+            <div class="card-head">
+              <h2 class="card-title">Recommended for You</h2>
+              <a th:href="@{/experts}" class="card-link">View all →</a>
+            </div>
+
+            <div
+              class="expert-grid"
+              th:if="${recommendedExperts != null and !recommendedExperts.isEmpty()}"
+            >
+              <div class="expert-card" th:each="ex : ${recommendedExperts}">
+                <div
+                  class="expert-avatar"
+                  th:text="${ex.name != null and !#strings.isEmpty(ex.name) ? #strings.substring(ex.name,0,1).toUpperCase() : 'A'}"
+                >
+                  A
+                </div>
+                <div class="expert-info">
+                  <p class="expert-name" th:text="${ex.name}">Expert Name</p>
+                  <p class="expert-title" th:text="${ex.headline}">Headline</p>
+                  <p class="expert-skill">
+                    <span class="skill-pill" th:text="${ex.primarySkill}"
+                      >Java</span
+                    >
+                  </p>
+                  <div class="expert-meta">
+                    <span class="expert-rating">
+                      <svg
+                        viewBox="0 0 16 16"
+                        width="12"
+                        height="12"
+                        fill="#F59E0B"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 1l1.9 5H15l-4.3 3.1 1.6 5L8 11l-4.3 3.1 1.6-5L1 6h5.1z"
+                        />
+                      </svg>
+                      <span th:text="${ex.rating}">4.8</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="expert-actions">
+                  <a
+                    th:href="@{/experts/{id}(id=${ex.id})}"
+                    class="btn-sm-outline"
+                    >View</a
+                  >
+                  <a th:href="@{/messages/new(to=${ex.id})}" class="btn-sm-fill"
+                    >Message</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Placeholder if no data yet -->
+            <div
+              class="expert-grid"
+              th:unless="${recommendedExperts != null and !recommendedExperts.isEmpty()}"
+            >
+              <div class="expert-card expert-card-placeholder">
+                <div class="expert-avatar av-blue">J</div>
+                <div class="expert-info">
+                  <p class="expert-name">Java Developer</p>
+                  <p class="expert-title">10+ years building enterprise apps</p>
+                  <p class="expert-skill">
+                    <span class="skill-pill">Java</span>
+                  </p>
+                  <div class="expert-meta">
+                    <span class="expert-rating">
+                      <svg
+                        viewBox="0 0 16 16"
+                        width="12"
+                        height="12"
+                        fill="#F59E0B"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 1l1.9 5H15l-4.3 3.1 1.6 5L8 11l-4.3 3.1 1.6-5L1 6h5.1z"
+                        />
+                      </svg>
+                      4.9
+                    </span>
+                  </div>
+                </div>
+                <div class="expert-actions">
+                  <a th:href="@{/experts}" class="btn-sm-outline">View</a>
+                  <a th:href="@{/messages}" class="btn-sm-fill">Message</a>
+                </div>
+              </div>
+              <div class="expert-card expert-card-placeholder">
+                <div class="expert-avatar av-green">F</div>
+                <div class="expert-info">
+                  <p class="expert-name">Organic Farmer</p>
+                  <p class="expert-title">15 years of field experience</p>
+                  <p class="expert-skill">
+                    <span class="skill-pill">Agriculture</span>
+                  </p>
+                  <div class="expert-meta">
+                    <span class="expert-rating">
+                      <svg
+                        viewBox="0 0 16 16"
+                        width="12"
+                        height="12"
+                        fill="#F59E0B"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 1l1.9 5H15l-4.3 3.1 1.6 5L8 11l-4.3 3.1 1.6-5L1 6h5.1z"
+                        />
+                      </svg>
+                      4.8
+                    </span>
+                  </div>
+                </div>
+                <div class="expert-actions">
+                  <a th:href="@{/experts}" class="btn-sm-outline">View</a>
+                  <a th:href="@{/messages}" class="btn-sm-fill">Message</a>
+                </div>
+              </div>
+              <div class="expert-card expert-card-placeholder">
+                <div class="expert-avatar av-amber">C</div>
+                <div class="expert-info">
+                  <p class="expert-name">Master Chef</p>
+                  <p class="expert-title">
+                    Award-winning culinary professional
+                  </p>
+                  <p class="expert-skill">
+                    <span class="skill-pill">Cooking</span>
+                  </p>
+                  <div class="expert-meta">
+                    <span class="expert-rating">
+                      <svg
+                        viewBox="0 0 16 16"
+                        width="12"
+                        height="12"
+                        fill="#F59E0B"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 1l1.9 5H15l-4.3 3.1 1.6 5L8 11l-4.3 3.1 1.6-5L1 6h5.1z"
+                        />
+                      </svg>
+                      5.0
+                    </span>
+                  </div>
+                </div>
+                <div class="expert-actions">
+                  <a th:href="@{/experts}" class="btn-sm-outline">View</a>
+                  <a th:href="@{/messages}" class="btn-sm-fill">Message</a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─────────────────────────────────────────────
+           4. CONTINUE LEARNING
+      ────────────────────────────────────────────── -->
+          <section class="home-card reveal" style="--d: 3">
+            <div class="card-head">
+              <h2 class="card-title">Continue Learning</h2>
+              <a th:href="@{/sessions}" class="card-link">All sessions →</a>
+            </div>
+
+            <div
+              class="learning-list"
+              th:if="${activeSessions != null and !activeSessions.isEmpty()}"
+            >
+              <div class="learning-item" th:each="s : ${activeSessions}">
+                <div class="learning-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2 9l10-5 10 5-10 5L2 9z"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div class="learning-info">
+                  <p class="learning-title" th:text="${s.topic}">Topic</p>
+                  <p class="learning-sub" th:text="${s.expertName}">
+                    Expert name
+                  </p>
+                </div>
+                <a
+                  th:href="@{/sessions/{id}(id=${s.id})}"
+                  class="btn-sm-outline"
+                  >Resume</a
+                >
+              </div>
+            </div>
+
+            <!-- Placeholder -->
+            <div
+              class="learning-list"
+              th:unless="${activeSessions != null and !activeSessions.isEmpty()}"
+            >
+              <div class="learning-empty">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="36"
+                  height="36"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true"
+                >
+                  <path d="M2 9l10-5 10 5-10 5L2 9z" stroke-linejoin="round" />
+                  <path
+                    d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <p>No active learning sessions yet.</p>
+                <a th:href="@{/experts}" class="empty-cta"
+                  >Find someone to learn from →</a
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- ─────────────────────────────────────────────
+           5. RECENT MESSAGES PREVIEW
+      ────────────────────────────────────────────── -->
+          <section class="home-card reveal" style="--d: 4">
+            <div class="card-head">
+              <h2 class="card-title">Messages</h2>
+              <a th:href="@{/messages}" class="card-link">Open Messages →</a>
+            </div>
+
+            <ul
+              class="msg-list"
+              th:if="${recentMessages != null and !recentMessages.isEmpty()}"
+            >
+              <li class="msg-item" th:each="m : ${recentMessages}">
+                <div
+                  class="msg-avatar"
+                  th:text="${m.senderName != null and !#strings.isEmpty(m.senderName) ? #strings.substring(m.senderName,0,1).toUpperCase() : 'A'}"
+                >
+                  A
+                </div>
+                <div class="msg-body">
+                  <p class="msg-name" th:text="${m.senderName}">Name</p>
+                  <p class="msg-preview" th:text="${m.lastMessage}">
+                    Last message...
+                  </p>
+                </div>
+                <span
+                  class="msg-badge"
+                  th:if="${m.unreadCount > 0}"
+                  th:text="${m.unreadCount}"
+                  >2</span
+                >
+              </li>
+            </ul>
+
+            <!-- Placeholder -->
+            <div
+              class="msg-empty"
+              th:unless="${recentMessages != null and !recentMessages.isEmpty()}"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="34"
+                height="34"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true"
+              >
+                <path d="M4 5h16v11H8l-4 4V5z" stroke-linejoin="round" />
+              </svg>
+              <p>No messages yet.</p>
+              <a th:href="@{/experts}" class="empty-cta"
+                >Start a conversation →</a
+              >
+            </div>
+          </section>
+
+          <!-- ─────────────────────────────────────────────
+           8. RECENT ACTIVITY
+      ────────────────────────────────────────────── -->
+          <section class="home-card reveal" style="--d: 5">
+            <div class="card-head">
+              <h2 class="card-title">Recent Activity</h2>
+            </div>
+
+            <ul
+              class="activity-list"
+              th:if="${recentActivity != null and !recentActivity.isEmpty()}"
+            >
+              <li class="activity-item" th:each="act : ${recentActivity}">
+                <div class="activity-dot"></div>
+                <div class="activity-body">
+                  <p class="activity-text" th:text="${act.description}">
+                    Activity
+                  </p>
+                  <p
+                    class="activity-time"
+                    th:text="${#temporals.format(act.createdAt,'dd MMM yyyy')}"
+                  >
+                    01 Jan 2025
+                  </p>
+                </div>
+              </li>
+            </ul>
+
+            <!-- Placeholder -->
+            <div
+              class="activity-empty"
+              th:unless="${recentActivity != null and !recentActivity.isEmpty()}"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="34"
+                height="34"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="9.5" />
+                <path
+                  d="M12 7v5l3 3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <p>
+                No activity yet. Start by adding skills or connecting with
+                people.
+              </p>
+            </div>
+          </section>
+        </div>
+        <!-- /.col-main -->
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="col-side">
+          <!-- ─────────────────────────────────────────────
+           6. PROFILE COMPLETION
+      ────────────────────────────────────────────── -->
+          <a th:href="@{/profile}" class="side-card-link">
+          <div class="side-card reveal" style="--d: 1">
+            <div class="completion-header">
+              <div class="completion-avatar" id="sideAvatar">
+                <span
+                  th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name,0,1).toUpperCase() : 'K'}"
+                  >K</span
+                >
+              </div>
+              <div>
+                <p
+                  class="completion-name"
+                  th:text="${user.name}"
+                >
+                  Your Name
+                </p>
+                <p class="completion-sub">Complete your profile</p>
+              </div>
+            </div>
+
+            <!-- Progress bar — wire aria-valuenow to user.profileCompletion once backend ready -->
+            <div
+              class="completion-bar-wrap"
+              role="progressbar"
+              th:attr="aria-valuenow=${profileCompletion != null} ? ${profileCompletion} : 20"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div class="completion-bar-track">
+                <div class="completion-bar-fill" id="completionFill"></div>
+              </div>
+              <span class="completion-pct" id="completionPct">
+                <span
+                  th:text="${profileCompletion != null} ? ${profileCompletion} : 20"
+                  >20</span
+                >%
+              </span>
+            </div>
+
+            <ul class="completion-checklist">
+              <li class="cl-item cl-done">
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle cx="7" cy="7" r="6.5" fill="#10B981" />
+                  <path
+                    d="M4 7l2 2 4-4"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Account created
+              </li>
+              <li
+                class="cl-item"
+                th:classappend="${profile != null and profile.bio != null and !#strings.isEmpty(profile.bio)} ? 'cl-done' : ''"
+              >
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                  th:if="${profile != null and profile.bio != null and !#strings.isEmpty(profile.bio)}"
+                >
+                  <circle cx="7" cy="7" r="6.5" fill="#10B981" />
+                  <path
+                    d="M4 7l2 2 4-4"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                  th:unless="${profile != null and profile.bio != null and !#strings.isEmpty(profile.bio)}"
+                >
+                  <circle
+                    cx="7"
+                    cy="7"
+                    r="6.5"
+                    stroke="#E5E7EB"
+                    stroke-width="1.5"
+                  />
+                </svg>
+                <a th:href="@{/profile/edit}" class="cl-link">Manage bio</a>
+              </li>
+              <li
+                class="cl-item"
+                th:classappend="${profile != null and profile.skills != null and !profile.skills.isEmpty()} ? 'cl-done' : ''"
+              >
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                  th:if="${profile != null and profile.skills != null and !profile.skills.isEmpty()}"
+                >
+                  <circle cx="7" cy="7" r="6.5" fill="#10B981" />
+                  <path
+                    d="M4 7l2 2 4-4"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                  th:unless="${profile != null and profile.skills != null and !profile.skills.isEmpty()}"
+                >
+                  <circle
+                    cx="7"
+                    cy="7"
+                    r="6.5"
+                    stroke="#E5E7EB"
+                    stroke-width="1.5"
+                  />
+                </svg>
+                <a th:href="@{/profile/edit/skills}" class="cl-link"
+                  >Manage skills</a
+                >
+              </li>
+              <li
+                class="cl-item"
+                th:classappend="${educationList != null and !educationList.isEmpty()} ? 'cl-done' : ''"
+              >
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                  th:if="${educationList != null and !educationList.isEmpty()}"
+                >
+                  <circle cx="7" cy="7" r="6.5" fill="#10B981" />
+                  <path
+                    d="M4 7l2 2 4-4"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                  th:unless="${educationList != null and !educationList.isEmpty()}"
+                >
+                  <circle
+                    cx="7"
+                    cy="7"
+                    r="6.5"
+                    stroke="#E5E7EB"
+                    stroke-width="1.5"
+                  />
+                </svg>
+                <a th:href="@{/profile/edit/education}" class="cl-link"
+                  >Manage education</a
+                >
+              </li>
+              <li
+                class="cl-item"
+                th:classappend="${certificationsList != null and !certificationsList.isEmpty()} ? 'cl-done' : ''"
+              >
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                  th:if="${certificationsList != null and !certificationsList.isEmpty()}"
+                >
+                  <circle cx="7" cy="7" r="6.5" fill="#10B981" />
+                  <path
+                    d="M4 7l2 2 4-4"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg
+                  viewBox="0 0 14 14"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                  th:unless="${certificationsList != null and !certificationsList.isEmpty()}"
+                >
+                  <circle
+                    cx="7"
+                    cy="7"
+                    r="6.5"
+                    stroke="#E5E7EB"
+                    stroke-width="1.5"
+                  />
+                </svg>
+                <a th:href="@{/profile/edit/certifications}" class="cl-link"
+                  >Manage certifications</a
+                >
+              </li>
+            </ul>
+          </div>
+          </a>
+
+          <!-- ─────────────────────────────────────────────
+           7. SUGGESTED PEOPLE
+      ────────────────────────────────────────────── -->
+          <div class="side-card reveal" style="--d: 2">
+            <div class="card-head">
+              <h2 class="card-title">People You May Know</h2>
+            </div>
+
+            <ul
+              class="suggest-list"
+              th:if="${suggestedExperts != null and !suggestedExperts.isEmpty()}"
+            >
+              <li class="suggest-item" th:each="se : ${suggestedExperts}">
+                <img th:if="${se.profilePicturepath != null and !#strings.isEmpty(se.profilePicturepath)}"
+                     th:src="@{/uploads/profile/{file}(file=${se.profilePicturepath})}"
+                     class="suggest-avatar suggest-avatar-img"
+                     alt="" />
+                <div class="suggest-avatar"
+                     th:if="${se.profilePicturepath == null or #strings.isEmpty(se.profilePicturepath)}"
+                     th:text="${se.user != null and se.user.name != null ? #strings.substring(se.user.name,0,1).toUpperCase() : '?'}">
+                  A
+                </div>
+                <div class="suggest-info">
+                  <p class="suggest-name" th:text="${se.user != null ? se.user.name : 'Unknown'}">Name</p>
+                  <p class="suggest-skill" th:text="${se.skills != null and !se.skills.isEmpty() ? se.skills.iterator().next().name : 'No skills'}">
+                    Skill
+                  </p>
+                </div>
+                <a th:href="@{/experts/{id}(id=${se.id})}" class="btn-sm-fill"
+                  >Connect</a
+                >
+              </li>
+            </ul>
+
+            <!-- Placeholder -->
+            <ul
+              class="suggest-list"
+              th:unless="${suggestedExperts != null and !suggestedExperts.isEmpty()}"
+            >
+              <li class="suggest-item">
+                <div class="suggest-avatar av-blue">D</div>
+                <div class="suggest-info">
+                  <p class="suggest-name">Data Scientist</p>
+                  <p class="suggest-skill">Machine Learning</p>
+                </div>
+                <a th:href="@{/experts}" class="btn-sm-fill">Connect</a>
+              </li>
+              <li class="suggest-item">
+                <div class="suggest-avatar av-green">L</div>
+                <div class="suggest-info">
+                  <p class="suggest-name">Legal Advisor</p>
+                  <p class="suggest-skill">Corporate Law</p>
+                </div>
+                <a th:href="@{/experts}" class="btn-sm-fill">Connect</a>
+              </li>
+              <li class="suggest-item">
+                <div class="suggest-avatar av-amber">E</div>
+                <div class="suggest-info">
+                  <p class="suggest-name">Electrician</p>
+                  <p class="suggest-skill">Home Wiring</p>
+                </div>
+                <a th:href="@{/experts}" class="btn-sm-fill">Connect</a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="side-card reveal" style="--d: 3">
+            <h2 class="card-title" style="margin-bottom: 14px">Quick Links</h2>
+            <ul class="quick-links">
+              <li>
+                <a th:href="@{/profile/edit/skills}">
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M10 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  Manage Skills
+                </a>
+              </li>
+              <li>
+                <a th:href="@{/profile/edit}">
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    aria-hidden="true"
+                  >
+                    <path d="M4 16h3l9-9-3-3-9 9v3z" stroke-linejoin="round" />
+                  </svg>
+                  Edit Profile
+                </a>
+              </li>
+              <li>
+                <a th:href="@{/experts}">
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    aria-hidden="true"
+                  >
+                    <circle cx="8" cy="8" r="5.5" />
+                    <path d="M16 16l-4-4" stroke-linecap="round" />
+                  </svg>
+                  Find Experts
+                </a>
+              </li>
+              <li>
+                <a th:href="@{/settings}">
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    aria-hidden="true"
+                  >
+                    <circle cx="10" cy="10" r="2.5" />
+                    <path
+                      d="M10 2v2M10 16v2M2 10h2M16 10h2M4.2 4.2l1.4 1.4M14.4 14.4l1.4 1.4M4.2 15.8l1.4-1.4M14.4 5.6l1.4-1.4"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Settings
+                </a>
+              </li>
+            </ul>
+          </div>
+        </aside>
+        <!-- /.col-side -->
+      </div>
+      <!-- /.home-inner -->
+    </main>
+
+    <script th:src="@{/js/Home.js}"></script>
+  </body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Helping — Knowly</title>
+<th:block th:replace="~{fragments/styles :: styles('Helping.css')}"></th:block>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+        <span class="brand-blue"><b>Know</b></span><span class="brand-green"><b>ly</b></span>
+      </a>
+      <ul class="nav-links">
+        <li><a th:href="@{/home}">Home</a></li>
+        <li><a th:href="@{/search}">Search Experts</a></li>
+        <li><a th:href="@{/helping}" class="nav-active">Helping</a></li>
+        <li><a th:href="@{/learning}">Learning</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a th:href="@{/profile}" class="avatar avatar-md" id="hNavAvatar" aria-label="My profile">
+          <span class="avatar-initial" th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name,0,1).toUpperCase() : 'K'}">K</span>
+        </a>
+      </div>
+      <button class="nav-toggle" id="hNavToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <ul class="nav-mobile" id="hNavMobile">
+      <li><a th:href="@{/home}">Home</a></li>
+      <li><a th:href="@{/search}">Search Experts</a></li>
+      <li><a th:href="@{/helping}">Helping</a></li>
+      <li><a th:href="@{/learning}">Learning</a></li>
+    </ul>
+  </nav>
+
+  <div class="subnav-bar">
+    <div class="tabs" role="tablist" aria-label="Helping status" id="helpingTabs">
+      <button type="button" role="tab" aria-selected="false" class="tab" data-tab="active" id="tabActive">
+        Active <span class="tab-badge" th:text="${activeCount}">0</span>
+      </button>
+      <button type="button" role="tab" aria-selected="true" class="tab active" data-tab="pending" id="tabPending">
+        Pending <span class="tab-badge" th:text="${pendingCount}">0</span>
+      </button>
+      <button type="button" role="tab" aria-selected="false" class="tab" data-tab="solved" id="tabSolved">
+        Solved <span class="tab-badge" th:text="${solvedCount}">0</span>
+      </button>
+    </div>
+  </div>
+
+  <main class="page">
+
+    <div class="page-head">
+      <h1 class="page-title">Helping</h1>
+      <p class="page-sub" id="helpingSubtitle">
+        <strong id="helpingCount" th:text="${pendingCount}">0</strong>
+        <span id="helpingCountLabel"> people are waiting on your knowledge.</span>
+      </p>
+    </div>
+
+    <ul class="request-list" id="helpingList" th:if="${!sessions.isEmpty()}">
+      <li th:each="helpSession : ${sessions}"
+          th:attr="data-tab=${helpSession.tab}"
+          class="helping-item">
+        <div class="request-card" role="button" tabindex="0"
+                th:style="'--wait:' + ${helpSession.waitOpacity}"
+                th:attr="data-session-id=${helpSession.sessionId}">
+          <div class="rc-top">
+            <span class="rc-subject" th:text="${helpSession.subject}">Subject</span>
+            <span class="rc-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 10h12M11 5l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+          <p class="rc-desc" th:text="${helpSession.description}">Description</p>
+          <div class="rc-meta">
+            <div class="rc-requester">
+              <img th:if="${helpSession.requesterProfilePicturepath != null and !#strings.isEmpty(helpSession.requesterProfilePicturepath)}"
+                   th:src="@{/uploads/profile/{file}(file=${helpSession.requesterProfilePicturepath})}"
+                   class="rc-avatar rc-avatar-img"
+                   alt="" />
+              <span class="rc-avatar"
+                    th:if="${helpSession.requesterProfilePicturepath == null or #strings.isEmpty(helpSession.requesterProfilePicturepath)}"
+                    th:text="${helpSession.requesterInitials != null && !helpSession.requesterInitials.isEmpty() ? helpSession.requesterInitials : 'AB'}">RM</span>
+              <span class="rc-name" th:text="${helpSession.requesterName}">Requester</span>
+            </div>
+            <div class="rc-side">
+              <span class="rc-skill" th:text="${helpSession.skillName}">Skill</span>
+              <span class="rc-time" th:text="${helpSession.timeAgo}">5 min ago</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="helping-empty" id="helpingEmptyAll" th:if="${sessions.isEmpty()}">
+      <p class="helping-empty-title">No help requests yet</p>
+      <p class="helping-empty-text">When someone asks for your expertise, their requests will show up here.</p>
+      <a th:href="@{/search}" class="helping-empty-action">Explore Experts</a>
+    </div>
+
+    <div class="helping-empty" id="helpingEmptyTab" hidden>
+      <p class="helping-empty-title" id="helpingEmptyTitle">Nothing here yet</p>
+      <p class="helping-empty-text" id="helpingEmptyText">Switch tabs to see requests in other states.</p>
+    </div>
+
+  </main>
+
+  <script th:src="@{/js/TabSwitcher.js}"></script>
+  <script th:src="@{/js/Helping.js}"></script>
+</body>
+</html>

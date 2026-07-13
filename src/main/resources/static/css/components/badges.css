@@ -1,0 +1,76 @@
+/* ==========================================================
+   KNOWLY DESIGN SYSTEM
+   Badges v1.0
+   ========================================================== */
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:4px 12px;
+
+    border-radius:var(--radius-pill);
+
+    font-size:var(--fs-xs);
+
+    font-weight:var(--fw-semibold);
+
+    white-space:nowrap;
+
+}
+
+/* ---------- Skill ---------- */
+
+.badge-skill{
+
+    background:var(--brand-blue-lighter);
+
+    color:var(--brand-blue);
+
+}
+
+/* ---------- Status ---------- */
+
+.badge-pending{
+
+    background:#FFF7ED;
+
+    color:#C2410C;
+
+}
+
+.badge-active{
+
+    background:var(--brand-green-lighter);
+
+    color:var(--brand-green);
+
+}
+
+.badge-completed{
+
+    background:#F1F5F9;
+
+    color:var(--text-secondary);
+
+}
+
+.badge-expired{
+
+    background:#F8FAFC;
+
+    color:var(--text-muted);
+
+}
+
+.badge-danger{
+
+    background:#FEF2F2;
+
+    color:var(--danger);
+
+}

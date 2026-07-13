@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Manage Skills | Knowly</title>
+
+    <th:block th:replace="~{fragments/styles :: styles('Skilledit.css')}"></th:block>
+  </head>
+
+  <body>
+    <!-- ═════════════════════════════════════════════════════ -->
+    <!-- NAVBAR -->
+    <!-- ═════════════════════════════════════════════════════ -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-inner">
+        <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+          <span class="brand-blue"><b>Know</b></span
+          ><span class="brand-green"><b>ly</b></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a th:href="@{/home}">Home</a></li>
+          <li><a th:href="@{/search}">Search Experts</a></li>
+          <li><a th:href="@{/helping}">Helping</a></li>
+          <li><a th:href="@{/learning}">Learning</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a
+            th:href="@{/notifications}"
+            class="nav-icon-btn"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
+            </svg>
+            <span class="nav-badge" id="notifBadge" style="display: none"
+              >0</span
+            >
+          </a>
+            <a
+            th:href="@{/profile}"
+            class="avatar avatar-md"
+            id="navAvatar"
+            aria-label="My profile"
+          >
+            <img
+              th:if="${profile != null and profile.profilePicturepath != null and !#strings.isEmpty(profile.profilePicturepath)}"
+              th:src="@{/uploads/profile/{file}(file=${profile.profilePicturepath})}"
+              class="avatar-img"
+              alt="My profile picture"
+            />
+            <span
+              class="avatar-initial"
+              th:if="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              th:text="${profile.user.name != null and !#strings.isEmpty(profile.user.name) ? #strings.substring(profile.user.name,0,1).toUpperCase() : 'K'}"
+              >K</span
+            >
+            <span
+              class="avatar-initial"
+              th:unless="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              >K</span>
+          </a>
+        </div>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <ul class="nav-mobile" id="navMobile">
+        <li><a th:href="@{/home}">Home</a></li>
+        <li><a th:href="@{/search}">Search Experts</a></li>
+        <li><a th:href="@{/helping}">Helping</a></li>
+        <li><a th:href="@{/learning}">Learning</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <!-- ================= HEADER ================= -->
+
+      <header class="top-bar">
+        <div>
+          <h1>Manage Skills</h1>
+
+          <p>
+            Showcase your expertise. Add, edit and manage the skills visible on
+            your Knowly profile.
+          </p>
+        </div>
+
+        <a th:href="@{/profile}" class="back-btn"> ← Back to Profile </a>
+      </header>
+
+      <!-- ================= TOP ACTIONS ================= -->
+
+      <section class="top-actions">
+        <div class="actions">
+          <select id="skillSort">
+            <option value="newest">Newest</option>
+
+            <option value="oldest">Oldest</option>
+
+            <option value="experience">Experience</option>
+
+            <option value="score">Highest Score</option>
+          </select>
+
+          <button type="button" class="primary-btn" id="addSkillBtn">
+            + Add Skill
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= STATISTICS ================= -->
+
+      <section class="stats">
+        <div class="stat-card">
+          <h3>Total Skills</h3>
+
+          <span th:text="${#lists.size(skills)}"> 0 </span>
+        </div>
+      </section>
+
+      <!-- ================= SKILLS GRID ================= -->
+
+      <section class="skills-grid" id="skillGrid">
+        <div
+          class="skill-card"
+          th:each="skill : ${skills}"
+          th:data-id="${skill.id}"
+          th:data-name="${skill.name}"
+          th:data-years="${skill.yearsOfExperience}"
+          th:data-level="${skill.proficiencyLevel}"
+          th:data-score="${skill.skillScore}"
+        >
+          <div class="skill-header">
+            <div>
+              <h2 th:text="${skill.name}">Java</h2>
+
+              <span class="level" th:text="${skill.proficiencyLevel}">
+                ADVANCED
+              </span>
+            </div>
+
+            <div class="score">
+              <span th:text="${skill.skillScore}"> 4.8 </span>
+
+              /5
+            </div>
+          </div>
+
+          <div class="skill-info">
+            <p>
+              <strong>Experience:</strong>
+
+              <span th:text="${skill.yearsOfExperience}"> 3 </span>
+
+              Years
+            </p>
+
+            <p>
+              <strong>Created:</strong>
+
+              <span
+                th:text="${#temporals.format(skill.createdAt,'dd MMM yyyy')}"
+              >
+                25 Jun 2026
+              </span>
+            </p>
+          </div>
+
+          <div class="skill-actions">
+            <button class="edit-btn" type="button">Edit</button>
+
+            <button class="delete-btn" type="button">Delete</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= EMPTY STATE ================= -->
+
+      <div
+        class="empty-state"
+        id="emptyState"
+        th:if="${#lists.isEmpty(skills)}"
+      >
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="9" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="empty-state-title">No Skills Added Yet</h2>
+        <p class="empty-state-description">
+          Add your first professional skill to help others discover your
+          expertise.
+        </p>
+        <div class="empty-state-action">
+          <button type="button" class="primary-btn" id="emptyAddSkillBtn">
+            + Add Skill
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+     ADD / EDIT SKILL MODAL
+====================================================== -->
+
+    <div class="modal" id="skillModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Add Skill</h2>
+
+          <button type="button" class="close-btn" id="closeModal">×</button>
+        </div>
+
+        <form
+          id="skillForm"
+          th:action="@{/profile/edit/skills}"
+          method="post"
+          th:object="${skill}"
+        >
+          <input type="hidden" id="skillId" name="id" />
+
+          <div class="field form-group">
+            <label class="field__label"> Skill Name </label>
+
+            <input
+              class="field__input"
+              type="text"
+              th:field="*{name}"
+              id="name"
+              required
+            />
+          </div>
+
+          <div class="field form-group">
+            <label class="field__label"> Years of Experience </label>
+
+            <input
+              class="field__input"
+              type="number"
+              th:field="*{yearsOfExperience}"
+              id="yearsOfExperience"
+              min="0"
+              max="60"
+              required
+            />
+          </div>
+
+          <div class="field form-group">
+            <label class="field__label"> Proficiency </label>
+
+            <select
+              class="field__input field__select"
+              th:field="*{proficiencyLevel}"
+              id="proficiencyLevel"
+              required
+            >
+              <option value="">Select</option>
+
+              <option value="BEGINNER">Beginner</option>
+
+              <option value="INTERMEDIATE">Intermediate</option>
+
+              <option value="ADVANCED">Advanced</option>
+
+              <option value="EXPERT">Expert</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancelSkill">
+              Cancel
+            </button>
+
+            <button type="submit" class="primary-btn" id="saveSkill">
+              Save Skill
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =====================================================
+     DELETE MODAL
+====================================================== -->
+
+    <div class="modal" id="deleteModal">
+      <div class="modal-content delete-content">
+        <h2>Delete Skill?</h2>
+
+        <p>Are you sure you want to remove this skill?</p>
+
+        <form method="post" th:action="@{/profile/edit/skills/delete}">
+          <input type="hidden" id="deleteSkillId" name="skillId" />
+
+          <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancelDelete">
+              Cancel
+            </button>
+
+            <button type="submit" class="danger-btn">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div
+      id="toastRoot"
+      class="toast-root"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <script th:src="@{/js/toast.js}"></script>
+    <script th:src="@{/js/Skilledit.js}"></script>
+  </body>
+</html>

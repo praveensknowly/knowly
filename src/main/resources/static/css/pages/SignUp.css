@@ -1,0 +1,633 @@
+/* Layout and page-specific styles only — tokens/reset from app.css */
+
+/* ── LOGO ──────────────────────────────────────── */
+.su-logo-know { color: var(--brand-blue); }
+.su-logo-ly   { color: var(--accent-green); }
+
+/* ── NAVBAR ────────────────────────────────────── */
+.su-nav {
+  position: sticky; top: 0; z-index: 500;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 36px;
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid rgba(229,231,235,0.7);
+}
+.su-verified-check {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.su-verified-check svg {
+  width: 22px;
+  height: 22px;
+}
+.su-input.frozen,
+input.frozen {
+  background-color: #f0fdf4;   /* light green tint */
+  color: #6b7280;
+  cursor: not-allowed;
+}
+.su-nav > a.su-logo {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+.su-nav-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  position: absolute; left: 50%; transform: translateX(-50%);
+}
+.su-nav-link {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: color 0.2s var(--ease-smooth);
+}
+
+.su-nav-link:hover { color: var(--text-primary); }
+.su-nav-link strong { color: var(--brand-blue); font-weight: 600; }
+
+/* ── LAYOUT ─────────────────────────────────────── */
+.su-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100dvh - 64px);
+}
+
+/* ── LEFT PANEL ─────────────────────────────────── */
+.su-left {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 48px;
+  background:
+    radial-gradient(ellipse 600px 500px at 10% 20%, rgba(37,99,235,0.07), transparent 65%),
+    radial-gradient(ellipse 500px 400px at 90% 70%, rgba(16,185,129,0.06), transparent 65%),
+    radial-gradient(ellipse 400px 300px at 50% 50%, rgba(124,58,237,0.04), transparent 65%);
+  overflow: hidden;
+}
+
+.su-left-content {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.su-left-logo {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.03em;
+  margin-bottom: 40px;
+  display: block;
+}
+
+.su-left-heading {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+.su-left-heading-accent {
+  color: var(--brand-blue);
+}
+
+.su-left-sub {
+  margin-top: 18px;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 360px;
+}
+
+.su-illustration {
+  margin-top: 36px;
+  width: 100%;
+  max-width: 480px;
+  filter: drop-shadow(0 8px 24px rgba(37,99,235,0.10));
+  animation: illusFloat 6s ease-in-out infinite;
+}
+.su-illustration svg { width: 100%; height: auto; }
+
+@keyframes illusFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ── RIGHT PANEL ────────────────────────────────── */
+.su-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 48px;
+  background: var(--background);
+  border-left: 1px solid var(--border);
+}
+
+/* ── GLASS CARD ─────────────────────────────────── */
+.su-card {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: var(--radius-2xl);
+  padding: 44px 40px 36px;
+  box-shadow: var(--shadow-lg);
+  animation: cardIn 0.6s var(--ease-smooth) both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.su-card-header { margin-bottom: 32px; }
+.su-card-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+.su-card-sub {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+/* ── AUTH ERROR BANNER ──────────────────────────── */
+.auth-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--danger-light);
+  color: #B91C1C;
+  border: 1px solid #FCA5A5;
+  font-size: 14px;
+  font-weight: 500;
+}
+.auth-error svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+/* ---------- Divider ("OR") ---------- */
+.auth-divider{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 26px 0 18px;
+}
+.auth-divider::before,
+.auth-divider::after{
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #E5E7EB 20%, #E5E7EB 80%, transparent);
+}
+.auth-divider span{
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #9CA3AF;
+}
+
+/* ---------- Social sign-up buttons ---------- */
+.auth-social-row{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-social-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 18px;
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease, background 0.18s ease;
+}
+.auth-social-btn:hover{
+  border-color: #D1D5DB;
+  background: #F9FAFB;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -8px rgba(17, 24, 39, 0.18);
+}
+.auth-social-btn:active{ transform: translateY(0); }
+.auth-social-btn:focus-visible{
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+.auth-social-icon{
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+@media (max-width: 560px){
+  .auth-social-btn{ font-size: 14px; padding: 11px 14px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .auth-social-btn:hover{ transform: none; }
+}
+/* ── FORM ───────────────────────────────────────── */
+.su-form { display: flex; flex-direction: column; gap: 18px; }
+
+/* ── FIELD / FLOATING LABEL ─────────────────────── */
+.su-field { display: flex; flex-direction: column; gap: 4px; }
+
+.su-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.su-field-icon {
+  position: absolute;
+  left: 14px;
+  width: 18px; height: 18px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color 0.2s var(--ease-smooth);
+  z-index: 1;
+  top: 50%; transform: translateY(-50%);
+}
+
+.su-input {
+  width: 100%;
+  height: 52px;
+  padding: 20px 44px 6px 44px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background: var(--surface);
+  outline: none;
+  transition:
+    border-color 0.2s var(--ease-smooth),
+    box-shadow   0.2s var(--ease-smooth);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Email field needs extra right padding to make room for the Verify button */
+#field-email .su-input {
+  padding-right: 92px;
+}
+
+/* OTP field has no left icon, so text starts flush left, and needs right
+   padding to make room for the Confirm button */
+#field-otp .su-input {
+  padding-left: 16px;
+  padding-right: 100px;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+}
+
+/* Floating label */
+.su-label {
+  position: absolute;
+  left: 44px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition:
+    top        0.2s var(--ease-smooth),
+    font-size  0.2s var(--ease-smooth),
+    color      0.2s var(--ease-smooth),
+    transform  0.2s var(--ease-smooth);
+  background: transparent;
+  padding: 0 2px;
+}
+
+/* OTP field's label sits flush left (no icon to clear) */
+#field-otp .su-label {
+  left: 16px;
+}
+
+/* Triggered: when input has value (placeholder=" ") */
+.su-input:not(:placeholder-shown) ~ .su-label,
+.su-input:focus ~ .su-label {
+  top: 10px;
+  transform: translateY(0);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--brand-blue);
+}
+
+.su-input:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+.su-input:focus ~ .su-field-icon { color: var(--brand-blue); }
+
+/* valid state */
+.su-field.valid .su-input {
+  border-color: var(--accent-green);
+}
+.su-field.valid .su-label { color: var(--accent-green); }
+.su-field.valid .su-input:focus {
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+}
+
+/* error state */
+.su-field.error .su-input {
+  border-color: var(--danger);
+}
+.su-field.error .su-label { color: var(--danger); }
+.su-field.error .su-input:focus {
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+}
+
+.su-error {
+  font-size: 0.8rem;
+  color: var(--danger);
+  min-height: 16px;
+  padding-left: 2px;
+  transition: opacity 0.2s var(--ease-smooth);
+}
+
+/* ── PASSWORD TOGGLE ────────────────────────────── */
+.su-eye {
+  position: absolute;
+  right: 14px;
+  top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  transition: color 0.2s var(--ease-smooth), background 0.2s var(--ease-smooth);
+}
+.su-eye:hover { color: var(--text-primary); background: var(--background); }
+.su-eye svg { width: 18px; height: 18px; }
+
+/* ── EMAIL VERIFY / OTP CONFIRM BUTTONS ─────────── */
+.su-verify-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--brand-blue);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--brand-blue);
+  font-family: var(--font-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.2s var(--ease-smooth),
+    color      0.2s var(--ease-smooth),
+    border-color 0.2s var(--ease-smooth),
+    opacity    0.2s var(--ease-smooth);
+}
+.su-verify-btn:hover:not(:disabled) {
+  background: var(--brand-blue);
+  color: #fff;
+}
+.su-verify-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-color: var(--border);
+  color: var(--text-muted);
+  background: var(--background);
+}
+
+/* once verified, the button turns into a static confirmation pill */
+.su-verify-btn.verified {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+  background: rgba(16,185,129,0.08);
+  cursor: default;
+  opacity: 1;
+}
+
+/* ── OTP / STATUS HINT TEXT ──────────────────────── */
+.su-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  min-height: 16px;
+  padding-left: 2px;
+}
+.su-hint a {
+  color: var(--brand-blue);
+  font-weight: 600;
+  transition: color 0.2s var(--ease-smooth);
+}
+.su-hint a:hover { color: var(--brand-blue-hover); text-decoration: underline; }
+.su-hint a.disabled {
+  color: var(--text-muted);
+  pointer-events: none;
+  cursor: default;
+  text-decoration: none;
+}
+
+/* OTP field entrance animation when it appears */
+#field-otp {
+  animation: otpIn 0.35s var(--ease-smooth) both;
+}
+@keyframes otpIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PASSWORD STRENGTH ──────────────────────────── */
+.su-strength {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin-top: 6px;
+}
+.su-seg {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.3s var(--ease-smooth);
+}
+.su-seg.weak   { background: var(--danger); }
+.su-seg.fair   { background: #F59E0B; }
+.su-seg.good   { background: var(--brand-blue); }
+.su-seg.strong { background: var(--accent-green); }
+
+.su-strength-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 4px;
+  min-height: 16px;
+  transition: color 0.2s var(--ease-smooth);
+}
+.su-strength-label.weak   { color: var(--danger); }
+.su-strength-label.fair   { color: #B45309; }
+.su-strength-label.good   { color: var(--brand-blue); }
+.su-strength-label.strong { color: var(--accent-green-hover); }
+
+/* ── CHECKBOX / TERMS ───────────────────────────── */
+.su-terms-wrap { display: flex; flex-direction: column; gap: 4px; }
+
+.su-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.su-checkbox { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.su-checkbox-box {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+  transition:
+    border-color 0.2s var(--ease-smooth),
+    background   0.2s var(--ease-smooth),
+    box-shadow   0.2s var(--ease-smooth);
+}
+.su-checkbox-box svg { opacity: 0; transition: opacity 0.15s var(--ease-smooth); width: 12px; height: 12px; }
+
+.su-checkbox:checked + .su-checkbox-box {
+  background: var(--brand-blue);
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+}
+.su-checkbox:checked + .su-checkbox-box svg { opacity: 1; }
+
+.su-checkbox-text {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.su-link {
+  color: var(--brand-blue);
+  font-weight: 500;
+  transition: color 0.2s var(--ease-smooth);
+}
+.su-link:hover { color: var(--brand-blue-hover); text-decoration: underline; }
+
+/* ── SUBMIT BUTTON ──────────────────────────────── */
+.su-submit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 52px;
+  background: var(--text-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 6px;
+  overflow: hidden;
+  transition:
+    background    0.2s var(--ease-smooth),
+    transform     0.2s var(--ease-smooth),
+    box-shadow    0.2s var(--ease-smooth);
+}
+.su-submit:hover:not(:disabled) {
+  background: #000;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.su-submit:active { transform: translateY(0); }
+.su-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+.su-submit-arrow { width: 18px; height: 18px; transition: transform 0.2s var(--ease-smooth); }
+.su-submit:hover .su-submit-arrow { transform: translateX(3px); }
+
+/* loading spinner */
+.su-spinner {
+  display: none;
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  position: absolute;
+  right: 20px;
+}
+.su-submit.loading .su-submit-text { opacity: 0.6; }
+.su-submit.loading .su-submit-arrow { display: none; }
+.su-submit.loading .su-spinner { display: block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SIGN IN NOTE ───────────────────────────────── */
+.su-signin-note {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* ── RESPONSIVENESS ─────────────────────────────── */
+@media (max-width: 900px) {
+  .su-layout { grid-template-columns: 1fr; }
+  .su-left {
+    padding: 48px 32px 32px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .su-left-content { align-items: center; text-align: center; }
+  .su-left-sub { text-align: center; }
+  .su-left-logo { margin-bottom: 24px; }
+  .su-illustration { max-width: 380px; }
+  .su-right { padding: 40px 24px 48px; }
+  .su-card { padding: 36px 28px 28px; }
+  .su-nav-label { display: none; }
+}
+
+@media (max-width: 560px) {
+  .su-nav { padding: 0 20px; }
+  .su-left { padding: 36px 20px 24px; }
+  .su-left-heading { font-size: clamp(1.7rem, 8vw, 2.2rem); }
+  .su-right { padding: 24px 16px 36px; }
+  .su-card { padding: 28px 20px 24px; border-radius: var(--radius-2xl); }
+
+  /* Verify/Confirm buttons get tight on narrow screens — shrink and drop padding */
+  .su-verify-btn {
+    padding: 0 10px;
+    font-size: 0.75rem;
+    height: 32px;
+  }
+  #field-email .su-input { padding-right: 78px; }
+  #field-otp .su-input { padding-right: 86px; }
+}

@@ -1,0 +1,139 @@
+
+  <!-- ═══════════════════════════════════════════════════════
+       BACKDROP + MODAL
+  ═══════════════════════════════════════════════════════ -->
+  <div th:fragment="helpRequestModal">
+  
+
+  <div class="hrm-backdrop" id="hrmBackdrop" hidden>
+    <form
+    	th:action="@{/help-request}" method="post"
+      class="hrm-modal"
+      id="hrmModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="hrmHelperName"
+      aria-describedby="hrmInfoText">
+    <input type="hidden" name="helperId" th:value="${profile.id}">
+      <!-- ── HEADER ── -->
+      <header class="hrm-header">
+        <div class="hrm-header-left">
+          <div class="hrm-avatar">
+            <img
+    id="hrmAvatarImg"
+    class="hrm-avatar-img"
+    th:src="@{'/uploads/profile/' + ${profile.profilePicturepath}}"
+    alt="Profile Picture">
+            <span class="hrm-avatar-letter" id="hrmAvatarLetter" hidden>A</span>
+          </div>
+          <div class="hrm-header-text">
+            <h2 id="hrmHelperName" th:text="${profile.name}"></h2>
+           <p th:text="${profile.bio}"></p>
+          </div>
+        </div>
+
+        <div class="hrm-header-right">
+          <!-- Rating belongs to the selected SKILL, not the person -->
+          <div class="hrm-skill-rating" id="hrmSkillRating" aria-live="polite">
+            <svg class="hrm-star" viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+              <path d="M10 1.6l2.47 5.24 5.73.68-4.24 4.02 1.13 5.7L10 14.98l-5.09 2.26 1.13-5.7L1.8 7.52l5.73-.68L10 1.6z"/>
+            </svg>
+            <span id="hrmSkillRatingValue">Select a skill</span>
+          </div>
+
+          <button type="button" class="hrm-close" id="hrmCloseBtn" aria-label="Close">
+            <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+              <path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="hrm-divider"></div>
+
+      <!-- ── BODY (scrollable if content is tall on small screens) ── -->
+      <div class="hrm-body">
+
+        <!-- Skill selection -->
+        <section class="hrm-field" data-field="skill">
+          <span class="hrm-label" id="hrmSkillLabel">Select a skill</span>
+
+         <div class="hrm-chips"
+     role="radiogroup"
+     aria-labelledby="hrmSkillLabel"
+     id="hrmChips">
+
+    <button
+        th:each="skill : ${profile.skills}"
+        type="button"
+        class="hrm-chip"
+        role="radio"
+        aria-checked="false"
+        th:data-skill-id="${skill.id}"
+        th:data-skill-name="${skill.name}"
+        th:data-rating="${skill.skillScore}"
+        th:text="${skill.name}">
+    </button>
+
+</div>
+
+          <input type="hidden"
+    id="hrmSkillInput"
+    name="skillId"/>
+          <p class="hrm-error" id="hrmSkillError" role="alert" hidden>Please select a skill to continue.</p>
+        </section>
+
+        <!-- Subject -->
+        <section class="hrm-field" data-field="subject">
+          <div class="hrm-label-row">
+            <label class="hrm-label" for="hrmSubject">Subject</label>
+            <span class="hrm-counter" id="hrmSubjectCounter">0 / 150</span>
+          </div>
+          <input
+            type="text"
+            name="subject"
+            id="hrmSubject"
+            class="hrm-input"
+            placeholder="Example: Dependency Injection Error"
+            maxlength="150"
+            autocomplete="off"
+          />
+          <p class="hrm-error" id="hrmSubjectError" role="alert" hidden>Please enter a subject.</p>
+        </section>
+
+        <!-- Problem description -->
+        <section class="hrm-field" data-field="description">
+          <label class="hrm-label" for="hrmDescription">Describe your problem</label>
+          <textarea
+            id="hrmDescription"
+            name="description"
+            class="hrm-textarea"
+            rows="5"
+            placeholder="Describe your problem clearly."
+          ></textarea>
+          <p class="hrm-error" id="hrmDescriptionError" role="alert" hidden>Please describe your problem.</p>
+        </section>
+
+        <!-- Info card -->
+        <div class="hrm-info" id="hrmInfoText">
+          <svg class="hrm-info-icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+            <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M10 6v4.2l2.6 1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>This request will start a 22-hour Help Session once the helper sends the first reply.</p>
+        </div>
+      </div>
+
+      <!-- ── FOOTER ── -->
+      <footer class="hrm-footer">
+        <button type="button" class="hrm-btn hrm-btn-outline" id="hrmCancelBtn">Cancel</button>
+        <button type="submit" class="hrm-btn hrm-btn-primary" id="hrmSendBtn">
+          <span class="hrm-btn-label">Send Help Request</span>
+          <span class="hrm-btn-spinner" aria-hidden="true"></span>
+        </button>
+      </footer>
+      </form>
+     </div>
+  </div>
+
+ 

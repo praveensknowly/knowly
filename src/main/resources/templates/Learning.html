@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Learning — Knowly</title>
+<th:block th:replace="~{fragments/styles :: styles('Learning.css')}"></th:block>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+        <span class="brand-blue"><b>Know</b></span><span class="brand-green"><b>ly</b></span>
+      </a>
+      <ul class="nav-links">
+        <li><a th:href="@{/home}">Home</a></li>
+        <li><a th:href="@{/search}">Search Experts</a></li>
+        <li><a th:href="@{/helping}">Helping</a></li>
+        <li><a th:href="@{/learning}" class="nav-active">Learning</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a th:href="@{/profile}" class="avatar avatar-md" id="lNavAvatar" aria-label="My profile">
+          <span class="avatar-initial" th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name,0,1).toUpperCase() : 'K'}">K</span>
+        </a>
+      </div>
+      <button class="nav-toggle" id="lNavToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <ul class="nav-mobile" id="lNavMobile">
+      <li><a th:href="@{/home}">Home</a></li>
+      <li><a th:href="@{/search}">Search Experts</a></li>
+      <li><a th:href="@{/helping}">Helping</a></li>
+      <li><a th:href="@{/learning}">Learning</a></li>
+    </ul>
+  </nav>
+
+  <div class="subnav-bar">
+    <div class="tabs" role="tablist" aria-label="Learning status" id="learningTabs">
+      <button type="button" role="tab" aria-selected="false" class="tab" data-tab="active" id="tabActive">
+        Active <span class="tab-badge" th:text="${activeCount}">0</span>
+      </button>
+      <button type="button" role="tab" aria-selected="true" class="tab active" data-tab="pending" id="tabPending">
+        Pending <span class="tab-badge" th:text="${pendingCount}">0</span>
+      </button>
+      <button type="button" role="tab" aria-selected="false" class="tab" data-tab="solved" id="tabSolved">
+        Solved <span class="tab-badge" th:text="${solvedCount}">0</span>
+      </button>
+    </div>
+  </div>
+
+  <main class="page">
+
+    <div class="page-head">
+      <h1 class="page-title">Learning</h1>
+      <p class="page-sub" id="learningSubtitle">
+        <strong id="learningCount" th:text="${pendingCount}">0</strong>
+        <span id="learningCountLabel"> requests you've made are waiting for a response.</span>
+      </p>
+    </div>
+
+    <ul class="request-list" id="learningList" th:if="${!sessions.isEmpty()}">
+      <li th:each="item : ${sessions}"
+          th:attr="data-tab=${item.tab}"
+          class="learning-item">
+        <div class="request-card" role="button" tabindex="0"
+                th:style="'--wait:' + ${item.waitOpacity}"
+                th:attr="data-session-id=${item.sessionId}">
+          <div class="rc-top">
+            <span class="rc-subject" th:text="${item.subject}">Subject</span>
+            <span class="rc-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 10h12M11 5l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+          <p class="rc-desc" th:text="${item.description}">Description</p>
+          <div class="rc-meta">
+            <div class="rc-helper">
+              <img th:if="${item.helperProfilePicturepath != null and !#strings.isEmpty(item.helperProfilePicturepath)}"
+                   th:src="@{/uploads/profile/{file}(file=${item.helperProfilePicturepath})}"
+                   class="rc-avatar rc-avatar-img"
+                   alt="" />
+              <span class="rc-avatar"
+                    th:if="${item.helperProfilePicturepath == null or #strings.isEmpty(item.helperProfilePicturepath)}"
+                    th:text="${item.helperInitials != null && !item.helperInitials.isEmpty() ? item.helperInitials : 'AB'}">RM</span>
+              <span class="rc-name" th:text="${item.helperName}">Helper</span>
+            </div>
+            <div class="rc-side">
+              <span class="rc-skill" th:text="${item.skillName}">Skill</span>
+              <span class="rc-time" th:text="${item.timeAgo}">5 min ago</span>
+            </div>
+            <div class="rc-actions">
+              <button type="button" class="rc-edit-btn" aria-label="Edit request" title="Edit request">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Edit</span>
+              </button>
+              <form th:action="@{/learning/{sessionId}/delete(sessionId=${item.sessionId})}" 
+                    method="post" 
+                    class="rc-delete-form"
+                    onsubmit="return confirm('Are you sure you want to delete this request? This action cannot be undone.');">
+                <button type="submit" class="rc-delete-btn" aria-label="Delete request" title="Delete request">
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M4 4h16M4 4v14a2 2 0 002 2h10a2 2 0 002-2V4M4 4l2-2h8l2 2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Delete</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="learning-empty" id="learningEmptyAll" th:if="${sessions.isEmpty()}">
+      <p class="learning-empty-title">You haven't asked for help yet</p>
+      <p class="learning-empty-text">When you request help from experts, your requests will show up here.</p>
+      <a th:href="@{/search}" class="learning-empty-action">Find Experts</a>
+    </div>
+
+    <div class="learning-empty" id="learningEmptyTab" hidden>
+      <p class="learning-empty-title" id="learningEmptyTitle">Nothing here yet</p>
+      <p class="learning-empty-text" id="learningEmptyText">Switch tabs to see requests in other states.</p>
+    </div>
+
+  </main>
+
+  <script th:src="@{/js/TabSwitcher.js}"></script>
+  <script th:src="@{/js/Learning.js}"></script>
+</body>
+</html>

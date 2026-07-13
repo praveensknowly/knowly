@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Something Went Wrong | Knowly</title>
+    <th:block th:replace="~{fragments/styles :: styles('error.css')}"></th:block>
+  </head>
+  <body class="error-page">
+    <div class="error-card">
+      <p class="error-eyebrow">Oops</p>
+      <h1
+        th:text="${status != null ? status + ' — ' + error : 'Something went wrong'}"
+      >
+        500 — Internal Server Error
+      </h1>
+      <p
+        class="error-message"
+        th:text="${message != null ? message : 'We hit an unexpected issue while processing your request.'}"
+      >
+        We hit an unexpected issue while processing your request.
+      </p>
+
+      <div class="error-actions">
+        <a th:href="@{/}" class="btn btn-primary">Go Home</a>
+        <a th:href="@{/profile}" class="btn btn-outline">Go to Profile</a>
+      </div>
+    </div>
+  </body>
+</html>

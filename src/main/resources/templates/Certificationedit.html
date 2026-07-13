@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Certifications | Knowly</title>
+    <th:block th:replace="~{fragments/styles :: styles('Projectedit.css')}"></th:block>
+  </head>
+  <body>
+    <!-- ═════════════════════════════════════════════════════ -->
+    <!-- NAVBAR -->
+    <!-- ═════════════════════════════════════════════════════ -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-inner">
+        <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+          <span class="brand-blue"><b>Know</b></span
+          ><span class="brand-green"><b>ly</b></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a th:href="@{/home}">Home</a></li>
+          <li><a th:href="@{/search}">Search Experts</a></li>
+          <li><a th:href="@{/helping}">Helping</a></li>
+          <li><a th:href="@{/learning}">Learning</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a
+            th:href="@{/notifications}"
+            class="nav-icon-btn"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
+            </svg>
+            <span class="nav-badge" id="notifBadge" style="display: none"
+              >0</span
+            >
+          </a>
+            <a
+            th:href="@{/profile}"
+            class="avatar avatar-md"
+            id="navAvatar"
+            aria-label="My profile"
+          >
+            <img
+              th:if="${profile != null and profile.profilePicturepath != null and !#strings.isEmpty(profile.profilePicturepath)}"
+              th:src="@{/uploads/profile/{file}(file=${profile.profilePicturepath})}"
+              class="avatar-img"
+              alt="My profile picture"
+            />
+            <span
+              class="avatar-initial"
+              th:if="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              th:text="${profile.user.name != null and !#strings.isEmpty(profile.user.name) ? #strings.substring(profile.user.name,0,1).toUpperCase() : 'K'}"
+              >K</span
+            >
+            <span
+              class="avatar-initial"
+              th:unless="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              >K</span>
+          </a>
+        </div>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <ul class="nav-mobile" id="navMobile">
+        <li><a th:href="@{/home}">Home</a></li>
+        <li><a th:href="@{/search}">Search Experts</a></li>
+        <li><a th:href="@{/helping}">Helping</a></li>
+        <li><a th:href="@{/learning}">Learning</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <header class="top-bar">
+        <div>
+          <h1>Manage Certifications</h1>
+          <p>
+            Add your professional certifications to showcase your credentials and expertise.
+          </p>
+        </div>
+        <a th:href="@{/profile}" class="back-btn">← Back to Profile</a>
+      </header>
+
+      <section class="top-actions">
+        <div class="search-box">
+          <input
+            id="certSearch"
+            type="text"
+            placeholder="Search certifications..."
+          />
+        </div>
+        <div class="actions">
+          <select id="certSort">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="name">Name</option>
+          </select>
+          <button type="button" class="primary-btn" id="addCertBtn">
+            + Add Certification
+          </button>
+        </div>
+      </section>
+
+      <section class="projects-grid" id="certificationsGrid">
+        <article
+          class="project-card"
+          th:each="cert : ${certificationsList}"
+          th:data-id="${cert.id}"
+          th:data-name="${cert.name}"
+          th:data-issuer="${cert.issuer}"
+          th:data-year="${cert.year}"
+          th:data-credential-url="${cert.credentialUrl}"
+        >
+          <div class="project-card-header">
+            <h2 th:text="${cert.name}">Certification Name</h2>
+            <div class="project-actions">
+              <button type="button" class="edit-btn" data-action="edit">Edit</button>
+              <button type="button" class="delete-btn" data-action="delete">Delete</button>
+            </div>
+          </div>
+          <p class="project-role">
+            <span th:text="${cert.issuer}">Issuer</span>
+            <span th:text="${cert.year}">2024</span>
+          </p>
+          <div class="project-meta">
+            <a
+              th:if="${cert.credentialUrl != null and !cert.credentialUrl.isEmpty()}"
+              th:href="${cert.credentialUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="credential-link"
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="M9 12l2 2 4-4"></path>
+              </svg>
+              View Credential
+            </a>
+          </div>
+        </article>
+      </section>
+
+      <div class="empty-state empty-state--certification" id="emptyState" th:if="${certificationsList == null or certificationsList.isEmpty()}">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2l8 3.5v5c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11v-5L12 2z" stroke-linejoin="round"/>
+            <path d="M9 12l2 2 4-4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="empty-state-title">No certifications added yet</h2>
+        <p class="empty-state-description">Add your professional certifications to showcase your credentials and expertise.</p>
+        <div class="empty-state-action">
+          <button type="button" class="primary-btn" id="emptyAddBtn">Add Your First Certification</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="certModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Add Certification</h2>
+          <button type="button" class="close-btn" id="closeModal">&times;</button>
+        </div>
+        <form id="certForm" method="post" th:action="@{/profile/edit/certifications}">
+          <input type="hidden" id="certId" name="id" />
+          <div class="form-group">
+            <label for="name">Certification Name *</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="issuer">Issuing Organization *</label>
+            <input type="text" id="issuer" name="issuer" required />
+          </div>
+          <div class="form-group">
+            <label for="year">Year Obtained *</label>
+            <input type="number" id="year" name="year" min="1950" max="2099" required />
+          </div>
+          <div class="form-group">
+            <label for="credentialUrl">Credential URL (optional)</label>
+            <input type="url" id="credentialUrl" name="credentialUrl" placeholder="https://..." />
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
+            <button type="submit" class="primary-btn">Save Certification</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+      <div class="modal-content modal-small">
+        <div class="modal-header">
+          <h2>Delete Certification</h2>
+          <button type="button" class="close-btn" id="closeDeleteModal">&times;</button>
+        </div>
+        <p>Are you sure you want to remove this certification?</p>
+        <form id="deleteCertForm" th:action="@{/profile/edit/certifications/delete}" method="post">
+          <input type="hidden" id="deleteCertId" name="certificationId" />
+          <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancelDeleteBtn">Cancel</button>
+            <button type="submit" class="danger-btn">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div
+      id="toastRoot"
+      class="toast-root"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <script th:src="@{/js/toast.js}"></script>
+    <script th:src="@{/js/Certificationedit.js}"></script>
+  </body>
+</html>

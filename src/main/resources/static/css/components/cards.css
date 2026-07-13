@@ -1,0 +1,58 @@
+/* ==========================================================
+   KNOWLY DESIGN SYSTEM
+   Cards v1.0
+   ========================================================== */
+
+.card{
+
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius-lg);
+
+    box-shadow:var(--shadow-sm);
+
+    transition:var(--transition-fast);
+
+}
+
+.card:hover{
+
+    box-shadow:var(--shadow-md);
+
+}
+
+.card-clickable{
+
+    cursor:pointer;
+
+}
+
+.card-clickable:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.card-header{
+
+    padding:var(--space-5);
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.card-body{
+
+    padding:var(--space-5);
+
+}
+
+.card-footer{
+
+    padding:var(--space-5);
+
+    border-top:1px solid var(--border);
+
+}

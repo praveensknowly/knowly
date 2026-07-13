@@ -1,0 +1,55 @@
+/* ==========================================================
+   Error Page — layout only (tokens/components from app.css)
+   ========================================================== */
+
+.error-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+  background: linear-gradient(135deg, var(--brand-blue-lighter) 0%, var(--background) 100%);
+}
+
+.error-page .error-card {
+  width: min(100%, 560px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-10) var(--space-8);
+  text-align: center;
+}
+
+.error-page .error-eyebrow {
+  display: inline-block;
+  margin: 0 0 var(--space-3);
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-blue-light);
+  color: var(--primary-hover);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.error-page h1 {
+  margin: 0 0 var(--space-3);
+  font-size: 34px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.error-page .error-message {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.error-page .error-actions {
+  margin-top: var(--space-6);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}

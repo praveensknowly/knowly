@@ -1,0 +1,118 @@
+/* ==========================================================
+   KNOWLY DESIGN SYSTEM
+   Typography v1.0
+   ========================================================== */
+
+/* ---------- Body ---------- */
+
+body{
+    font-family: var(--font-primary);
+    font-size: var(--fs-md);
+    color: var(--text-primary);
+    background: var(--background);
+    line-height: 1.6;
+}
+
+/* ---------- Headings ---------- */
+
+h1,h2,h3,h4,h5,h6{
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    font-weight: var(--fw-bold);
+    line-height: 1.2;
+}
+
+h1{
+    font-size: var(--fs-4xl);
+}
+
+h2{
+    font-size: var(--fs-3xl);
+}
+
+h3{
+    font-size: var(--fs-2xl);
+}
+
+h4{
+    font-size: var(--fs-xl);
+}
+
+h5{
+    font-size: var(--fs-lg);
+}
+
+h6{
+    font-size: var(--fs-md);
+}
+
+/* ---------- Paragraph ---------- */
+
+p{
+    color: var(--text-secondary);
+    font-size: var(--fs-md);
+}
+
+/* ---------- Small ---------- */
+
+small{
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+}
+
+/* ---------- Labels ---------- */
+
+label{
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--text-secondary);
+}
+
+/* ---------- Code ---------- */
+
+code{
+    font-family: var(--font-mono);
+    font-size: .9em;
+}
+
+/* ---------- Utilities ---------- */
+
+.text-primary{
+    color: var(--text-primary);
+}
+
+.text-secondary{
+    color: var(--text-secondary);
+}
+
+.text-muted{
+    color: var(--text-muted);
+}
+
+.text-white{
+    color: var(--text-white);
+}
+
+.text-success{
+    color: var(--success);
+}
+
+.text-warning{
+    color: var(--warning);
+}
+
+.text-danger{
+    color: var(--danger);
+}
+
+.text-center{
+    text-align:center;
+}
+
+.text-left{
+    text-align:left;
+}
+
+.text-right{
+    text-align:right;
+}

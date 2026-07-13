@@ -1,0 +1,60 @@
+/* ==========================================================
+   KNOWLY DESIGN SYSTEM
+   Dropdown v1.0
+   ========================================================== */
+
+.dropdown{
+
+    position:relative;
+
+}
+
+.dropdown-menu{
+
+    position:absolute;
+
+    top:110%;
+
+    right:0;
+
+    min-width:220px;
+
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius-lg);
+
+    box-shadow:var(--shadow-lg);
+
+    padding:var(--space-2);
+
+    z-index:var(--z-dropdown);
+
+}
+
+.dropdown-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:var(--space-3);
+
+    padding:12px;
+
+    border-radius:var(--radius-md);
+
+    color:var(--text-secondary);
+
+    transition:var(--transition-fast);
+
+}
+
+.dropdown-item:hover{
+
+    background:var(--surface-secondary);
+
+    color:var(--primary);
+
+}

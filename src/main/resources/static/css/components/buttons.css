@@ -1,0 +1,96 @@
+/* ==========================================================
+   KNOWLY DESIGN SYSTEM
+   Buttons v1.0
+   ========================================================== */
+
+.btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:var(--space-2);
+
+    padding:12px 22px;
+
+    border:none;
+
+    border-radius:var(--radius-md);
+
+    font-size:var(--fs-md);
+
+    font-weight:var(--fw-semibold);
+
+    cursor:pointer;
+
+    transition:var(--transition-fast);
+
+}
+
+.btn-primary{
+
+    background:var(--primary);
+
+    color:var(--text-white);
+
+}
+
+.btn-primary:hover{
+
+    background:var(--primary-hover);
+
+}
+
+.btn-secondary{
+
+    background:var(--secondary);
+
+    color:var(--text-white);
+
+}
+
+.btn-secondary:hover{
+
+    background:var(--brand-green-hover);
+
+}
+
+.btn-outline{
+
+    background:transparent;
+
+    color:var(--primary);
+
+    border:1px solid var(--primary);
+
+}
+
+.btn-outline:hover{
+
+    background:var(--brand-blue-lighter);
+
+}
+
+.btn-danger{
+
+    background:var(--danger);
+
+    color:white;
+
+}
+
+.btn-danger:hover{
+
+    opacity:.9;
+
+}
+
+.btn:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+}

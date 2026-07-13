@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Projects | Knowly</title>
+    <th:block th:replace="~{fragments/styles :: styles(~{'Projectedit.css'})}"></th:block>
+  </head>
+  <body>
+    <!-- ═════════════════════════════════════════════════════ -->
+    <!-- NAVBAR -->
+    <!-- ═════════════════════════════════════════════════════ -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-inner">
+        <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+          <span class="brand-blue"><b>Know</b></span
+          ><span class="brand-green"><b>ly</b></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a th:href="@{/home}">Home</a></li>
+          <li><a th:href="@{/search}">Search Experts</a></li>
+          <li><a th:href="@{/helping}">Helping</a></li>
+          <li><a th:href="@{/learning}">Learning</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a
+            th:href="@{/notifications}"
+            class="nav-icon-btn"
+            aria-label="Notifications"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
+            </svg>
+            <span class="nav-badge" id="notifBadge" style="display: none"
+              >0</span
+            >
+          </a>
+            <a
+            th:href="@{/profile}"
+            class="avatar avatar-md"
+            id="navAvatar"
+            aria-label="My profile"
+          >
+            <img
+              th:if="${profile != null and profile.profilePicturepath != null and !#strings.isEmpty(profile.profilePicturepath)}"
+              th:src="@{/uploads/profile/{file}(file=${profile.profilePicturepath})}"
+              class="avatar-img"
+              alt="My profile picture"
+            />
+            <span
+              class="avatar-initial"
+              th:if="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              th:text="${profile.user.name != null and !#strings.isEmpty(profile.user.name) ? #strings.substring(profile.user.name,0,1).toUpperCase() : 'K'}"
+              >K</span
+            >
+            <span
+              class="avatar-initial"
+              th:unless="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
+              >K</span>
+          </a>
+        </div>
+
+        <button
+          class="nav-toggle"
+          id="navToggle"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <ul class="nav-mobile" id="navMobile">
+        <li><a th:href="@{/home}">Home</a></li>
+        <li><a th:href="@{/search}">Search Experts</a></li>
+        <li><a th:href="@{/helping}">Helping</a></li>
+        <li><a th:href="@{/learning}">Learning</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <header class="top-bar">
+        <div>
+          <h1>Manage Projects</h1>
+          <p>
+            Share your most important work and achievements with people who
+            visit your profile.
+          </p>
+        </div>
+        <a th:href="@{/profile}" class="back-btn">← Back to Profile</a>
+      </header>
+
+      <section class="top-actions">
+        <div class="search-box">
+          <input
+            id="projectSearch"
+            type="text"
+            placeholder="Search your projects..."
+          />
+        </div>
+
+        <div class="actions">
+          <select id="projectSort">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="title">Title</option>
+          </select>
+          <button type="button" class="primary-btn" id="addProjectBtn">
+            + Add Project
+          </button>
+        </div>
+      </section>
+
+      <section class="stats">
+        <div class="stat-card">
+          <h3>Total Projects</h3>
+          <span th:text="${#lists.size(projects)}">0</span>
+        </div>
+      </section>
+
+      <section class="projects-grid" id="projectGrid">
+        <article
+          class="project-card"
+          th:each="project : ${projects}"
+          th:data-id="${project.id}"
+          th:data-title="${project.title}"
+          th:data-role="${project.role}"
+          th:data-link="${project.link}"
+          th:data-tech="${project.technologies}"
+          th:data-description="${project.description}"
+          th:data-created="${project.createdAt}"
+        >
+          <div class="project-card-header">
+            <div>
+              <h2 th:text="${project.title}">Project Title</h2>
+              <p class="project-role" th:text="${project.role}">
+                Product design
+              </p>
+            </div>
+            <div class="project-actions">
+              <button type="button" class="edit-btn">Edit</button>
+              <button type="button" class="delete-btn">Delete</button>
+            </div>
+          </div>
+          <p class="project-description" th:text="${project.description}">
+            Project description goes here.
+          </p>
+          <div class="project-meta">
+            <span th:text="${project.technologies}">React · Spring Boot</span>
+            <a
+              th:if="${project.link != null and !project.link.isEmpty()}"
+              th:href="${project.link}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="project-link"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              View project
+            </a>
+          </div>
+        </article>
+      </section>
+
+      <div
+        class="empty-state"
+        id="emptyState"
+        th:if="${#lists.isEmpty(projects)}"
+      >
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 12h20M12 2v20" stroke-linecap="round"/>
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="empty-state-title">No projects added yet</h2>
+        <p class="empty-state-description">
+          Add a project to showcase your work and highlight the outcomes you
+          delivered.
+        </p>
+        <div class="empty-state-action">
+          <button type="button" class="primary-btn" id="emptyAddProjectBtn">
+            + Add Project
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="projectModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Add Project</h2>
+          <button type="button" class="close-btn" id="closeModal">×</button>
+        </div>
+
+        <form
+          id="projectForm"
+          th:action="@{/profile/edit/projects}"
+          method="post"
+          novalidate
+        >
+          <input type="hidden" id="projectId" name="id" />
+
+          <div class="field form-group">
+            <label class="field__label" for="projectTitle">Project Title</label>
+            <input
+              class="field__input"
+              id="projectTitle"
+              name="title"
+              type="text"
+              required
+            />
+          </div>
+
+          <div class="field form-group">
+            <label class="field__label" for="projectRole">Role</label>
+            <input
+              class="field__input"
+              id="projectRole"
+              name="role"
+              type="text"
+              required
+            />
+          </div>
+
+          <div class="field form-group">
+            <label class="field__label" for="projectTech">Technologies</label>
+            <input
+              class="field__input"
+              id="projectTech"
+              name="technologies"
+              type="text"
+              placeholder="React, Spring Boot, AWS"
+            />
+          </div>
+
+          <div class="field form-group">
+            <label class="field__label" for="projectLink">Project link</label>
+            <input
+              class="field__input"
+              id="projectLink"
+              name="link"
+              type="url"
+              placeholder="https://"
+            />
+          </div>
+
+          <div class="field form-group">
+            <label class="field__label" for="projectDescription"
+              >Description</label
+            >
+            <textarea
+              class="field__input"
+              id="projectDescription"
+              name="description"
+              rows="5"
+              maxlength="800"
+              placeholder="Describe the project and your contribution."
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancelProject">
+              Cancel
+            </button>
+            <button type="submit" class="primary-btn" id="saveProject">
+              Save Project
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <form
+      id="deleteProjectForm"
+      th:action="@{/profile/edit/projects/delete}"
+      method="post"
+    >
+      <input type="hidden" id="deleteProjectId" name="projectId" />
+    </form>
+
+    <div
+      id="toastRoot"
+      class="toast-root"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <script th:src="@{/js/toast.js}"></script>
+    <script th:src="@{/js/Projectedit.js}"></script>
+  </body>
+</html>

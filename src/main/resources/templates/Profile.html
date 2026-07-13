@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title th:text="${user.name} + ' — Knowly'">Profile — Knowly</title>
+<meta name="description"
+	th:content="${profile != null and profile.bio != null and !profile.bio.isEmpty()}
+                    ? ${#strings.abbreviate(profile.bio, 150)}
+                    : 'View this profile on Knowly'" />
+
+<th:block th:replace="~{fragments/styles :: styles('Profile.css')}"></th:block>
+</head>
+<body>
+
+	<!-- ═══════════════════════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════════════════════ -->
+	<nav class="pf-nav" id="pfNav">
+		<div class="pf-nav-inner">
+
+			<a th:href="@{/}" class="pf-nav-logo" aria-label="Knowly home"> <span
+				class="pf-logo-know">Know</span><span class="pf-logo-ly">ly</span>
+			</a>
+
+			<ul class="pf-nav-links" id="pfNavLinks">
+				<li><a th:href="@{/home}">Home</a></li>
+				<li><a th:href="@{/search}">Search Experts</a></li>
+				<li><a th:href="@{/helping}">Helping</a></li>
+				<li><a th:href="@{/learning}">Learning</a></li>
+			</ul>
+
+			<div class="pf-nav-actions">
+				<a th:href="@{/notifications}" class="pf-nav-icon-btn"
+					aria-label="Notifications"> <svg viewBox="0 0 24 24" width="20"
+						height="20" fill="none" stroke="currentColor" stroke-width="1.7"
+						aria-hidden="true">
+          <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
+							stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
+        </svg>
+				</a> <a th:href="@{/profile}" class="avatar avatar-md"
+					aria-label="My profile"> <span class="avatar-initial"
+					th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name, 0, 1).toUpperCase() : 'J'}">J</span>
+				</a>
+			</div>
+
+			<button class="pf-nav-toggle" id="pfNavToggle"
+				aria-label="Toggle navigation menu" aria-expanded="false">
+				<span></span><span></span><span></span>
+			</button>
+		</div>
+
+		<!-- Mobile drawer -->
+		<ul class="pf-nav-mobile" id="pfNavMobile">
+			<li><a th:href="@{/home}">Home</a></li>
+			<li><a th:href="@{/search}">Search Experts</a></li>
+			<li><a th:href="@{/helping}">Helping</a></li>
+			<li><a th:href="@{/learning}">Learning</a></li>
+			<li><a th:href="@{/notifications}">Notifications</a></li>
+			<li><a th:href="@{/profile/edit}" class="pf-btn pf-btn-primary">Edit
+					Profile</a></li>
+		</ul>
+	</nav>
+
+	<!-- ═══════════════════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════════════════ -->
+	<main class="pf-main">
+
+		<!-- ══════════════════════════════════════════════
+       PROFILE HEADER
+  ══════════════════════════════════════════════ -->
+		<section class="pf-header pf-reveal" aria-label="Profile header">
+
+			<!-- Cover banner -->
+			<div class="pf-cover" id="pfCover" aria-hidden="true">
+				<div class="pf-cover-gradient"></div>
+			</div>
+
+			<!-- Header card -->
+			<div class="pf-header-card">
+				<div class="pf-header-top">
+
+					<!-- Avatar -->
+					<div class="pf-avatar-wrap">
+						<div class="pf-avatar" id="pfAvatar">
+
+							<!-- Profile picture, when uploaded -->
+							<img
+								th:if="${profile != null
+                          and profile.profilePicturepath != null
+                          and !profile.profilePicturepath.isEmpty()}"
+								th:src="@{'/uploads/profile/' + ${profile.profilePicturepath}}"
+								class="pf-avatar-img" th:alt="${user.name}" />
+
+							<!-- Fallback initial letter -->
+							<span class="pf-avatar-letter"
+								th:unless="${profile != null
+                               and profile.profilePicturepath != null
+                               and !profile.profilePicturepath.isEmpty()}"
+								th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name, 0, 1).toUpperCase() : 'J'}">J</span>
+						</div>
+						<span class="pf-avatar-badge" aria-hidden="true"></span>
+					</div>
+
+					<!-- Edit button — desktop -->
+					<div class="pf-header-actions">
+						<a th:href="@{/profile/edit}" class="pf-btn pf-btn-outline"> <svg
+								viewBox="0 0 20 20" width="15" height="15" fill="none"
+								stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M4 16h3.5L17 6.5a2 2 0 00-3-3L4.5 13V16z"
+									stroke-linejoin="round" />
+            </svg> Edit Profile
+						</a>
+					</div>
+				</div>
+
+				<!-- ── Identity ── -->
+				<div class="pf-identity">
+
+					<!-- Name -->
+					<div class="pf-name-row">
+						<h1 class="pf-name" th:text="${user.name}">User Name</h1>
+					</div>
+
+					<!-- Bio headline (abbreviated) -->
+					<p class="pf-headline"
+						th:if="${profile != null
+                   and profile.bio != null
+                   and !profile.bio.isEmpty()}"
+						th:text="${#strings.abbreviate(profile.bio, 140)}">
+						Professional headline</p>
+					<p class="pf-headline pf-headline-empty"
+						th:unless="${profile != null
+                        and profile.bio != null
+                        and !profile.bio.isEmpty()}">
+						No headline yet. <a th:href="@{/profile/edit}"
+							class="pf-inline-link">Add one →</a>
+					</p>
+
+					<!-- Meta row: location · joined date · languages -->
+					<ul class="pf-meta-row">
+
+						<li
+							th:if="${profile != null
+                       and profile.location != null
+                       and !profile.location.isEmpty()}">
+							<svg viewBox="0 0 20 20" width="14" height="14" fill="none"
+								stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M10 11a3 3 0 100-6 3 3 0 000 6z"
+									stroke-linejoin="round" />
+              <path d="M10 18s-7-5.5-7-10a7 7 0 0114 0c0 4.5-7 10-7 10z"
+									stroke-linejoin="round" />
+            </svg> <span th:text="${profile.location}">Location</span>
+						</li>
+
+						<li><svg viewBox="0 0 20 20" width="14" height="14"
+								fill="none" stroke="currentColor" stroke-width="1.7"
+								aria-hidden="true">
+              <rect x="2" y="4" width="16" height="14" rx="2.5"
+									stroke-linejoin="round" />
+              <path d="M2 9h16M6 2v3M14 2v3" stroke-linecap="round" />
+            </svg> <span> Joined <span
+								th:text="${#temporals.format(user.createdAt, 'MMMM yyyy')}">January
+									2024</span>
+						</span></li>
+
+						<li th:if="${profile != null and profile.languages != null and !profile.languages.isEmpty()}">
+
+    <svg viewBox="0 0 20 20" width="14" height="14" fill="none"
+         stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <path d="M10 2a8 8 0 100 16A8 8 0 0010 2z"
+              stroke-linejoin="round"/>
+        <path d="M2 10h16M10 2c-2 3-3 5-3 8s1 5 3 8M10 2c2 3 3 5 3 8s-1 5-3 8"
+              stroke-linecap="round"/>
+    </svg>
+
+    <div class="pf-language-chips">
+        <span class="pf-language-chip"
+              th:each="language : ${profile.languages}"
+              th:text="${language.name}">
+            English
+        </span>
+    </div>
+
+</li>
+
+					</ul>
+
+					<!-- Profile completion bar -->
+					<div class="pf-completion-row">
+						<div class="pf-completion-bar-outer" role="progressbar"
+							th:attr="aria-valuenow=${profileCompletion},
+              aria-label=${'Profile ' + profileCompletion + '% complete'}"
+							aria-valuemin="0" aria-valuemax="100">
+							<div class="pf-completion-bar-inner" id="pfCompletionBar"
+								th:style="'width:' + ${profileCompletion} + '%'"></div>
+						</div>
+						<span class="pf-completion-text"> <span
+							th:text="${profileCompletion}">0</span>% profile complete
+						</span>
+					</div>
+
+				</div>
+				<!-- /.pf-identity -->
+			</div>
+			<!-- /.pf-header-card -->
+		</section>
+
+		<!-- ══════════════════════════════════════════════
+       PAGE GRID
+  ══════════════════════════════════════════════ -->
+		<div class="pf-grid">
+
+			<!-- ═══════════════ LEFT / MAIN COLUMN ═══════════════ -->
+			<div class="pf-col-main">
+
+				<!-- ── ABOUT ────────────────────────────────────── -->
+				<section class="pf-card pf-reveal" style="--pf-delay: 1"
+					aria-labelledby="pf-about-title">
+					<div class="pf-card-header">
+						<h2 class="pf-card-title" id="pf-about-title">About</h2>
+						<a th:href="@{/profile/edit}" class="pf-card-edit"
+							aria-label="Edit about section"> <svg viewBox="0 0 20 20"
+								width="14" height="14" fill="none" stroke="currentColor"
+								stroke-width="1.8" aria-hidden="true">
+              <path d="M4 16h3.5L17 6.5a2 2 0 00-3-3L4.5 13V16z"
+									stroke-linejoin="round" />
+            </svg> Edit
+						</a>
+					</div>
+
+					<p class="pf-about-text"
+						th:if="${profile != null
+                   and profile.bio != null
+                   and !profile.bio.isEmpty()}"
+						th:text="${profile.bio}">Full bio</p>
+
+					<div class="pf-empty-state"
+						th:unless="${profile != null
+                          and profile.bio != null
+                          and !profile.bio.isEmpty()}">
+						<svg viewBox="0 0 24 24" width="32" height="32" fill="none"
+							stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M4 6h16M4 10h16M4 14h10" stroke-linecap="round" />
+          </svg>
+						<p>No bio added yet.</p>
+						<a th:href="@{/profile/edit}" class="pf-empty-action">Write
+							your bio →</a>
+					</div>
+				</section>
+
+				<!-- ── SKILLS ───────────────────────────────────── -->
+				<section class="pf-card pf-reveal" style="--pf-delay: 2"
+					aria-labelledby="pf-skills-title">
+					<div class="pf-card-header">
+						<h2 class="pf-card-title" id="pf-skills-title">Skills</h2>
+						<a th:href="@{/profile/edit/skills}" class="pf-card-edit"
+							aria-label="Manage skills"> <svg viewBox="0 0 20 20"
+								width="14" height="14" fill="none" stroke="currentColor"
+								stroke-width="1.8" aria-hidden="true">
+              <path d="M10 4v12M4 10h12" stroke-linecap="round" />
+            </svg> Manage
+						</a>
+					</div>
+
+					<!-- Skills grid -->
+					<div class="pf-skills-grid"
+						th:if="${profile != null
+                      and profile.skills != null
+                      and !profile.skills.isEmpty()}">
+
+						<article class="pf-skill-card" th:each="skill : ${profile.skills}"
+							th:attr="data-name=${skill.name}">
+
+							<!-- Icon initial — gradient applied by Profile.js -->
+							<div class="pf-skill-icon" th:attr="data-skill=${skill.name}"
+								aria-hidden="true">
+								<span
+									th:text="${skill.name != null and !#strings.isEmpty(skill.name) ? #strings.substring(skill.name, 0, 1).toUpperCase() : 'J'}">J</span>
+							</div>
+
+							<div class="pf-skill-body">
+
+								<!-- Name + proficiency badge -->
+								<div class="pf-skill-name-row">
+									<h3 class="pf-skill-name" th:text="${skill.name}">Java</h3>
+
+									<span class="pf-skill-level"
+										th:text="${skill.proficiencyLevel}"
+										th:classappend="${'pf-level-' + skill.proficiencyLevel.toString().toLowerCase()}">
+										ADVANCED </span>
+								</div>
+
+								<!-- Star row — stars injected by Profile.js; score shown as text -->
+								<div class="pf-skill-score-row">
+									<div class="pf-skill-stars"
+										th:attr="data-score=${skill.skillScore}" aria-hidden="true">
+										<!-- Profile.js renders stars here -->
+									</div>
+									<span class="pf-skill-score-num"
+										th:text="${#numbers.formatDecimal(skill.skillScore, 1, 1)}">4.8</span>
+									<span class="pf-skill-score-sep">/</span> <span
+										class="pf-skill-score-max">5.0</span>
+								</div>
+
+								<!-- Years of experience -->
+								<p class="pf-skill-exp"
+									th:if="${skill.yearsOfExperience != null
+                          and skill.yearsOfExperience > 0}">
+									<svg viewBox="0 0 16 16" width="12" height="12" fill="none"
+										stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <circle cx="8" cy="8" r="6.5" />
+                  <path d="M8 4.5V8l2.5 2" stroke-linecap="round" />
+                </svg>
+									<span th:text="${skill.yearsOfExperience}">3</span> <span
+										th:text="${skill.yearsOfExperience == 1} ? 'year' : 'years'">years</span>
+									experience
+								</p>
+
+							</div>
+							<!-- /.pf-skill-body -->
+						</article>
+
+					</div>
+					<!-- /.pf-skills-grid -->
+
+					<!-- Empty state -->
+					<div class="pf-empty-state"
+						th:unless="${profile != null
+                          and profile.skills != null
+                          and !profile.skills.isEmpty()}">
+						<svg viewBox="0 0 24 24" width="32" height="32" fill="none"
+							stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path
+								d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"
+								stroke-linejoin="round" />
+          </svg>
+						<p>No skills added yet.</p>
+						<a th:href="@{/profile/edit/skills}" class="pf-empty-action">
+							Add your first skill → </a>
+					</div>
+				</section>
+
+				<!-- ── EDUCATION ─────────────────────────────────── -->
+				<section class="pf-card pf-reveal" style="--pf-delay: 3"
+					aria-labelledby="pf-edu-title">
+					<div class="pf-card-header">
+						<h2 class="pf-card-title" id="pf-edu-title">Education</h2>
+						<a th:href="@{/profile/edit/education}" class="pf-card-edit"
+							aria-label="Manage education"> <svg viewBox="0 0 20 20"
+								width="14" height="14" fill="none" stroke="currentColor"
+								stroke-width="1.8" aria-hidden="true">
+              <path d="M10 4v12M4 10h12" stroke-linecap="round" />
+            </svg> Manage
+						</a>
+					</div>
+
+					<div class="pf-timeline"
+						th:if="${educationList != null and !educationList.isEmpty()}">
+						<div class="pf-timeline-item" th:each="edu : ${educationList}">
+
+							<div class="pf-tl-dot pf-tl-dot-blue" aria-hidden="true"></div>
+
+							<div class="pf-tl-body">
+								<h3 class="pf-tl-title">
+									<span th:text="${edu.degree}">Degree</span>
+									<th:block
+										th:if="${edu.fieldOfStudy != null
+                                   and !edu.fieldOfStudy.isEmpty()}">
+										<span> — </span>
+										<span th:text="${edu.fieldOfStudy}">Computer Science</span>
+									</th:block>
+								</h3>
+								<p class="pf-tl-inst" th:text="${edu.institution}">Institution</p>
+								<p class="pf-tl-date">
+									<span th:text="${edu.startYear}">2020</span> <span> – </span> <span
+										th:text="${edu.endYear != null} ? ${edu.endYear} : 'Present'">2024</span>
+								</p>
+								<p class="pf-tl-desc"
+									th:if="${edu.description != null and !edu.description.isEmpty()}"
+									th:text="${edu.description}"></p>
+							</div>
+
+						</div>
+					</div>
+
+					<div class="pf-empty-state"
+						th:unless="${educationList != null and !educationList.isEmpty()}">
+						<svg viewBox="0 0 24 24" width="32" height="32" fill="none"
+							stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M2 9l10-5 10 5-10 5L2 9z" stroke-linejoin="round" />
+            <path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"
+								stroke-linecap="round" />
+          </svg>
+						<p>No education added yet.</p>
+						<a th:href="@{/profile/edit/education}" class="pf-empty-action">
+							Add education → </a>
+					</div>
+				</section>
+
+				<!-- ── PROJECTS ──────────────────────────────────── -->
+				<!--
+        Projects live on UserProfile, but the spec lists them as
+        profile.projects (Collection<Project>). We guard with a null-safe
+        check so the page never throws if projects haven't been implemented yet.
+      -->
+				<section class="pf-card pf-reveal" style="--pf-delay: 4"
+					aria-labelledby="pf-proj-title" th:if="${profile != null}">
+					<div class="pf-card-header">
+						<h2 class="pf-card-title" id="pf-proj-title">Projects</h2>
+						<a th:href="@{/profile/edit/projects}" class="pf-card-edit"
+							aria-label="Manage projects"> <svg viewBox="0 0 20 20"
+								width="14" height="14" fill="none" stroke="currentColor"
+								stroke-width="1.8" aria-hidden="true">
+              <path d="M10 4v12M4 10h12" stroke-linecap="round" />
+            </svg> Manage
+						</a>
+					</div>
+
+					<!-- Projects grid -->
+					<div class="pf-projects-grid"
+						th:if="${profile.projects != null and !profile.projects.isEmpty()}">
+
+						<article class="pf-project-card"
+							th:each="proj : ${profile.projects}">
+
+							<div class="pf-proj-header">
+								<h3 class="pf-proj-name" th:text="${proj.title}">Project
+									Title</h3>
+
+								<!-- External link (uses project.link, NOT githubLink) -->
+								<div class="pf-proj-links">
+									<a th:if="${proj.link != null and !proj.link.isEmpty()}"
+										th:href="${proj.link}" target="_blank"
+										rel="noopener noreferrer" class="pf-proj-link"
+										aria-label="View project"> <svg viewBox="0 0 20 20"
+											width="16" height="16" fill="none" stroke="currentColor"
+											stroke-width="1.7" aria-hidden="true">
+                    <path
+												d="M10.5 3.5H16.5V9.5M10 10l6-6M8.5 5H5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3.5"
+												stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+									</a>
+								</div>
+							</div>
+
+							<!-- Role -->
+							<p class="pf-tl-inst"
+								th:if="${proj.role != null and !proj.role.isEmpty()}"
+								th:text="${proj.role}">Role</p>
+
+							<!-- Description -->
+							<p class="pf-proj-desc"
+								th:if="${proj.description != null and !proj.description.isEmpty()}"
+								th:text="${#strings.abbreviate(proj.description, 180)}">Description</p>
+
+							<!-- Technologies -->
+							<div class="pf-proj-tech"
+								th:if="${proj.technologies != null and !proj.technologies.isEmpty()}">
+								<span class="pf-tech-chip" th:each="tech : ${proj.technologies}"
+									th:text="${tech}">Tech</span>
+							</div>
+
+						</article>
+					</div>
+					<!-- /.pf-projects-grid -->
+
+					<!-- Empty state -->
+					<div class="pf-empty-state"
+						th:unless="${profile.projects != null and !profile.projects.isEmpty()}">
+						<svg viewBox="0 0 24 24" width="32" height="32" fill="none"
+							stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="16" rx="2.5"
+								stroke-linejoin="round" />
+            <path d="M8 21h8M12 19v2" stroke-linecap="round" />
+          </svg>
+						<p>No projects added yet.</p>
+						<a th:href="@{/profile/edit/projects}" class="pf-empty-action">
+							Add a project → </a>
+					</div>
+				</section>
+
+				<!-- ── CERTIFICATIONS ────────────────────────────── -->
+				<section class="pf-card pf-reveal" style="--pf-delay: 5"
+					aria-labelledby="pf-cert-title">
+					<div class="pf-card-header">
+						<h2 class="pf-card-title" id="pf-cert-title">Certifications</h2>
+						<a th:href="@{/profile/edit/certifications}" class="pf-card-edit"
+							aria-label="Manage certifications"> <svg viewBox="0 0 20 20"
+								width="14" height="14" fill="none" stroke="currentColor"
+								stroke-width="1.8" aria-hidden="true">
+              <path d="M10 4v12M4 10h12" stroke-linecap="round" />
+            </svg> Manage
+						</a>
+					</div>
+
+					<div class="pf-certs-grid"
+						th:if="${certificationsList != null and !certificationsList.isEmpty()}">
+
+						<article class="pf-cert-card"
+							th:each="cert : ${certificationsList}">
+
+							<div class="pf-cert-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+									stroke="currentColor" stroke-width="1.6">
+                <path
+										d="M12 2l8 3.5v5c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11v-5L12 2z"
+										stroke-linejoin="round" />
+                <path d="M9 12l2 2 4-4.5" stroke-linecap="round"
+										stroke-linejoin="round" />
+              </svg>
+							</div>
+
+							<div class="pf-cert-body">
+								<h3 class="pf-cert-name" th:text="${cert.name}">Certificate
+									Name</h3>
+								<p class="pf-cert-issuer" th:text="${cert.issuer}">Issuer</p>
+								<p class="pf-cert-year" th:text="${cert.year}">2024</p>
+							</div>
+
+							<!-- Verify credential — uses credentialUrl (NOT credentialLink) -->
+							<a
+								th:if="${cert.credentialUrl != null and !cert.credentialUrl.isEmpty()}"
+								th:href="${cert.credentialUrl}" target="_blank"
+								rel="noopener noreferrer" class="pf-cert-link"
+								aria-label="Verify credential"> Verify <svg
+									viewBox="0 0 16 16" width="11" height="11" fill="none"
+									stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M3 8h10M8.5 4l4 4-4 4" stroke-linecap="round"
+										stroke-linejoin="round" />
+              </svg>
+							</a>
+						</article>
+
+					</div>
+					<!-- /.pf-certs-grid -->
+
+					<!-- Empty state -->
+					<div class="pf-empty-state"
+						th:unless="${certificationsList != null and !certificationsList.isEmpty()}">
+						<svg viewBox="0 0 24 24" width="32" height="32" fill="none"
+							stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path
+								d="M12 2l8 3.5v5c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11v-5L12 2z"
+								stroke-linejoin="round" />
+          </svg>
+						<p>No certifications added yet.</p>
+						<a th:href="@{/profile/edit/certifications}"
+							class="pf-empty-action"> Add a certification → </a>
+					</div>
+				</section>
+
+			</div>
+			<!-- /.pf-col-main -->
+
+			<!-- ═══════════════ RIGHT SIDEBAR ═══════════════ -->
+			<aside class="pf-col-aside">
+
+				<!-- ── PERSONAL INFO CARD ── -->
+				<div class="pf-card pf-sidebar-card pf-reveal" style="--pf-delay: 1">
+					<h2 class="pf-card-title pf-sidebar-title">Personal Info</h2>
+
+					<ul class="pf-contact-list">
+
+						<li th:if="${user.email != null and !user.email.isEmpty()}">
+							<span class="pf-contact-link"> <span
+								class="pf-contact-icon"> <svg viewBox="0 0 24 24"
+										width="18" height="18" fill="none" stroke="currentColor"
+										stroke-width="1.7" aria-hidden="true">
+                  <rect x="2" y="5" width="20" height="15" rx="2.5"
+											stroke-linejoin="round" />
+                  <path d="M2 8l10 7 10-7" stroke-linecap="round" />
+                </svg>
+							</span> <span class="pf-contact-label" th:text="${user.email}">email@example.com</span>
+						</span>
+						</li>
+
+						<li
+							th:if="${profile != null
+                       and profile.dob != null}">
+							<span class="pf-contact-link"> <span
+								class="pf-contact-icon"> <svg viewBox="0 0 24 24"
+										width="18" height="18" fill="none" stroke="currentColor"
+										stroke-width="1.7" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="16" rx="2.5"
+											stroke-linejoin="round" />
+                  <path d="M3 10h18M8 3v3M16 3v3" stroke-linecap="round" />
+                </svg>
+							</span> <span class="pf-contact-label"
+								th:text="${#temporals.format(profile.dob, 'dd MMM yyyy')}">
+									01 Jan 2000 </span>
+						</span>
+						</li>
+
+						<li
+							th:if="${profile != null
+                       and profile.gender != null
+                       and !profile.gender.toString().isEmpty()}">
+							<span class="pf-contact-link"> <span
+								class="pf-contact-icon"> <svg viewBox="0 0 24 24"
+										width="18" height="18" fill="none" stroke="currentColor"
+										stroke-width="1.7" aria-hidden="true">
+                  <circle cx="12" cy="9" r="5" />
+                  <path d="M12 14v7M9 18h6" stroke-linecap="round" />
+                </svg>
+							</span> <span class="pf-contact-label" th:text="${profile.gender}">Gender</span>
+						</span>
+						</li>
+
+					</ul>
+				</div>
+
+				<!-- ── QUICK ACTIONS ── -->
+				<div class="pf-card pf-sidebar-card pf-reveal" style="--pf-delay: 2">
+					<h2 class="pf-card-title pf-sidebar-title">Quick Actions</h2>
+					<ul class="pf-quick-list">
+
+						<li><a th:href="@{/profile/edit}" class="pf-quick-link">
+								<svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+									stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M4 16h3.5L17 6.5a2 2 0 00-3-3L4.5 13V16z"
+										stroke-linejoin="round" />
+              </svg> Edit Profile
+						</a></li>
+
+						<li><a th:href="@{/profile/edit/skills}"
+							class="pf-quick-link"> <svg viewBox="0 0 20 20" width="16"
+									height="16" fill="none" stroke="currentColor"
+									stroke-width="1.8" aria-hidden="true">
+                <path
+										d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"
+										stroke-linejoin="round" />
+              </svg> Manage Skills
+						</a></li>
+
+						<li><a th:href="@{/profile/edit/education}"
+							class="pf-quick-link"> <svg viewBox="0 0 20 20" width="16"
+									height="16" fill="none" stroke="currentColor"
+									stroke-width="1.8" aria-hidden="true">
+                <path d="M2 7l8-4 8 4-8 4-8-4z" stroke-linejoin="round" />
+                <path d="M5 9v5c0 1.5 2.5 2.5 5 2.5s5-1 5-2.5V9"
+										stroke-linecap="round" />
+              </svg> Manage Education
+						</a></li>
+
+						<li><a th:href="@{/profile/edit/projects}"
+							class="pf-quick-link"> <svg viewBox="0 0 20 20" width="16"
+									height="16" fill="none" stroke="currentColor"
+									stroke-width="1.8" aria-hidden="true">
+                <rect x="2" y="3" width="16" height="13" rx="2"
+										stroke-linejoin="round" />
+                <path d="M7 17.5h6M10 16v1.5" stroke-linecap="round" />
+              </svg> Manage Projects
+						</a></li>
+
+						<li><a th:href="@{/profile/edit/certifications}"
+							class="pf-quick-link"> <svg viewBox="0 0 20 20" width="16"
+									height="16" fill="none" stroke="currentColor"
+									stroke-width="1.8" aria-hidden="true">
+                <path
+										d="M10 2l6.5 2.5v4C16.5 13 13.8 16 10 18 6.2 16 3.5 13 3.5 8.5v-4L10 2z"
+										stroke-linejoin="round" />
+              </svg> Manage Certifications
+						</a></li>
+
+						<li class="pf-quick-sep"></li>
+
+						<li>
+    <form th:action="@{/logout}" method="post" class="pf-logout-form">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <button type="submit" class="pf-quick-link pf-quick-link-danger"
+            style="background:none;border:none;width:100%;text-align:left;cursor:pointer;font:inherit;">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+                stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M7 17H4a2 2 0 01-2-2V5a2 2 0 012-2h3"
+                    stroke-linecap="round" />
+                <path d="M13 14l4-4-4-4M17 10H7" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg> Logout
+        </button>
+    </form>
+</li>
+					</ul>
+				</div>
+
+			</aside>
+			<!-- /.pf-col-aside -->
+
+		</div>
+		<!-- /.pf-grid -->
+	</main>
+	<!-- /.pf-main -->
+
+	<script th:src="@{/js/Profile.js}"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+/* ==========================================================
+   KNOWLY DESIGN SYSTEM
+   Layout v1.0
+   ========================================================== */
+
+/* ---------- Containers ---------- */
+
+.container{
+    width:100%;
+    max-width:var(--container-lg);
+    margin:auto;
+    padding:0 var(--space-4);
+}
+
+.container-sm{
+    max-width:var(--container-sm);
+}
+
+.container-md{
+    max-width:var(--container-md);
+}
+
+.container-xl{
+    max-width:var(--container-xl);
+}
+
+/* ---------- Page ---------- */
+
+.page{
+    min-height:100vh;
+    padding:var(--space-7) 0;
+}
+
+.page-header{
+    margin-bottom:var(--space-8);
+}
+
+.page-content{
+    width:100%;
+}
+
+/* ---------- Flex ---------- */
+
+.flex{
+    display:flex;
+}
+
+.flex-column{
+    display:flex;
+    flex-direction:column;
+}
+
+.flex-center{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.flex-between{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+/* ---------- Grid ---------- */
+
+.grid{
+    display:grid;
+}
+
+.grid-2{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:var(--space-6);
+}
+
+.grid-3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:var(--space-6);
+}
+
+.grid-4{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:var(--space-6);
+}

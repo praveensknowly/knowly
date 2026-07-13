@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — Knowly</title>
+  <meta name="description" content="Create your Knowly account. Share what you know. Learn what you don't." />
+    <th:block th:replace="~{fragments/styles :: styles('SignUp.css')}" ></th:block>
+
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- NAVBAR                                  -->
+  <!-- ═══════════════════════════════════════ -->
+  <nav class="su-nav">
+    <a href="index.html" class="su-logo">
+      <span class="su-logo-know">Know</span><span class="su-logo-ly">ly</span>
+    </a>
+    <p class="su-nav-label">Create your account</p>
+    <a th:href="@{/login}" class="su-nav-link">
+      Already a member? <strong>Sign in</strong>
+    </a>
+  </nav>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE LAYOUT                             -->
+  <!-- ═══════════════════════════════════════ -->
+  <main class="su-layout">
+
+    <!-- ─── LEFT PANEL ─── -->
+    <aside class="su-left">
+      <div class="su-left-content">
+
+        <!-- brand -->
+        <a href="index.html" class="su-left-logo">
+          <span class="su-logo-know">Know</span><span class="su-logo-ly">ly</span>
+        </a>
+
+        <!-- heading -->
+        <h1 class="su-left-heading">
+          Share What<br>You Know.<br>
+          <span class="su-left-heading-accent">Learn What<br>You Don't.</span>
+        </h1>
+
+        <p class="su-left-sub">
+          Join a community built to connect learners with skilled people.
+        </p>
+
+        <!-- ── SVG ILLUSTRATION ── -->
+        <div class="su-illustration" aria-label="Illustration of knowledge sharing and mentorship" role="img">
+          <svg viewBox="0 0 480 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- background glow blobs -->
+            <ellipse cx="120" cy="180" rx="140" ry="120" fill="url(#blob1)" opacity="0.35"/>
+            <ellipse cx="360" cy="140" rx="130" ry="110" fill="url(#blob2)" opacity="0.28"/>
+            <ellipse cx="240" cy="280" rx="160" ry="80" fill="url(#blob3)" opacity="0.2"/>
+
+            <!-- floating abstract shapes -->
+            <rect x="34" y="38" width="44" height="44" rx="13" fill="url(#sq1)" opacity="0.7" transform="rotate(-12 56 60)"/>
+            <rect x="390" y="240" width="36" height="36" rx="10" fill="url(#sq2)" opacity="0.6" transform="rotate(14 408 258)"/>
+            <circle cx="430" cy="50" r="22" fill="url(#circ1)" opacity="0.6"/>
+            <circle cx="60" cy="290" r="16" fill="url(#circ2)" opacity="0.5"/>
+
+            <!-- ── PERSON A: mentor/teacher (left) ── -->
+            <!-- body -->
+            <circle cx="130" cy="95" r="28" fill="url(#personA)"/>
+            <!-- head -->
+            <circle cx="130" cy="60" r="18" fill="url(#personA)"/>
+            <!-- face detail -->
+            <circle cx="124" cy="58" r="2.5" fill="white" opacity="0.9"/>
+            <circle cx="136" cy="58" r="2.5" fill="white" opacity="0.9"/>
+            <path d="M124 66 Q130 71 136 66" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+            <!-- ── PERSON B: learner (right) ── -->
+            <circle cx="350" cy="95" r="28" fill="url(#personB)"/>
+            <circle cx="350" cy="60" r="18" fill="url(#personB)"/>
+            <circle cx="344" cy="58" r="2.5" fill="white" opacity="0.9"/>
+            <circle cx="356" cy="58" r="2.5" fill="white" opacity="0.9"/>
+            <!-- curious expression -->
+            <path d="M344 67 Q350 63 356 67" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+            <!-- ── KNOWLEDGE FLOW — glowing orbs traveling from A to B ── -->
+            <!-- path line -->
+            <path d="M162 88 Q240 40 318 88" stroke="url(#flowGrad)" stroke-width="2" stroke-dasharray="6 5" opacity="0.7"/>
+
+            <!-- orbs on path -->
+            <circle cx="200" cy="70" r="9" fill="url(#orb1)" opacity="0.95">
+              <animateMotion dur="3.2s" repeatCount="indefinite" begin="0s">
+                <mpath href="#flowPath"/>
+              </animateMotion>
+            </circle>
+            <circle cx="240" cy="55" r="7" fill="url(#orb2)" opacity="0.85">
+              <animateMotion dur="3.2s" repeatCount="indefinite" begin="1.1s">
+                <mpath href="#flowPath"/>
+              </animateMotion>
+            </circle>
+            <circle cx="280" cy="68" r="6" fill="url(#orb3)" opacity="0.75">
+              <animateMotion dur="3.2s" repeatCount="indefinite" begin="2.1s">
+                <mpath href="#flowPath"/>
+              </animateMotion>
+            </circle>
+
+            <!-- hidden path for animateMotion -->
+            <path id="flowPath" d="M162 88 Q240 40 318 88" fill="none"/>
+
+            <!-- ── CENTRAL BOOK / KNOWLEDGE HUB ── -->
+            <rect x="200" y="155" width="80" height="100" rx="10" fill="url(#bookGrad)"/>
+            <rect x="205" y="155" width="8" height="100" rx="4" fill="white" opacity="0.18"/>
+            <!-- book lines -->
+            <line x1="218" y1="178" x2="268" y2="178" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <line x1="218" y1="192" x2="268" y2="192" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <line x1="218" y1="206" x2="252" y2="206" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <line x1="218" y1="220" x2="260" y2="220" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <!-- bookmark -->
+            <polygon points="262,155 272,155 272,175 267,170 262,175" fill="url(#circ1)"/>
+
+            <!-- lines connecting people to book -->
+            <line x1="152" y1="115" x2="214" y2="165" stroke="url(#flowGrad)" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.55"/>
+            <line x1="328" y1="115" x2="268" y2="165" stroke="url(#flowGrad)" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.55"/>
+
+            <!-- ── FLOATING SKILL TAGS ── -->
+            <rect x="48" y="170" width="96" height="30" rx="15" fill="white" opacity="0.92" filter="url(#tagShadow)"/>
+            <circle cx="68" cy="185" r="8" fill="url(#personA)" opacity="0.9"/>
+            <text x="82" y="189" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#111827">Java Dev</text>
+
+            <rect x="50" y="218" width="106" height="30" rx="15" fill="white" opacity="0.92" filter="url(#tagShadow)"/>
+            <circle cx="70" cy="233" r="8" fill="url(#blob2)" opacity="0.9"/>
+            <text x="84" y="237" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#111827">UI Design</text>
+
+            <rect x="330" y="168" width="108" height="30" rx="15" fill="white" opacity="0.92" filter="url(#tagShadow)"/>
+            <circle cx="350" cy="183" r="8" fill="url(#personB)" opacity="0.9"/>
+            <text x="364" y="187" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#111827">Farming</text>
+
+            <rect x="326" y="216" width="116" height="30" rx="15" fill="white" opacity="0.92" filter="url(#tagShadow)"/>
+            <circle cx="346" cy="231" r="8" fill="url(#circ1)" opacity="0.9"/>
+            <text x="360" y="235" font-family="Inter,sans-serif" font-size="10.5" font-weight="600" fill="#111827">Tax Advice</text>
+
+            <!-- ── BOTTOM CAPTION BAR ── -->
+            <rect x="100" y="296" width="280" height="34" rx="17" fill="white" opacity="0.88" filter="url(#tagShadow)"/>
+            <circle cx="120" cy="313" r="9" fill="url(#personA)"/>
+            <circle cx="136" cy="313" r="9" fill="url(#personB)" style="margin-left:-4px"/>
+            <text x="152" y="317" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#111827">Real people. Real knowledge.</text>
+
+            <!-- ── DEFS ── -->
+            <defs>
+              <radialGradient id="blob1" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#2563EB"/>
+                <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="blob2" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#10B981"/>
+                <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="blob3" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#7C3AED"/>
+                <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
+              </radialGradient>
+
+              <linearGradient id="sq1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#2563EB"/>
+                <stop offset="100%" stop-color="#7C3AED"/>
+              </linearGradient>
+              <linearGradient id="sq2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#10B981"/>
+                <stop offset="100%" stop-color="#2563EB"/>
+              </linearGradient>
+              <radialGradient id="circ1">
+                <stop offset="0%" stop-color="#F59E0B"/>
+                <stop offset="100%" stop-color="#EF4444"/>
+              </radialGradient>
+              <radialGradient id="circ2">
+                <stop offset="0%" stop-color="#10B981"/>
+                <stop offset="100%" stop-color="#059669"/>
+              </radialGradient>
+
+              <linearGradient id="personA" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#2563EB"/>
+                <stop offset="100%" stop-color="#1D4ED8"/>
+              </linearGradient>
+              <linearGradient id="personB" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#10B981"/>
+                <stop offset="100%" stop-color="#059669"/>
+              </linearGradient>
+
+              <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#2563EB"/>
+                <stop offset="100%" stop-color="#10B981"/>
+              </linearGradient>
+
+              <radialGradient id="orb1">
+                <stop offset="0%" stop-color="#fff"/>
+                <stop offset="100%" stop-color="#2563EB"/>
+              </radialGradient>
+              <radialGradient id="orb2">
+                <stop offset="0%" stop-color="#fff"/>
+                <stop offset="50%" stop-color="#60A5FA"/>
+                <stop offset="100%" stop-color="#10B981"/>
+              </radialGradient>
+              <radialGradient id="orb3">
+                <stop offset="0%" stop-color="#fff"/>
+                <stop offset="100%" stop-color="#10B981"/>
+              </radialGradient>
+
+              <linearGradient id="bookGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#2563EB"/>
+                <stop offset="100%" stop-color="#10B981"/>
+              </linearGradient>
+
+              <filter id="tagShadow" x="-10%" y="-20%" width="120%" height="160%">
+                <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#111827" flood-opacity="0.08"/>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ─── RIGHT PANEL — FORM ─── -->
+    <section class="su-right">
+      <div class="su-card">
+
+        <div class="su-card-header">
+          <h2 class="su-card-title">Create your account</h2>
+          <p class="su-card-sub">Join Knowly and start sharing or finding real skills.</p>
+        </div>
+		<div class="auth-error" th:if="${error}">
+		    <svg width="20" height="20" viewBox="0 0 24 24"
+		         fill="none" stroke="currentColor" stroke-width="2">
+		        <path d="M12 9v4"/>
+		        <path d="M12 17h.01"/>
+		        <path d="M10.29 3.86L1.82 18A2 2 0 003.53 21h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+		    </svg>
+		
+		    <span th:text="${error}"></span>
+		</div>
+       <form
+    class="su-form"
+    id="signupForm"
+    th:action="@{/signup}"
+    method="post"
+    novalidate
+    autocomplete="off">
+
+          <!-- Full Name -->
+          <div class="su-field" id="field-name">
+            <div class="su-input-wrap">
+              <svg class="su-field-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M3 18c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="su-input"
+                placeholder=" "
+                autocomplete="name"
+                required
+                minlength="2"
+              />
+              <label class="su-label" for="name">Full name</label>
+            </div>
+            <p class="su-error" id="nameError" role="alert"></p>
+          </div>
+
+          <!-- Email -->
+          <!-- Email -->
+          <div class="su-field" id="field-email">
+            <div class="su-input-wrap">
+              <svg class="su-field-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <rect x="2" y="5" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M2 8l8 5 8-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="su-input"
+                placeholder=" "
+                autocomplete="email"
+                required
+              />
+              <label class="su-label" for="email">Email address</label>
+<button type="button" class="su-verify-btn" id="verifyEmailBtn">Verify</button>
+<span class="su-verified-check" id="emailVerifiedCheck" style="display:none;" aria-label="Email verified">
+  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <circle cx="10" cy="10" r="9" fill="#10B981"/>
+    <path d="M6 10.5l2.5 2.5L14 7.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</span>
+            </div>
+            <p class="su-error" id="emailError" role="alert"></p>
+            <p class="su-hint" id="emailStatus" role="status"></p>
+          </div>
+
+          <!-- OTP code entry (hidden until Verify is clicked) -->
+          <div class="su-field" id="field-otp" style="display:none;">
+            <div class="su-input-wrap">
+              <input
+                type="text"
+                id="otpCode"
+                class="su-input"
+                placeholder=" "
+                maxlength="6"
+                inputmode="numeric"
+                pattern="\d{6}"
+                autocomplete="one-time-code"
+              />
+              <label class="su-label" for="otpCode">6-digit code</label>
+              <button type="button" class="su-verify-btn" id="confirmOtpBtn">Confirm</button>
+            </div>
+            <p class="su-error" id="otpError" role="alert"></p>
+            <p class="su-hint" id="otpStatus" role="status">
+              Sent to your inbox. <a href="#" id="resendOtpLink">Resend code</a>
+            </p>
+          </div>
+
+          <input type="hidden" id="emailVerifiedFlag" value="false" />
+
+          <!-- Phone -->
+          <div class="su-field" id="field-number">
+            <div class="su-input-wrap">
+              <svg class="su-field-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <rect x="5" y="1" width="10" height="18" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="10" cy="15.5" r="1" fill="currentColor"/>
+              </svg>
+              <input
+                type="tel"
+                id="number"
+                name="number"
+                class="su-input"
+                placeholder=" "
+                autocomplete="tel"
+                required
+              />
+              <label class="su-label" for="number">Phone number</label>
+            </div>
+            <p class="su-error" id="numberError" role="alert"></p>
+          </div>
+
+          <!-- Password -->
+          <div class="su-field" id="field-password">
+            <div class="su-input-wrap">
+              <svg class="su-field-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <rect x="4" y="9" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 9V6a3 3 0 016 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="10" cy="13.5" r="1.2" fill="currentColor"/>
+              </svg>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="su-input"
+                placeholder=" "
+                autocomplete="new-password"
+                required
+                minlength="8"
+              />
+              <label class="su-label" for="password">Password</label>
+              <button type="button" class="su-eye" id="togglePassword" aria-label="Show password" tabindex="-1">
+                <svg id="eyeShow" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10z" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                <svg id="eyeHide" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="display:none">
+                  <path d="M3 3l14 14M8.46 8.53A2.5 2.5 0 0012.5 12.5M5.1 5.16C3.45 6.36 2 8.05 2 10s3 5.5 8 5.5a9.7 9.7 0 003.9-.82M7 4.74A9.7 9.7 0 0110 4.5c5 0 8 4.5 8 5.5a7.38 7.38 0 01-1.95 2.58" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+            <!-- strength bar -->
+            <div class="su-strength" id="strengthBar" aria-hidden="true">
+              <span class="su-seg" id="seg1"></span>
+              <span class="su-seg" id="seg2"></span>
+              <span class="su-seg" id="seg3"></span>
+              <span class="su-seg" id="seg4"></span>
+            </div>
+            <p class="su-strength-label" id="strengthLabel"></p>
+            <p class="su-error" id="passwordError" role="alert"></p>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="su-field" id="field-confirm">
+            <div class="su-input-wrap">
+              <svg class="su-field-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <rect x="4" y="9" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 9V6a3 3 0 016 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M8 13l1.5 1.5L12 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                class="su-input"
+                placeholder=" "
+                autocomplete="new-password"
+                required
+              />
+              <label class="su-label" for="confirmPassword">Confirm password</label>
+              <button type="button" class="su-eye" id="toggleConfirm" aria-label="Show confirm password" tabindex="-1">
+                <svg id="eyeShow2" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10z" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                <svg id="eyeHide2" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="display:none">
+                  <path d="M3 3l14 14M8.46 8.53A2.5 2.5 0 0012.5 12.5M5.1 5.16C3.45 6.36 2 8.05 2 10s3 5.5 8 5.5a9.7 9.7 0 003.9-.82M7 4.74A9.7 9.7 0 0110 4.5c5 0 8 4.5 8 5.5a7.38 7.38 0 01-1.95 2.58" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+            <p class="su-error" id="confirmError" role="alert"></p>
+          </div>
+
+          <!-- Terms -->
+          <div class="su-terms-wrap" id="field-terms">
+            <label class="su-checkbox-label" for="terms">
+              <input type="checkbox" id="terms" name="terms" class="su-checkbox" required />
+              <span class="su-checkbox-box" aria-hidden="true">
+                <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="su-checkbox-text">
+                I agree to Knowly's <a href="#" class="su-link">Terms of Service</a> and <a href="#" class="su-link">Privacy Policy</a>
+              </span>
+            </label>
+            <p class="su-error" id="termsError" role="alert"></p>
+          </div>
+
+          <!-- Submit button -->
+          <button type="submit" class="su-submit" id="submitBtn">
+            <span class="su-submit-text">Create account</span>
+            <svg class="su-submit-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="su-spinner" id="spinner" aria-hidden="true"></span>
+          </button>
+
+       </form>
+
+        <!-- Divider -->
+        <div class="auth-divider" role="separator" aria-label="Or continue with">
+          <span>OR</span>
+        </div>
+
+        <!-- Social sign-up -->
+        <div class="auth-social-row">
+          <a href="/oauth2/authorization/google" class="auth-social-btn" id="googleBtn">
+            <svg class="auth-social-icon" viewBox="0 0 20 20" aria-hidden="true">
+              <path fill="#4285F4" d="M19.6 10.23c0-.68-.06-1.32-.17-1.94H10v3.67h5.38a4.6 4.6 0 01-2 3.02v2.5h3.23c1.9-1.75 2.99-4.32 2.99-7.25z"/>
+              <path fill="#34A853" d="M10 20c2.7 0 4.96-.9 6.61-2.42l-3.23-2.5c-.9.6-2.04.96-3.38.96-2.6 0-4.8-1.75-5.59-4.11H1.06v2.58A9.99 9.99 0 0010 20z"/>
+              <path fill="#FBBC05" d="M4.41 11.93A5.99 5.99 0 014.09 10c0-.67.12-1.32.32-1.93V5.49H1.06A9.99 9.99 0 000 10c0 1.61.39 3.14 1.06 4.51l3.35-2.58z"/>
+              <path fill="#EA4335" d="M10 3.96c1.47 0 2.79.5 3.83 1.49l2.87-2.87C14.95.99 12.7 0 10 0 6.09 0 2.7 2.24 1.06 5.49l3.35 2.58C5.2 5.71 7.4 3.96 10 3.96z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </a>
+          <a href="/oauth2/authorization/github" class="auth-social-btn" id="githubBtn">
+            <svg class="auth-social-icon" viewBox="0 0 20 20" aria-hidden="true" fill="#111827">
+              <path d="M10 0a10 10 0 00-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.69-.1-.26-.45-1.29.1-2.68 0 0 .84-.27 2.75 1.03a9.4 9.4 0 015 0c1.9-1.3 2.75-1.03 2.75-1.03.55 1.39.2 2.42.1 2.68.64.7 1.03 1.6 1.03 2.69 0 3.85-2.34 4.7-4.57 4.94.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0010 0z"/>
+            </svg>
+            <span>Continue with GitHub</span>
+          </a>
+        </div>
+
+        <p class="su-signin-note">
+          Already have an account? <a th:href="@{/login}" class="su-link">Sign in</a>
+        </p>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script th:src="@{/js/SignUp.js}"></script>
+</body>
+</html>

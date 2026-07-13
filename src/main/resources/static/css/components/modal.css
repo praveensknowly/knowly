@@ -1,0 +1,74 @@
+/* ==========================================================
+   KNOWLY DESIGN SYSTEM
+   Modal v1.0
+   ========================================================== */
+
+.modal-backdrop{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(15,23,42,.55);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:var(--space-6);
+
+    z-index:var(--z-modal);
+
+}
+
+.modal{
+
+    width:100%;
+
+    max-width:650px;
+
+    background:var(--surface);
+
+    border-radius:var(--radius-xl);
+
+    box-shadow:var(--shadow-xl);
+
+    overflow:hidden;
+
+}
+
+.modal-header{
+
+    padding:var(--space-5);
+
+    border-bottom:1px solid var(--border);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.modal-body{
+
+    padding:var(--space-6);
+
+}
+
+.modal-footer{
+
+    padding:var(--space-5);
+
+    border-top:1px solid var(--border);
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:var(--space-3);
+
+}

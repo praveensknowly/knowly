@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="${profile.name} + ' — Expert on Knowly'">Expert — Knowly</title>
+  <meta name="description"
+        th:content="${profile != null and profile.bio != null and !profile.bio.isEmpty()}
+                    ? ${#strings.abbreviate(profile.bio, 150)}
+                    : 'View this expert on Knowly'"/>
+<th:block th:replace="~{fragments/styles :: styles('Expert.css')}"></th:block>
+<th:block th:replace="~{fragments/styles :: styles('help-request-modal.css')}"></th:block>
+  
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════ -->
+<nav class="nav" id="expertNav">
+  <div class="nav-inner">
+
+    <a th:href="@{/home}" href="#" class="nav-logo" aria-label="Knowly home">
+      <span class="logo-know">Know</span><span class="logo-ly">ly</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a th:href="@{/home}">Home</a></li>
+      <li><a th:href="@{/search}">Search Experts</a></li>
+      <li><a th:href="@{/helping}">Helping</a></li>
+      <li><a th:href="@{/learning}">Learning</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a th:href="@{/profile}" href="#" class="avatar avatar-md" aria-label="My profile"
+         sec:authorize="isAuthenticated()">
+        <span class="avatar-initial"
+              sec:authentication="name"
+              th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name, 0, 1).toUpperCase() : 'U'}">U</span>
+      </a>
+    </div>
+
+    <button class="nav-toggle" id="expertNavToggle"
+            aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <ul class="nav-mobile" id="expertNavMobile">
+    <li><a th:href="@{/home}">Home</a></li>
+    <li><a th:href="@{/search}">Search Experts</a></li>
+    <li><a th:href="@{/helping}">Helping</a></li>
+    <li><a th:href="@{/learning}">Learning</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     PAGE
+══════════════════════════════════════════════ -->
+<main class="page" id="expertPage">
+
+  <!-- ══════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════ -->
+  <div class="hero-wrap">
+    <div class="hero-banner" aria-hidden="true">
+      <div class="hero-banner-noise"></div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-top">
+
+        <!-- Avatar -->
+        <div class="hero-avatar-wrap">
+          <div class="hero-avatar" id="expertAvatar">
+
+            <img th:if="${profile != null
+                          and profile.profilePicturepath != null
+                          and !profile.profilePicturepath.isEmpty()}"
+                 th:src="@{'/uploads/profile/' + ${profile.profilePicturepath}}"
+                 th:alt="${profile.name}"
+                 id="expertAvatarImg"/>
+
+            <span class="hero-avatar-letter"
+                  th:unless="${profile != null
+                               and profile.profilePicturepath != null
+                               and !profile.profilePicturepath.isEmpty()}"
+                  th:text="${profile.name != null and !#strings.isEmpty(profile.name) ? #strings.substring(profile.name, 0, 1).toUpperCase() : 'E'}">E</span>
+          </div>
+          <span class="hero-online-dot" aria-hidden="true"></span>
+        </div>
+
+        <!-- CTAs — desktop -->
+        <div class="hero-ctas">
+        <button
+    type="button"
+    class="btn btn-primary open-help-request">
+
+     <svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+                 stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M2 2h16a1 1 0 011 1v10a1 1 0 01-1 1H6l-4 4V3a1 1 0 011-1z"
+                    stroke-linejoin="round"/>
+            </svg>
+
+    			Message Expert
+			</button>
+
+          <button type="button" class="btn btn-outline" id="saveExpertBtn"
+                  aria-label="Save expert">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none"
+                 stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M5 3h10a1 1 0 011 1v13l-6-3-6 3V4a1 1 0 011-1z"
+                    stroke-linejoin="round"/>
+            </svg>
+            Save Expert
+          </button>
+        </div>
+      </div>
+
+      <!-- Identity -->
+      <div class="hero-identity">
+
+        <div class="hero-name-row">
+          <h1 class="hero-name" th:text="${profile.name}">Expert Name</h1>
+
+          <!-- Overall rating badge — placeholder until review system is wired -->
+          <span class="rating-badge" aria-label="Overall rating">
+            <svg viewBox="0 0 20 20" width="13" height="13" fill="currentColor"
+                 aria-hidden="true">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.539-1.118l1.287-3.957a1 1 0 00-.364-1.118L2.05 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.049 2.927z"/>
+            </svg>
+            4.9 overall
+          </span>
+        </div>
+
+        <!-- Location -->
+        <p class="hero-location"
+           th:if="${profile != null
+                   and profile.location != null
+                   and !profile.location.isEmpty()}">
+          <svg viewBox="0 0 20 20" width="13" height="13" fill="none"
+               stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M10 11a3 3 0 100-6 3 3 0 000 6z" stroke-linejoin="round"/>
+            <path d="M10 18s-7-5.5-7-10a7 7 0 0114 0c0 4.5-7 10-7 10z"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span th:text="${profile.location}">City, Country</span>
+        </p>
+
+        <!-- Languages -->
+        <div class="hero-languages"
+             th:if="${profile != null
+                     and profile.languages != null
+                     and !profile.languages.isEmpty()}">
+          <span class="hero-lang-chip"
+                th:each="lang : ${profile.languages}"
+                th:text="${lang.name}">Language</span>
+        </div>
+
+        <!-- Bio -->
+        <p class="hero-bio"
+           th:if="${profile != null
+                   and profile.bio != null
+                   and !profile.bio.isEmpty()}"
+           th:text="${#strings.abbreviate(profile.bio, 280)}">
+          Expert bio goes here.
+        </p>
+        <p class="hero-bio hero-bio-empty"
+           th:unless="${profile != null
+                        and profile.bio != null
+                        and !profile.bio.isEmpty()}">
+          This expert hasn't added a bio yet.
+        </p>
+
+      </div><!-- /.hero-identity -->
+    </div><!-- /.hero-card -->
+  </div><!-- /.hero-wrap -->
+
+
+  <!-- ══════════════════════════════════════════
+       LAYOUT GRID
+  ══════════════════════════════════════════ -->
+  <div class="layout">
+
+    <!-- ═════════ MAIN COLUMN ═════════ -->
+    <div class="col-main">
+
+      <!-- ── SKILLS ──────────────────────────────── -->
+      <section class="card" aria-labelledby="skills-heading">
+        <div class="card-header">
+          <div>
+            <p class="section-eyebrow">Verified Knowledge</p>
+            <h2 class="card-title" id="skills-heading">Skills &amp; Expertise</h2>
+          </div>
+        </div>
+
+        <div class="skills-grid"
+             th:if="${profile != null
+                      and profile.skills != null
+                      and !profile.skills.isEmpty()}">
+
+          <article class="skill-card"
+                   th:each="skill : ${profile.skills}">
+
+            <div class="skill-card-top">
+              <div class="skill-icon" aria-hidden="true">
+                <span th:text="${skill.name != null and !#strings.isEmpty(skill.name) ? #strings.substring(skill.name, 0, 1).toUpperCase() : 'J'}">J</span>
+              </div>
+
+              <span class="prof-badge"
+                    th:text="${#strings.capitalize(#strings.toLowerCase(skill.proficiencyLevel.toString()))}"
+                    th:classappend="'prof-' + ${#strings.toLowerCase(skill.proficiencyLevel.toString())}">
+                Advanced
+              </span>
+            </div>
+
+            <div>
+              <h3 class="skill-name" th:text="${skill.name}">Skill Name</h3>
+
+              <!-- Stars + numeric score -->
+              <div class="skill-stars-row">
+                <div class="skill-stars"
+                     th:attr="data-score=${skill.skillScore}"
+                     aria-hidden="true">
+                  <!-- Stars injected by JS -->
+                </div>
+                <span class="skill-score-num"
+                      th:text="${#numbers.formatDecimal(skill.skillScore, 1, 1)}">4.8</span>
+                <span class="skill-score-sep">/</span>
+                <span class="skill-score-max">5.0</span>
+              </div>
+            </div>
+
+            <!-- Meta row -->
+            <dl class="skill-meta">
+
+              <div class="skill-meta-item"
+                   th:if="${skill.yearsOfExperience != null}">
+                <dt class="skill-meta-label">Experience</dt>
+                <dd class="skill-meta-value"
+                    th:text="${skill.yearsOfExperience} + (${skill.yearsOfExperience} == 1 ? ' yr' : ' yrs')">
+                  3 yrs
+                </dd>
+              </div>
+
+              <!-- Placeholder review count -->
+              <div class="skill-meta-item">
+                <dt class="skill-meta-label">Reviews</dt>
+                <dd class="skill-meta-value skill-meta-value--muted">Coming soon</dd>
+              </div>
+
+            </dl>
+          </article>
+
+        </div><!-- /.skills-grid -->
+
+        <!-- Empty state -->
+        <div class="empty"
+             th:unless="${profile != null
+                          and profile.skills != null
+                          and !profile.skills.isEmpty()}">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none"
+               stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+            <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"
+                  stroke-linejoin="round"/>
+          </svg>
+          <p>This expert hasn't listed any skills yet.</p>
+        </div>
+      </section>
+
+      <!-- ── ABOUT ───────────────────────────────── -->
+      <section class="card" aria-labelledby="about-heading">
+        <div class="card-header">
+          <div>
+            <p class="section-eyebrow">Background</p>
+            <h2 class="card-title" id="about-heading">About</h2>
+          </div>
+        </div>
+
+        <p class="about-text"
+           th:if="${profile != null
+                   and profile.bio != null
+                   and !profile.bio.isEmpty()}"
+           th:text="${profile.bio}">Full bio</p>
+
+        <div class="empty"
+             th:unless="${profile != null
+                          and profile.bio != null
+                          and !profile.bio.isEmpty()}">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none"
+               stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+            <path d="M4 6h16M4 10h16M4 14h10" stroke-linecap="round"/>
+          </svg>
+          <p>No bio available for this expert.</p>
+        </div>
+      </section>
+
+      <!-- ── EDUCATION ──────────────────────────── -->
+      <section class="card" aria-labelledby="education-heading">
+        <div class="card-header">
+          <div>
+            <p class="section-eyebrow">Academic Background</p>
+            <h2 class="card-title" id="education-heading">Education</h2>
+          </div>
+        </div>
+
+        <ol class="timeline"
+            th:if="${profile != null
+                     and profile.education != null
+                     and !profile.education.isEmpty()}">
+
+          <li class="timeline-item" th:each="edu : ${profile.education}">
+            <div class="tl-dot tl-dot-blue" aria-hidden="true"></div>
+            <div class="tl-body">
+              <h3 class="tl-title">
+                <span th:text="${edu.degree}">Degree</span>
+                <th:block th:if="${edu.fieldOfStudy != null
+                                   and !edu.fieldOfStudy.isEmpty()}">
+                  <span> — </span>
+                  <span th:text="${edu.fieldOfStudy}">Field of Study</span>
+                </th:block>
+              </h3>
+              <p class="tl-inst" th:text="${edu.institution}">Institution</p>
+              <p class="tl-date">
+                <span th:text="${edu.startYear}">2020</span>
+                <span> – </span>
+                <span th:text="${edu.endYear != null} ? ${edu.endYear} : 'Present'">2024</span>
+              </p>
+              <p class="tl-desc"
+                 th:if="${edu.description != null and !edu.description.isEmpty()}"
+                 th:text="${edu.description}"></p>
+            </div>
+          </li>
+
+        </ol>
+
+        <div class="empty"
+             th:unless="${profile != null
+                          and profile.education != null
+                          and !profile.education.isEmpty()}">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none"
+               stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+            <path d="M2 9l10-5 10 5-10 5L2 9z" stroke-linejoin="round"/>
+            <path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"
+                  stroke-linecap="round"/>
+          </svg>
+          <p>No education history listed.</p>
+        </div>
+      </section>
+
+      <!-- ── PROJECTS ───────────────────────────── -->
+      <section class="card"
+               th:if="${profile != null}"
+               aria-labelledby="projects-heading">
+        <div class="card-header">
+          <div>
+            <p class="section-eyebrow">Portfolio</p>
+            <h2 class="card-title" id="projects-heading">Projects</h2>
+          </div>
+        </div>
+
+        <div class="projects-grid"
+             th:if="${profile.projects != null
+                      and !profile.projects.isEmpty()}">
+
+          <article class="project-card" th:each="proj : ${profile.projects}">
+
+            <div class="proj-header">
+              <h3 class="proj-name" th:text="${proj.title}">Project Title</h3>
+
+              <a th:if="${proj.link != null and !proj.link.isEmpty()}"
+                 th:href="${proj.link}"
+                 target="_blank" rel="noopener noreferrer"
+                 class="proj-link" aria-label="View project">
+                <svg viewBox="0 0 20 20" width="15" height="15" fill="none"
+                     stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M10.5 3.5H16.5V9.5M10 10l6-6M8.5 5H5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3.5"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+
+            <p class="proj-role"
+               th:if="${proj.role != null and !proj.role.isEmpty()}"
+               th:text="${proj.role}">Role</p>
+
+            <p class="proj-desc"
+               th:if="${proj.description != null and !proj.description.isEmpty()}"
+               th:text="${#strings.abbreviate(proj.description, 180)}">Description</p>
+
+            <div class="proj-tech"
+                 th:if="${proj.technologies != null and !proj.technologies.isEmpty()}">
+              <span class="tech-chip"
+                    th:each="tech : ${proj.technologies}"
+                    th:text="${tech}">Tech</span>
+            </div>
+
+          </article>
+        </div>
+
+        <div class="empty"
+             th:unless="${profile.projects != null
+                          and !profile.projects.isEmpty()}">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none"
+               stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="16" rx="2.5" stroke-linejoin="round"/>
+            <path d="M8 21h8M12 19v2" stroke-linecap="round"/>
+          </svg>
+          <p>No projects shared by this expert.</p>
+        </div>
+      </section>
+
+      <!-- ── CERTIFICATIONS ─────────────────────── -->
+      <section class="card" aria-labelledby="certs-heading">
+        <div class="card-header">
+          <div>
+            <p class="section-eyebrow">Credentials</p>
+            <h2 class="card-title" id="certs-heading">Certifications</h2>
+          </div>
+        </div>
+
+        <ul class="certs-list"
+            th:if="${profile != null
+                     and profile.certifications != null
+                     and !profile.certifications.isEmpty()}">
+
+          <li class="cert-card" th:each="cert : ${profile.certifications}">
+
+            <div class="cert-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+                   stroke="currentColor" stroke-width="1.6">
+                <path d="M12 2l8 3.5v5c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11v-5L12 2z"
+                      stroke-linejoin="round"/>
+                <path d="M9 12l2 2 4-4.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+
+            <div class="cert-body">
+              <h3 class="cert-name" th:text="${cert.name}">Certificate Name</h3>
+              <p class="cert-issuer" th:text="${cert.issuer}">Issuer</p>
+              <p class="cert-year" th:text="${cert.year}">2024</p>
+            </div>
+
+            <a th:if="${cert.credentialUrl != null and !cert.credentialUrl.isEmpty()}"
+               th:href="${cert.credentialUrl}"
+               target="_blank" rel="noopener noreferrer"
+               class="cert-link"
+               aria-label="Verify credential">
+              Verify
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="none"
+                   stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M3 8h10M8.5 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+
+        </ul>
+
+        <div class="empty"
+             th:unless="${profile != null
+                          and profile.certifications != null
+                          and !profile.certifications.isEmpty()}">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none"
+               stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+            <path d="M12 2l8 3.5v5c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11v-5L12 2z"
+                  stroke-linejoin="round"/>
+          </svg>
+          <p>No certifications listed by this expert.</p>
+        </div>
+      </section>
+
+    </div><!-- /.col-main -->
+
+    <!-- ═════════ SIDEBAR ═════════ -->
+    <aside class="col-aside" aria-label="Expert summary">
+
+      <!-- Quick stats -->
+      <div class="aside-card">
+        <h2 class="aside-title">At a glance</h2>
+        <div class="stat-grid">
+
+          <div class="stat-item">
+            <span class="stat-value"
+                  th:text="${profile != null
+                             and profile.skills != null}
+                            ? ${#lists.size(profile.skills)}
+                            : 0">0</span>
+            <span class="stat-label">Skills</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-value"
+                  th:text="${profile != null
+                             and profile.certifications != null}
+                            ? ${#lists.size(profile.certifications)}
+                            : 0">0</span>
+            <span class="stat-label">Certifications</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-value"
+                  th:text="${profile != null
+                             and profile.projects != null}
+                            ? ${#lists.size(profile.projects)}
+                            : 0">0</span>
+            <span class="stat-label">Projects</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-value">4.9</span>
+            <span class="stat-label">Avg rating</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CTA card -->
+      <div class="aside-card">
+    <h2 class="aside-title">Connect with this expert</h2>
+
+    <div class="aside-cta">
+
+        <!-- Opens Help Request Modal -->
+       <button
+    type="button"
+    class="btn btn-primary open-help-request">
+
+    <svg viewBox="0 0 20 20"
+         width="15"
+         height="15"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="1.8"
+         aria-hidden="true">
+        <path d="M2 2h16a1 1 0 011 1v10a1 1 0 01-1 1H6l-4 4V3a1 1 0 011-1z"
+              stroke-linejoin="round"/>
+    </svg>
+
+    Message Expert
+</button>
+        <!-- Save Expert -->
+        <button
+            type="button"
+            class="btn btn-outline"
+            aria-label="Save expert">
+
+            <svg viewBox="0 0 20 20"
+                 width="15"
+                 height="15"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 aria-hidden="true">
+                <path d="M5 3h10a1 1 0 011 1v13l-6-3-6 3V4a1 1 0 011-1z"
+                      stroke-linejoin="round"/>
+            </svg>
+
+            Save Expert
+        </button>
+
+    </div>
+</div>
+
+      <!-- Top skills quick list -->
+      <div class="aside-card"
+           th:if="${profile != null
+                    and profile.skills != null
+                    and !profile.skills.isEmpty()}">
+        <h2 class="aside-title">Top skills</h2>
+        <ul style="display:flex;flex-direction:column;gap:8px;">
+          <li th:each="skill, iter : ${profile.skills}"
+              th:if="${iter.index < 5}"
+              style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+
+            <span style="font-size:.875rem;font-weight:600;color:var(--text);"
+                  th:text="${skill.name}">Skill</span>
+
+            <span class="prof-badge"
+                  th:text="${#strings.capitalize(#strings.toLowerCase(skill.proficiencyLevel.toString()))}"
+                  th:classappend="'prof-' + ${#strings.toLowerCase(skill.proficiencyLevel.toString())}">
+              Level
+            </span>
+          </li>
+        </ul>
+      </div>
+
+    </aside><!-- /.col-aside -->
+
+  </div><!-- /.layout -->
+</main>
+ <!-- Help Request Modal -->
+<div th:replace="~{fragments/help-request-modal :: helpRequestModal}"></div>
+
+
+<script th:src="@{/js/Expert.js}"></script>
+<script th:src="@{/js/help-request-modal.js}"></script>
+</body>
+</html>
