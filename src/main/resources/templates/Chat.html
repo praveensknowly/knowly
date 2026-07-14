@@ -36,8 +36,8 @@
       </div>
       <div class="chat-header-right">
         <div th:if="${error}" class="chat-error-banner" th:text="${error}">Error message</div>
-        <div class="chat-status-badge" th:classappend="'chat-status-badge--' + ${#strings.toLowerCase(chat.status)}" 
-            th:attr="data-status=${chat.status}, data-expires-at=${chat.sessionExpiresAt != null ? #temporals.format(chat.sessionExpiresAt, 'yyyy-MM-dd HH:mm:ss') : ''}, data-expired-reason=${chat.expiredReason != null ? chat.expiredReason : ''}">
+        <div class="chat-status-badge" th:classappend="'chat-status-badge--' + ${#strings.toLowerCase(chat.status)}"
+            th:attr="data-status=${chat.status}, data-expires-at-ms=${chat.sessionExpiresAtMs != null ? chat.sessionExpiresAtMs : ''}, data-expired-reason=${chat.expiredReason != null ? chat.expiredReason : ''}">
           <span class="chat-status-dot"></span>
           <span class="chat-status-text" th:text="${chat.status}">Open</span>
           <span class="chat-countdown" style="display: none;"></span>

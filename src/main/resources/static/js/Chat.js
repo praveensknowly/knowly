@@ -127,36 +127,36 @@
 (function () {
   const statusBadge = document.querySelector('.chat-status-badge');
   if (!statusBadge) return;
-  
+
   const status = statusBadge.getAttribute('data-status');
-  const expiresAt = statusBadge.getAttribute('data-expires-at');
+  const expiresAtMs = statusBadge.getAttribute('data-expires-at-ms');
   const expiredReason = statusBadge.getAttribute('data-expired-reason');
   const statusText = statusBadge.querySelector('.chat-status-text');
   const countdownEl = statusBadge.querySelector('.chat-countdown');
-  
+
   let countdownInterval = null;
-  
+
   // Handle expired and ignored states
   if (status === 'expired' || status === 'EXPIRED' || status === 'ignored' || status === 'IGNORED') {
     disableChatInput(expiredReason || 'Session has expired');
     return;
   }
-  
+
   // Start countdown for ACTIVE sessions
   if (status === 'active' || status === 'ACTIVE') {
-    if (expiresAt && countdownEl) {
+    if (expiresAtMs && countdownEl) {
       countdownEl.style.display = 'inline';
-      updateCountdown(expiresAt, countdownEl);
-      countdownInterval = setInterval(() => updateCountdown(expiresAt, countdownEl), 1000);
+      updateCountdown(expiresAtMs, countdownEl);
+      countdownInterval = setInterval(() => updateCountdown(expiresAtMs, countdownEl), 1000);
     }
   }
-  
-  function updateCountdown(expiresAtStr, element) {
-    // Parse space-separated format: "yyyy-MM-dd HH:mm:ss"
-    const expiresAt = new Date(expiresAtStr.replace(' ', 'T'));
+
+  function updateCountdown(expiresAtMsStr, element) {
+    // Parse epoch milliseconds (UTC)
+    const expiresAt = new Date(parseInt(expiresAtMsStr));
     const now = new Date();
     const diff = expiresAt - now;
-    
+
     if (diff <= 0) {
       element.textContent = 'Expired';
       if (countdownInterval) {
@@ -166,7 +166,7 @@
       disableChatInput('Session time completed');
       return;
     }
-    
+
     const minutes = Math.floor(diff / 60000);
     const seconds = Math.floor((diff % 60000) / 1000);
     element.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
