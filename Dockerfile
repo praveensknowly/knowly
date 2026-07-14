@@ -13,6 +13,5 @@ COPY --from=build /app/target/knowly-*.jar app.jar
 USER knowly
 EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=prod
-VOLUME /app/uploads/profile
 HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://localhost:8080/actuator/health || exit 1
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
