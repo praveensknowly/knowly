@@ -15,7 +15,7 @@
     <!-- NAVBAR                                  -->
     <!-- ═══════════════════════════════════════ -->
     <nav class="su-nav">
-      <a href="index.html" class="su-logo">
+      <a th:href="@{/}" class="su-logo">
         <span class="su-logo-know">Know</span><span class="su-logo-ly">ly</span>
       </a>
       <p class="su-nav-label">Sign in to your account</p>
@@ -511,6 +511,7 @@
             novalidate
             autocomplete="off"
           >
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <!-- Email or Phone -->
             <div class="su-field" id="field-identifier">
               <div class="su-input-wrap">

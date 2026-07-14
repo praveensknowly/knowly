@@ -15,92 +15,7 @@
     <th:block th:replace="~{fragments/styles :: styles('Home.css')}"></th:block>
   </head>
   <body>
-    <!-- ═══════════════════════════════════════════════════
-     NAVBAR  (same pattern as all Knowly pages)
-════════════════════════════════════════════════════ -->
-    <nav class="navbar" id="navbar">
-      <div class="nav-inner">
-        <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
-          <span class="brand-blue"><b>Know</b></span
-          ><span class="brand-green"><b>ly</b></span>
-        </a>
-
-        <ul class="nav-links">
-          <li><a th:href="@{/home}" class="nav-active">Home</a></li>
-          <li><a th:href="@{/search}">Search Experts</a></li>
-          <li><a th:href="@{/helping}">Helping</a></li>
-          <li><a th:href="@{/learning}">Learning</a></li>
-        </ul>
-
-        <div class="nav-actions">
-          <a
-            th:href="@{/notifications}"
-            class="nav-icon-btn"
-            aria-label="Notifications"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-              aria-hidden="true"
-            >
-              <path
-                d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
-            </svg>
-            <span class="nav-badge" id="notifBadge" style="display: none"
-              >0</span
-            >
-          </a>
-            <a
-            th:href="@{/profile}"
-            class="avatar avatar-md"
-            id="navAvatar"
-            aria-label="My profile"
-          >
-            <img
-              th:if="${profile != null and profile.profilePicturepath != null and !#strings.isEmpty(profile.profilePicturepath)}"
-              th:src="@{/uploads/profile/{file}(file=${profile.profilePicturepath})}"
-              class="avatar-img"
-              alt="My profile picture"
-            />
-            <span
-              class="avatar-initial"
-              th:if="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
-              th:text="${profile.user.name != null and !#strings.isEmpty(profile.user.name) ? #strings.substring(profile.user.name,0,1).toUpperCase() : 'K'}"
-              >K</span
-            >
-            <span
-              class="avatar-initial"
-              th:unless="${profile != null and profile.user != null and (profile.profilePicturepath == null or #strings.isEmpty(profile.profilePicturepath))}"
-              >K</span>
-          </a>
-        </div>
-
-        <button
-          class="nav-toggle"
-          id="navToggle"
-          aria-label="Toggle menu"
-          aria-expanded="false"
-        >
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-
-      <ul class="nav-mobile" id="navMobile">
-        <li><a th:href="@{/home}">Home</a></li>
-        <li><a th:href="@{/search}">Search Experts</a></li>
-        <li><a th:href="@{/helping}">Helping</a></li>
-        <li><a th:href="@{/learning}">Learning</a></li>
-        <li><a th:href="@{/profile}">My Profile</a></li>
-      </ul>
-    </nav>
+    <div th:replace="~{fragments/navbar :: navbar('home')}"></div>
 
     <!-- ═══════════════════════════════════════════════════
      PAGE BODY
@@ -285,8 +200,8 @@
                     class="btn-sm-outline"
                     >View</a
                   >
-                  <a th:href="@{/messages/new(to=${ex.id})}" class="btn-sm-fill"
-                    >Message</a
+                  <a th:href="@{/experts/{id}(id=${ex.id})}" class="btn-sm-fill"
+                    >Request Help</a
                   >
                 </div>
               </div>
@@ -324,7 +239,7 @@
                 </div>
                 <div class="expert-actions">
                   <a th:href="@{/experts}" class="btn-sm-outline">View</a>
-                  <a th:href="@{/messages}" class="btn-sm-fill">Message</a>
+                  <a th:href="@{/experts}" class="btn-sm-fill">Request Help</a>
                 </div>
               </div>
               <div class="expert-card expert-card-placeholder">
@@ -354,7 +269,7 @@
                 </div>
                 <div class="expert-actions">
                   <a th:href="@{/experts}" class="btn-sm-outline">View</a>
-                  <a th:href="@{/messages}" class="btn-sm-fill">Message</a>
+                  <a th:href="@{/experts}" class="btn-sm-fill">Request Help</a>
                 </div>
               </div>
               <div class="expert-card expert-card-placeholder">
@@ -386,7 +301,7 @@
                 </div>
                 <div class="expert-actions">
                   <a th:href="@{/experts}" class="btn-sm-outline">View</a>
-                  <a th:href="@{/messages}" class="btn-sm-fill">Message</a>
+                  <a th:href="@{/experts}" class="btn-sm-fill">Request Help</a>
                 </div>
               </div>
             </div>
@@ -398,14 +313,14 @@
           <section class="home-card reveal" style="--d: 3">
             <div class="card-head">
               <h2 class="card-title">Continue Learning</h2>
-              <a th:href="@{/sessions}" class="card-link">All sessions →</a>
+              <a th:href="@{/learning}" class="card-link">All sessions →</a>
             </div>
 
             <div
               class="learning-list"
-              th:if="${activeSessions != null and !activeSessions.isEmpty()}"
+              th:if="${learningSessions != null and !learningSessions.isEmpty()}"
             >
-              <div class="learning-item" th:each="s : ${activeSessions}">
+              <div class="learning-item" th:each="s : ${learningSessions}">
                 <div class="learning-icon">
                   <svg
                     viewBox="0 0 24 24"
@@ -427,13 +342,13 @@
                   </svg>
                 </div>
                 <div class="learning-info">
-                  <p class="learning-title" th:text="${s.topic}">Topic</p>
-                  <p class="learning-sub" th:text="${s.expertName}">
+                  <p class="learning-title" th:text="${s.subject}">Topic</p>
+                  <p class="learning-sub" th:text="${s.helperName}">
                     Expert name
                   </p>
                 </div>
                 <a
-                  th:href="@{/sessions/{id}(id=${s.id})}"
+                  th:href="@{/chat/{sessionId}(sessionId=${s.sessionId})}"
                   class="btn-sm-outline"
                   >Resume</a
                 >
@@ -443,7 +358,7 @@
             <!-- Placeholder -->
             <div
               class="learning-list"
-              th:unless="${activeSessions != null and !activeSessions.isEmpty()}"
+              th:unless="${learningSessions != null and !learningSessions.isEmpty()}"
             >
               <div class="learning-empty">
                 <svg
@@ -462,7 +377,7 @@
                   />
                 </svg>
                 <p>No active learning sessions yet.</p>
-                <a th:href="@{/experts}" class="empty-cta"
+                <a th:href="@{/search}" class="empty-cta"
                   >Find someone to learn from →</a
                 >
               </div>
@@ -470,44 +385,46 @@
           </section>
 
           <!-- ─────────────────────────────────────────────
-           5. RECENT MESSAGES PREVIEW
+           5. HELPING REQUESTS
       ────────────────────────────────────────────── -->
           <section class="home-card reveal" style="--d: 4">
             <div class="card-head">
-              <h2 class="card-title">Messages</h2>
-              <a th:href="@{/messages}" class="card-link">Open Messages →</a>
+              <h2 class="card-title">Helping</h2>
+              <a th:href="@{/helping}" class="card-link">View all →</a>
             </div>
 
             <ul
               class="msg-list"
-              th:if="${recentMessages != null and !recentMessages.isEmpty()}"
+              th:if="${helpingSessions != null and !helpingSessions.isEmpty()}"
             >
-              <li class="msg-item" th:each="m : ${recentMessages}">
-                <div
-                  class="msg-avatar"
-                  th:text="${m.senderName != null and !#strings.isEmpty(m.senderName) ? #strings.substring(m.senderName,0,1).toUpperCase() : 'A'}"
-                >
-                  A
-                </div>
-                <div class="msg-body">
-                  <p class="msg-name" th:text="${m.senderName}">Name</p>
-                  <p class="msg-preview" th:text="${m.lastMessage}">
-                    Last message...
-                  </p>
-                </div>
-                <span
-                  class="msg-badge"
-                  th:if="${m.unreadCount > 0}"
-                  th:text="${m.unreadCount}"
-                  >2</span
-                >
+              <li class="msg-item" th:each="s : ${helpingSessions}">
+                <a th:href="@{/chat/{sessionId}(sessionId=${s.sessionId})}" class="msg-item-link">
+                  <div
+                    class="msg-avatar"
+                    th:text="${s.requesterName != null and !#strings.isEmpty(s.requesterName) ? #strings.substring(s.requesterName,0,1).toUpperCase() : 'A'}"
+                  >
+                    A
+                  </div>
+                  <div class="msg-body">
+                    <p class="msg-name" th:text="${s.requesterName}">Name</p>
+                    <p class="msg-preview" th:text="${s.description}">
+                      Last message...
+                    </p>
+                  </div>
+                  <span
+                    class="msg-badge"
+                    th:if="${s.tab != null and s.tab != 'solved'}"
+                    th:text="${s.tab}"
+                    >pending</span
+                  >
+                </a>
               </li>
             </ul>
 
             <!-- Placeholder -->
             <div
               class="msg-empty"
-              th:unless="${recentMessages != null and !recentMessages.isEmpty()}"
+              th:unless="${helpingSessions != null and !helpingSessions.isEmpty()}"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -520,9 +437,9 @@
               >
                 <path d="M4 5h16v11H8l-4 4V5z" stroke-linejoin="round" />
               </svg>
-              <p>No messages yet.</p>
-              <a th:href="@{/experts}" class="empty-cta"
-                >Start a conversation →</a
+              <p>No help requests yet.</p>
+              <a th:href="@{/profile/edit/skills}" class="empty-cta"
+                >Add skills to start getting requests →</a
               >
             </div>
           </section>

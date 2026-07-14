@@ -195,6 +195,7 @@ select:focus-visible {
   padding: 8px 24px 20px;
   gap: 2px;
 }
+.nav-links-mobile.open { display: flex; }
 .nav-links-mobile a {
   padding: 12px 8px;
   font-size: 0.95rem;
@@ -732,7 +733,6 @@ select:focus-visible {
   
   .nav-links { display: none; }
   .nav-toggle { display: flex; }
-  .nav-links-mobile { display: flex; }
   
   .hero {
     padding: 80px 20px 60px;

@@ -33,28 +33,6 @@
   }
 
   /* ──────────────────────────────────────────────────────────
-     2. MOBILE NAV TOGGLE
-  ────────────────────────────────────────────────────────── */
-  var navToggle = $('navToggle');
-  var navMobile = $('navMobile');
-
-  if (navToggle && navMobile) {
-    navToggle.addEventListener('click', function () {
-      var open = navMobile.classList.toggle('open');
-      navToggle.classList.toggle('open', open);
-      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-
-    $$('a', navMobile).forEach(function (link) {
-      link.addEventListener('click', function () {
-        navMobile.classList.remove('open');
-        navToggle.classList.remove('open');
-        navToggle.setAttribute('aria-expanded', 'false');
-      });
-    });
-  }
-
-  /* ──────────────────────────────────────────────────────────
      3. SCROLL REVEAL — Intersection Observer
      Same pattern as main.js / Profile.js
   ────────────────────────────────────────────────────────── */

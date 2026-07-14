@@ -1,26 +1,6 @@
 (function () {
   'use strict';
 
-  // Navbar mobile toggle
-  const navToggle = document.getElementById('navToggle');
-  const navMobile = document.getElementById('navMobile');
-  
-  if (navToggle && navMobile) {
-    navToggle.addEventListener('click', () => {
-      const isOpen = navMobile.classList.toggle('open');
-      navToggle.classList.toggle('open', isOpen);
-      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
-
-    navMobile.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        navMobile.classList.remove('open');
-        navToggle.classList.remove('open');
-        navToggle.setAttribute('aria-expanded', 'false');
-      });
-    });
-  }
-
   const state = { editingId: null };
   const addProjectBtn = document.getElementById('addProjectBtn');
   const emptyAddBtn = document.getElementById('emptyAddProjectBtn');

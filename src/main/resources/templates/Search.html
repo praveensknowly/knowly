@@ -11,67 +11,7 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════
-     NAVBAR  (same pattern as all Knowly pages)
-══════════════════════════════════════ -->
-<nav class="navbar" id="navbar">
-  <div class="nav-inner">
-    <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
-      <span class="brand-blue"><b>Know</b></span
-      ><span class="brand-green"><b>ly</b></span>
-    </a>
-
-    <ul class="nav-links">
-      <li><a th:href="@{/home}">Home</a></li>
-      <li><a th:href="@{/search}" class="nav-active">Search Experts</a></li>
-      <li><a th:href="@{/helping}">Helping</a></li>
-      <li><a th:href="@{/learning}">Learning</a></li>
-    </ul>
-
-    <div class="nav-actions">
-      <a
-        th:href="@{/notifications}"
-        class="nav-icon-btn"
-        aria-label="Notifications"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          aria-hidden="true"
-        >
-          <path
-            d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M13.7 21a2 2 0 01-3.4 0"
-            stroke-linecap="round"
-          />
-        </svg>
-      </a>
-      <a th:href="@{/profile}" class="avatar avatar-md" id="navAvatar" aria-label="My profile">
-        <span class="avatar-initial" th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name,0,1).toUpperCase() : 'K'}">K</span>
-      </a>
-    </div>
-
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-
-  <ul class="nav-mobile" id="navMobile">
-    <li><a th:href="@{/home}">Home</a></li>
-    <li><a th:href="@{/search}">Search Experts</a></li>
-    <li><a th:href="@{/helping}">Helping</a></li>
-    <li><a th:href="@{/learning}">Learning</a></li>
-    <li><a th:href="@{/profile}">My profile</a></li>
-  </ul>
-</nav>
+<div th:replace="~{fragments/navbar :: navbar('search')}"></div>
 
 <!-- ═══════════════════════════════════════════════════════════
      STATE 1 — LANDING (query is empty)

@@ -15,6 +15,7 @@
       aria-labelledby="hrmHelperName"
       aria-describedby="hrmInfoText">
     <input type="hidden" name="helperId" th:value="${profile.id}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
       <!-- ── HEADER ── -->
       <header class="hrm-header">
         <div class="hrm-header-left">

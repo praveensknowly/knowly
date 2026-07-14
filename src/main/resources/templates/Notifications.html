@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Notifications — Knowly</title>
+<th:block th:replace="~{fragments/styles :: styles('Notifications.css')}"></th:block>
+</head>
+<body>
+
+  <div th:replace="~{fragments/navbar :: navbar('notifications')}"></div>
+
+  <main class="page">
+
+    <div class="page-head">
+      <h1 class="page-title">Notifications</h1>
+      <p class="page-sub">Stay updated on your help requests and responses.</p>
+    </div>
+
+    <!-- ══════ REQUESTS FOR YOU (RECEIVED) ══════ -->
+    <section class="notif-section">
+      <h2 class="notif-section-title">Requests for you</h2>
+      <p class="notif-section-sub" th:if="${!receivedRequests.isEmpty()}"
+         th:text="${receivedRequests.size() + ' pending request(s) awaiting your response'}">
+        1 pending request awaiting your response
+      </p>
+
+      <ul class="request-list" th:if="${!receivedRequests.isEmpty()}">
+        <li th:each="helpSession : ${receivedRequests}" class="helping-item">
+          <a th:href="@{/chat/{sessionId}(sessionId=${helpSession.sessionId})}" class="request-card">
+            <div class="rc-top">
+              <span class="rc-subject" th:text="${helpSession.subject}">Subject</span>
+              <span class="rc-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 10h12M11 5l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+            <p class="rc-desc" th:text="${helpSession.description}">Description</p>
+            <div class="rc-meta">
+              <div class="rc-requester">
+                <img th:if="${helpSession.requesterProfilePicturepath != null and !#strings.isEmpty(helpSession.requesterProfilePicturepath)}"
+                     th:src="@{/uploads/profile/{file}(file=${helpSession.requesterProfilePicturepath})}"
+                     class="rc-avatar rc-avatar-img"
+                     alt="" />
+                <span class="rc-avatar"
+                      th:if="${helpSession.requesterProfilePicturepath == null or #strings.isEmpty(helpSession.requesterProfilePicturepath)}"
+                      th:text="${helpSession.requesterInitials != null && !helpSession.requesterInitials.isEmpty() ? helpSession.requesterInitials : 'AB'}">RM</span>
+                <span class="rc-name" th:text="${helpSession.requesterName}">Requester</span>
+              </div>
+              <div class="rc-side">
+                <span class="rc-skill" th:text="${helpSession.skillName}">Skill</span>
+                <span class="rc-time" th:text="${helpSession.timeAgo}">5 min ago</span>
+              </div>
+            </div>
+          </a>
+        </li>
+      </ul>
+
+      <div class="helping-empty" th:if="${receivedRequests.isEmpty()}">
+        <p class="helping-empty-title">No requests for you</p>
+        <p class="helping-empty-text">When someone asks for your expertise, their requests will show up here.</p>
+        <a th:href="@{/profile/edit/skills}" class="helping-empty-action">Add skills to get requests</a>
+      </div>
+    </section>
+
+    <!-- ══════ YOUR PENDING REQUESTS (SENT) ══════ -->
+    <section class="notif-section">
+      <h2 class="notif-section-title">Your pending requests</h2>
+      <p class="notif-section-sub" th:if="${!sentRequests.isEmpty()}"
+         th:text="${sentRequests.size() + ' request(s) awaiting a response'}">
+        1 request awaiting a response
+      </p>
+
+      <ul class="request-list" th:if="${!sentRequests.isEmpty()}">
+        <li th:each="learnSession : ${sentRequests}" class="helping-item">
+          <a th:href="@{/chat/{sessionId}(sessionId=${learnSession.sessionId})}" class="request-card">
+            <div class="rc-top">
+              <span class="rc-subject" th:text="${learnSession.subject}">Subject</span>
+              <span class="rc-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 10h12M11 5l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+            <p class="rc-desc" th:text="${learnSession.description}">Description</p>
+            <div class="rc-meta">
+              <div class="rc-requester">
+                <img th:if="${learnSession.helperProfilePicturepath != null and !#strings.isEmpty(learnSession.helperProfilePicturepath)}"
+                     th:src="@{/uploads/profile/{file}(file=${learnSession.helperProfilePicturepath})}"
+                     class="rc-avatar rc-avatar-img"
+                     alt="" />
+                <span class="rc-avatar"
+                      th:if="${learnSession.helperProfilePicturepath == null or #strings.isEmpty(learnSession.helperProfilePicturepath)}"
+                      th:text="${learnSession.helperInitials != null && !learnSession.helperInitials.isEmpty() ? learnSession.helperInitials : 'AB'}">RM</span>
+                <span class="rc-name" th:text="${learnSession.helperName}">Helper</span>
+              </div>
+              <div class="rc-side">
+                <span class="rc-skill" th:text="${learnSession.skillName}">Skill</span>
+                <span class="rc-time" th:text="${learnSession.timeAgo}">5 min ago</span>
+              </div>
+            </div>
+          </a>
+        </li>
+      </ul>
+
+      <div class="helping-empty" th:if="${sentRequests.isEmpty()}">
+        <p class="helping-empty-title">No pending requests</p>
+        <p class="helping-empty-text">Your sent requests awaiting a response will appear here.</p>
+        <a th:href="@{/search}" class="helping-empty-action">Find an expert to help you</a>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

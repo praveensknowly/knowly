@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+  <th:block th:fragment="navbar(active)">
+    <nav class="navbar" id="navbar">
+      <div class="nav-inner">
+        <a th:href="@{/}" class="brand-logo" aria-label="Knowly home">
+          <span class="brand-blue"><b>Know</b></span><span class="brand-green"><b>ly</b></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a th:href="@{/home}" th:classappend="${active == 'home'} ? 'nav-active'">Home</a></li>
+          <li><a th:href="@{/search}" th:classappend="${active == 'search'} ? 'nav-active'">Search Experts</a></li>
+          <li><a th:href="@{/helping}" th:classappend="${active == 'helping'} ? 'nav-active'">Helping</a></li>
+          <li><a th:href="@{/learning}" th:classappend="${active == 'learning'} ? 'nav-active'">Learning</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a th:href="@{/notifications}" class="nav-icon-btn" aria-label="Notifications">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
+            </svg>
+            <span class="nav-badge" id="notifBadge" th:if="${notificationCount != null and notificationCount > 0}" th:text="${notificationCount}">0</span>
+          </a>
+
+          <a th:href="@{/settings}" class="nav-icon-btn" aria-label="Settings">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+
+          <a th:href="@{/profile}" class="avatar avatar-md" id="navAvatar" aria-label="My profile">
+            <img
+              th:if="${navProfile != null and navProfile.profilePicturepath != null and !#strings.isEmpty(navProfile.profilePicturepath)}"
+              th:src="@{/uploads/profile/{file}(file=${navProfile.profilePicturepath})}"
+              class="avatar-img"
+              alt="My profile picture" />
+            <span
+              class="avatar-initial"
+              th:unless="${navProfile != null and navProfile.profilePicturepath != null and !#strings.isEmpty(navProfile.profilePicturepath)}"
+              th:text="${navProfile != null and navProfile.user != null and navProfile.user.name != null and !#strings.isEmpty(navProfile.user.name)} ? ${#strings.substring(navProfile.user.name,0,1).toUpperCase()} : 'K'">K</span>
+          </a>
+        </div>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <ul class="nav-mobile" id="navMobile">
+        <li><a th:href="@{/home}">Home</a></li>
+        <li><a th:href="@{/search}">Search Experts</a></li>
+        <li><a th:href="@{/helping}">Helping</a></li>
+        <li><a th:href="@{/learning}">Learning</a></li>
+        <li><a th:href="@{/profile}">My Profile</a></li>
+        <li><a th:href="@{/settings}">Settings</a></li>
+      </ul>
+    </nav>
+
+    <script>
+      (function () {
+        var navToggle = document.getElementById('navToggle');
+        var navMobile = document.getElementById('navMobile');
+        if (!navToggle || !navMobile) return;
+        navToggle.addEventListener('click', function () {
+          var isOpen = navMobile.classList.toggle('open');
+          navToggle.classList.toggle('open', isOpen);
+          navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        navMobile.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () {
+            navMobile.classList.remove('open');
+            navToggle.classList.remove('open');
+            navToggle.setAttribute('aria-expanded', 'false');
+          });
+        });
+      })();
+    </script>
+  </th:block>
+</body>
+</html>

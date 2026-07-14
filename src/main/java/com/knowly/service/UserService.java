@@ -86,7 +86,38 @@ public class UserService {
 	public void update(EditDto dto,String email){
 		User user = this.findByEmail(email);
 		UserProfile userProfile=user.getProfile();
-		
+
+		// Password confirmation gate for LOCAL users
+		if ("LOCAL".equals(user.getProvider())) {
+			if (dto.getCurrentPassword() == null || dto.getCurrentPassword().isBlank()) {
+				throw new IllegalArgumentException("Current password is required to make changes.");
+			}
+			if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+				throw new IllegalArgumentException("Incorrect current password. Please try again.");
+			}
+		}
+
+		// Number update with uniqueness check
+		if (dto.getNumber() != null && !dto.getNumber().isBlank()) {
+			if (!dto.getNumber().equals(user.getNumber())) {
+				if (userRepo.existsByNumberAndIdNot(dto.getNumber(), user.getId())) {
+					throw new IllegalArgumentException("This phone number is already in use by another account.");
+				}
+				user.setNumber(dto.getNumber());
+			}
+		}
+
+		// Password change logic
+		if (dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
+			if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+				throw new IllegalArgumentException("New password and confirm password do not match.");
+			}
+			if (dto.getNewPassword().length() < 6) {
+				throw new IllegalArgumentException("Password must be at least 6 characters long.");
+			}
+			user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+		}
+
 		UserProfileMapper.updateFromDto(dto,userProfile);
 		MultipartFile profilePicture = dto.getProfilePicture();
 		if (profilePicture != null && !profilePicture.isEmpty()) {
@@ -110,6 +141,7 @@ public class UserService {
 		userProfile.setLanguages(languages);
 
 		profileRepo.save(userProfile);
+		userRepo.save(user);
 	}
 
 

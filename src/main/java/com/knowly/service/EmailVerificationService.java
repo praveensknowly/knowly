@@ -41,18 +41,26 @@ public class EmailVerificationService {
 
     @Transactional
     public boolean verifyOtp(String email, String code) {
-        var tokenOpt = tokenRepo.findByEmailAndToken(email, code);
+        var tokenOpt = tokenRepo.findByEmail(email);
         if (tokenOpt.isEmpty()) {
-            return false; // wrong code
+            return false; // no token for this email
         }
 
         EmailVerificationToken token = tokenOpt.get();
+
         if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
             return false; // expired
         }
 
         if (token.getAttempts() >= 5) {
             return false; // too many attempts
+        }
+
+        // Compare code manually to track attempts even for wrong codes
+        if (!token.getToken().equals(code)) {
+            token.setAttempts(token.getAttempts() + 1);
+            tokenRepo.save(token);
+            return false; // wrong code
         }
 
         token.setAttempts(token.getAttempts() + 1);

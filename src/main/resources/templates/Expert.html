@@ -16,45 +16,7 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════
-     NAVBAR
-══════════════════════════════════════════════ -->
-<nav class="nav" id="expertNav">
-  <div class="nav-inner">
-
-    <a th:href="@{/home}" href="#" class="nav-logo" aria-label="Knowly home">
-      <span class="logo-know">Know</span><span class="logo-ly">ly</span>
-    </a>
-
-    <ul class="nav-links">
-      <li><a th:href="@{/home}">Home</a></li>
-      <li><a th:href="@{/search}">Search Experts</a></li>
-      <li><a th:href="@{/helping}">Helping</a></li>
-      <li><a th:href="@{/learning}">Learning</a></li>
-    </ul>
-
-    <div class="nav-actions">
-      <a th:href="@{/profile}" href="#" class="avatar avatar-md" aria-label="My profile"
-         sec:authorize="isAuthenticated()">
-        <span class="avatar-initial"
-              sec:authentication="name"
-              th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name, 0, 1).toUpperCase() : 'U'}">U</span>
-      </a>
-    </div>
-
-    <button class="nav-toggle" id="expertNavToggle"
-            aria-label="Toggle navigation" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-
-  <ul class="nav-mobile" id="expertNavMobile">
-    <li><a th:href="@{/home}">Home</a></li>
-    <li><a th:href="@{/search}">Search Experts</a></li>
-    <li><a th:href="@{/helping}">Helping</a></li>
-    <li><a th:href="@{/learning}">Learning</a></li>
-  </ul>
-</nav>
+<div th:replace="~{fragments/navbar :: navbar('')}"></div>
 
 <!-- ══════════════════════════════════════════════
      PAGE

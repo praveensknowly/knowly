@@ -53,6 +53,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         if (email == null || email.isBlank()) {
+            if ("github".equals(registrationId)) {
+                throw new OAuth2AuthenticationException(
+                    "GitHub account has no verified email — please verify an email on GitHub and try again.");
+            }
             throw new OAuth2AuthenticationException(
                 "No email available from " + registrationId + ". Make sure the email scope/permission is granted.");
         }
@@ -63,7 +67,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user = existing.orElseGet(User::new);
         boolean isNew = existing.isEmpty();
 
-        if (isNew) {
+        if (!isNew) {
+            // Prevent silent account takeover of LOCAL accounts
+            if ("LOCAL".equals(existing.get().getProvider())) {
+                throw new OAuth2AuthenticationException(
+                    "An account with this email already exists using password login. Please log in with your password instead.");
+            }
+        } else {
             user.setEmail(email);
             user.setName(name != null ? name : email);
             user.setProvider(registrationId.toUpperCase());
@@ -96,6 +106,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .filter(e -> Boolean.TRUE.equals(e.get("primary")) && Boolean.TRUE.equals(e.get("verified")))
                 .map(e -> (String) e.get("email"))
                 .findFirst()
-                .orElse(emails.isEmpty() ? null : (String) emails.get(0).get("email"));
+                .orElse(null);
     }
 }

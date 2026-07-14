@@ -18,6 +18,7 @@ import com.knowly.entity.UserProfile;
 import com.knowly.exceptions.UserAlreadyExistException;
 import com.knowly.service.CertificationService;
 import com.knowly.service.EducationService;
+import com.knowly.service.HelpSessionService;
 import com.knowly.service.UserService;
 import com.knowly.util.ProfileCompletion;
 
@@ -27,14 +28,16 @@ public class HomeController {
 	private final UserService userService;
 	private EducationService educationService;
 	private CertificationService certificationService;
+	private HelpSessionService helpSessionService;
 
 	
 	public HomeController(UserService userService, EducationService educationService,
-			CertificationService certificationService) {
+			CertificationService certificationService, HelpSessionService helpSessionService) {
 		super();
 		this.userService = userService;
 		this.educationService = educationService;
 		this.certificationService = certificationService;
+		this.helpSessionService = helpSessionService;
 	}
 
 	@GetMapping("/")
@@ -86,14 +89,51 @@ public class HomeController {
 		Set<?> certificationsList = certificationService.findAll(auth.getName());
 		List<UserProfile> suggestedExperts = userService.getSuggestedExperts(auth.getName());
 
+		// Fetch learning and helping sessions for homepage preview
+		var learningSessions = helpSessionService.findForRequester(auth.getName());
+		var helpingSessions = helpSessionService.findForHelper(auth.getName());
+
+		// Limit to first 4 items, prioritizing active/pending over solved
+		var learningPreview = learningSessions.stream()
+				.sorted((a, b) -> {
+					// Prioritize active, then pending, then solved
+					int aPriority = getTabPriority(a.getTab());
+					int bPriority = getTabPriority(b.getTab());
+					if (aPriority != bPriority) return aPriority - bPriority;
+					return 0; // keep original order within same priority
+				})
+				.limit(4)
+				.toList();
+
+		var helpingPreview = helpingSessions.stream()
+				.sorted((a, b) -> {
+					int aPriority = getTabPriority(a.getTab());
+					int bPriority = getTabPriority(b.getTab());
+					if (aPriority != bPriority) return aPriority - bPriority;
+					return 0;
+				})
+				.limit(4)
+				.toList();
+
 		model.addAttribute("profile", profile);
 		model.addAttribute("user", profile.getUser());
 		model.addAttribute("educationList", educationList);
 		model.addAttribute("certificationsList", certificationsList);
 		model.addAttribute("profileCompletion", Math.min(ProfileCompletion.calculate(profile, educationList, certificationsList), 100));
 		model.addAttribute("suggestedExperts", suggestedExperts);
+		model.addAttribute("learningSessions", learningPreview);
+		model.addAttribute("helpingSessions", helpingPreview);
 
 		return "Home";
+	}
+
+	private int getTabPriority(String tab) {
+		if (tab == null) return 3;
+		return switch (tab) {
+			case "active" -> 1;
+			case "pending" -> 2;
+			default -> 3; // solved
+		};
 	}
 	
 	

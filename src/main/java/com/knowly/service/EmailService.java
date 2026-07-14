@@ -18,6 +18,9 @@ public class EmailService {
     @Value("${resend.api.key}")
     private String resendApiKey;
 
+    @Value("${resend.from.email}")
+    private String resendFromEmail;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     public void sendVerificationEmail(String toEmail, String code) {
@@ -33,7 +36,7 @@ public class EmailService {
                 + "This code expires in 10 minutes.</p>";
 
         Map<String, Object> body = new HashMap<>();
-        body.put("from", "Knowly <otp@praveensknowly.in>");
+        body.put("from", "Knowly <" + resendFromEmail + ">");
         body.put("to", List.of(toEmail));
         body.put("subject", "Your Knowly verification code");
         body.put("html", htmlBody);

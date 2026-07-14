@@ -1,0 +1,204 @@
+<!doctype html>
+<html
+  lang="en"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings — Knowly</title>
+    <meta name="description" content="Manage your Knowly account settings." />
+    <th:block th:replace="~{fragments/styles :: styles('Settings.css')}"></th:block>
+  </head>
+  <body>
+    <div th:replace="~{fragments/navbar :: navbar('settings')}"></div>
+
+    <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+    <main class="set-page">
+      <!-- ── PAGE HEADER ── -->
+      <div class="set-page-header reveal">
+        <div class="set-breadcrumb">
+          <a th:href="@{/profile}" class="set-breadcrumb-link">
+            <svg
+              viewBox="0 0 20 20"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path d="M12 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Back to Profile
+          </a>
+        </div>
+        <div class="set-page-title-row">
+          <div>
+            <h1 class="set-page-title">Settings</h1>
+            <p class="set-page-sub">
+              Manage your account security and notification preferences.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS CARDS ── -->
+      <div class="set-layout">
+        <!-- ══════ MANAGE YOUR PROFILE ══════ -->
+        <div class="set-card reveal">
+          <div class="set-card-title-row">
+            <div>
+              <h2 class="set-card-title">Manage Your Profile</h2>
+              <p class="set-card-sub">Edit your profile information and preferences.</p>
+            </div>
+          </div>
+
+          <div class="set-links">
+            <a th:href="@{/profile/edit}" class="set-link-row">
+              <div class="set-link-left">
+                <svg class="set-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <div class="set-link-text">
+                  <span class="set-link-label">Edit Profile</span>
+                  <span class="set-link-desc">Update your personal information and password</span>
+                </div>
+              </div>
+              <svg class="set-link-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M12 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+
+            <a th:href="@{/profile/edit/skills}" class="set-link-row">
+              <div class="set-link-left">
+                <svg class="set-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="set-link-text">
+                  <span class="set-link-label">Manage Skills</span>
+                  <span class="set-link-desc">Add or remove skills you can help with</span>
+                </div>
+              </div>
+              <svg class="set-link-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M12 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+
+            <a th:href="@{/profile/edit/education}" class="set-link-row">
+              <div class="set-link-left">
+                <svg class="set-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M12 14l9-5-9-5-9 5 9 5z" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="set-link-text">
+                  <span class="set-link-label">Manage Education</span>
+                  <span class="set-link-desc">Add or update your education history</span>
+                </div>
+              </div>
+              <svg class="set-link-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M12 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+
+            <a th:href="@{/profile/edit/projects}" class="set-link-row">
+              <div class="set-link-left">
+                <svg class="set-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2v1" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="set-link-text">
+                  <span class="set-link-label">Manage Projects</span>
+                  <span class="set-link-desc">Showcase your projects and work experience</span>
+                </div>
+              </div>
+              <svg class="set-link-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M12 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+
+            <a th:href="@{/profile/edit/certifications}" class="set-link-row">
+              <div class="set-link-left">
+                <svg class="set-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M12 15l-2 5l9-9l-9-9l2 5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="set-link-text">
+                  <span class="set-link-label">Manage Certifications</span>
+                  <span class="set-link-desc">Add your professional certifications</span>
+                </div>
+              </div>
+              <svg class="set-link-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M12 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+
+            <a th:href="@{/notifications}" class="set-link-row">
+              <div class="set-link-left">
+                <svg class="set-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round"/>
+                </svg>
+                <div class="set-link-text">
+                  <span class="set-link-label">Notifications</span>
+                  <span class="set-link-desc">View your help requests and responses</span>
+                </div>
+              </div>
+              <svg class="set-link-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M12 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- ══════ NOTIFICATIONS ══════ -->
+        <div class="set-card reveal">
+          <div class="set-card-title-row">
+            <div>
+              <h2 class="set-card-title">Notifications</h2>
+              <p class="set-card-sub">Control how you receive notifications.</p>
+            </div>
+          </div>
+          
+          <div class="set-toggles">
+            <div class="set-toggle-row">
+              <div class="set-toggle-info">
+                <label class="set-toggle-label" for="emailNotifications">Email Notifications</label>
+                <p class="set-toggle-desc">Receive email updates about your account activity.</p>
+              </div>
+              <label class="set-toggle-switch">
+                <input type="checkbox" id="emailNotifications" name="emailNotifications" />
+                <span class="set-toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="set-toggle-row">
+              <div class="set-toggle-info">
+                <label class="set-toggle-label" for="sessionReminders">Session Reminders</label>
+                <p class="set-toggle-desc">Get reminded about upcoming help sessions.</p>
+              </div>
+              <label class="set-toggle-switch">
+                <input type="checkbox" id="sessionReminders" name="sessionReminders" />
+                <span class="set-toggle-slider"></span>
+              </label>
+            </div>
+            
+            <div class="set-toggle-row">
+              <div class="set-toggle-info">
+                <label class="set-toggle-label" for="marketingEmails">Marketing Emails</label>
+                <p class="set-toggle-desc">Receive news and updates from Knowly.</p>
+              </div>
+              <label class="set-toggle-switch">
+                <input type="checkbox" id="marketingEmails" name="marketingEmails" />
+                <span class="set-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script th:src="@{/js/Settings.js}"></script>
+  </body>
+</html>

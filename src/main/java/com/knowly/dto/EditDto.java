@@ -18,6 +18,11 @@ public class EditDto {
 	private String location;
 	private List<String> languages = new ArrayList<>();
 	private MultipartFile profilePicture;
+	private String currentPassword;
+	private String newEmail;
+	private String newPassword;
+	private String confirmPassword;
+	private String number;
 
 	public List<String> getLanguages() {
 		return languages == null ? Collections.emptyList() : languages;
@@ -43,7 +48,9 @@ public class EditDto {
 	@Override
 	public String toString() {
 		return "EditDto [dob=" + dob + ", bio=" + bio + ", gender=" + gender + ", location=" + location + ", languages="
-				+ languages + ", profilePicture=" + profilePicture + "]";
+				+ languages + ", profilePicture=" + profilePicture + ", currentPassword=" + currentPassword + ", newEmail="
+				+ newEmail + ", newPassword=" + newPassword + ", confirmPassword=" + confirmPassword + ", number=" + number
+				+ "]";
 	}
 
 	public MultipartFile getProfilePicture() {
@@ -84,5 +91,45 @@ public class EditDto {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public String getCurrentPassword() {
+		return currentPassword;
+	}
+
+	public void setCurrentPassword(String currentPassword) {
+		this.currentPassword = currentPassword;
+	}
+
+	public String getNewEmail() {
+		return newEmail;
+	}
+
+	public void setNewEmail(String newEmail) {
+		this.newEmail = newEmail;
+	}
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}
+
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 }

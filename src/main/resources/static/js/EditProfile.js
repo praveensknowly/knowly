@@ -11,25 +11,6 @@
   const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
   /* ============================================================
-     1. MOBILE NAV TOGGLE
-  ============================================================ */
-  const navToggle = $('navToggle');
-  const navMobile  = $('navMobile');
-
-  if (navToggle && navMobile) {
-    navToggle.addEventListener('click', () => {
-      const open = navMobile.classList.toggle('open');
-      navToggle.classList.toggle('open', open);
-      navToggle.setAttribute('aria-expanded', String(open));
-    });
-    $$('a', navMobile).forEach(a => a.addEventListener('click', () => {
-      navMobile.classList.remove('open');
-      navToggle.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
-    }));
-  }
-
-  /* ============================================================
      2. SCROLL REVEAL
   ============================================================ */
   const revealEls = $$('.reveal');
@@ -631,6 +612,119 @@
       floatSave.style.opacity = '1';
       floatSave.style.pointerEvents = 'auto';
     }
+  }
+
+  /* ============================================================
+     16. EMAIL CHANGE FLOW
+  ============================================================ */
+  const sendCodeBtn = $('sendCodeBtn');
+  const newEmailInput = $('newEmail');
+  const codeSection = $('codeSection');
+  const emailCodeInput = $('emailCode');
+  const verifyEmailBtn = $('verifyEmailBtn');
+  const emailError = $('emailError');
+  const codeError = $('codeError');
+
+  if (sendCodeBtn && newEmailInput) {
+    sendCodeBtn.addEventListener('click', async () => {
+      const newEmail = newEmailInput.value.trim();
+      if (!newEmail || !newEmail.includes('@')) {
+        if (emailError) emailError.textContent = 'Please enter a valid email address.';
+        return;
+      }
+
+      sendCodeBtn.disabled = true;
+      sendCodeBtn.textContent = 'Sending...';
+
+      // Get CSRF token from cookie
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+      };
+      const csrfToken = getCookie('XSRF-TOKEN');
+
+      try {
+        const response = await fetch('/profile/edit/email/send-code', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-XSRF-TOKEN': csrfToken
+          },
+          body: JSON.stringify(newEmail)
+        });
+
+        const result = await response.text();
+        if (result.startsWith('error:')) {
+          if (emailError) emailError.textContent = result.replace('error: ', '');
+          sendCodeBtn.disabled = false;
+          sendCodeBtn.textContent = 'Send Code';
+        } else {
+          if (emailError) emailError.textContent = '';
+          if (codeSection) codeSection.hidden = false;
+          sendCodeBtn.textContent = 'Code Sent';
+          sendCodeBtn.disabled = false;
+        }
+      } catch (err) {
+        if (emailError) emailError.textContent = 'Failed to send code. Please try again.';
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.textContent = 'Send Code';
+      }
+    });
+  }
+
+  if (verifyEmailBtn && emailCodeInput && newEmailInput) {
+    verifyEmailBtn.addEventListener('click', async () => {
+      const code = emailCodeInput.value.trim();
+      const newEmail = newEmailInput.value.trim();
+
+      if (!code || code.length !== 6) {
+        if (codeError) codeError.textContent = 'Please enter the 6-digit code.';
+        return;
+      }
+
+      verifyEmailBtn.disabled = true;
+      verifyEmailBtn.textContent = 'Verifying...';
+
+      // Get CSRF token from cookie
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+      };
+      const csrfToken = getCookie('XSRF-TOKEN');
+
+      try {
+        const response = await fetch('/profile/edit/email', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-XSRF-TOKEN': csrfToken
+          },
+          body: JSON.stringify({ newEmail, code })
+        });
+
+        const result = await response.text();
+        if (result.startsWith('error:')) {
+          if (codeError) codeError.textContent = result.replace('error: ', '');
+          verifyEmailBtn.disabled = false;
+          verifyEmailBtn.textContent = 'Verify';
+        } else {
+          if (codeError) codeError.textContent = '';
+          verifyEmailBtn.textContent = 'Verified!';
+          newEmailInput.value = '';
+          emailCodeInput.value = '';
+          if (codeSection) codeSection.hidden = true;
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        }
+      } catch (err) {
+        if (codeError) codeError.textContent = 'Verification failed. Please try again.';
+        verifyEmailBtn.disabled = false;
+        verifyEmailBtn.textContent = 'Verify';
+      }
+    });
   }
 
 })();
