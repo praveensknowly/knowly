@@ -12,6 +12,7 @@
     <th:block th:replace="~{fragments/styles :: styles('Settings.css')}"></th:block>
   </head>
   <body>
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     <div th:replace="~{fragments/navbar :: navbar('settings')}"></div>
 
     <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
@@ -196,12 +197,12 @@
             </div>
 
             <!-- Push Notifications toggle -->
-            <div class="set-row" id="setPushRow">
-              <div class="set-row-text">
-                <span class="set-row-label">Push Notifications</span>
-                <span class="set-row-desc">Get notified in your browser for new sessions and messages.</span>
+            <div class="set-toggle-row" id="setPushRow">
+              <div class="set-toggle-info">
+                <span class="set-toggle-label">Push Notifications</span>
+                <span class="set-toggle-desc">Get notified in your browser for new sessions and messages.</span>
               </div>
-              <label class="set-toggle" for="setPushToggle">
+              <label class="set-toggle-switch" for="setPushToggle">
                 <input type="checkbox" id="setPushToggle" />
                 <span class="set-toggle-slider"></span>
               </label>
