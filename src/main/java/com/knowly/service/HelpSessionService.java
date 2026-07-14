@@ -344,6 +344,9 @@ public class HelpSessionService {
 		dto.setHelperProfilePicturepath(session.getHelper().getProfilePicturepath());
 		dto.setMyRole(currentUser.getId().equals(session.getRequester().getId()) ? "requester" : "helper");
 		dto.setSessionExpiresAt(session.getSessionExpiresAt());
+		if (session.getSessionExpiresAt() != null) {
+			dto.setSessionExpiresAtMs(session.getSessionExpiresAt().atZone(java.time.ZoneId.of("UTC")).toInstant().toEpochMilli());
+		}
 		dto.setExpiredReason(session.getExpiredReason());
 
 		// Load messages and map to DTOs

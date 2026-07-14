@@ -15,6 +15,7 @@ public class ChatSessionDto {
 	private String myRole;
 	private List<ChatMessageDto> messages;
 	private LocalDateTime sessionExpiresAt;
+	private Long sessionExpiresAtMs;
 	private String expiredReason;
 	private boolean showRatingPopup;
 
@@ -104,6 +105,14 @@ public class ChatSessionDto {
 
 	public void setSessionExpiresAt(LocalDateTime sessionExpiresAt) {
 		this.sessionExpiresAt = sessionExpiresAt;
+	}
+
+	public Long getSessionExpiresAtMs() {
+		return sessionExpiresAtMs;
+	}
+
+	public void setSessionExpiresAtMs(Long sessionExpiresAtMs) {
+		this.sessionExpiresAtMs = sessionExpiresAtMs;
 	}
 
 	public String getExpiredReason() {
