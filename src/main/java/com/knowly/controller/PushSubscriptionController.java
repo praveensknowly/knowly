@@ -54,10 +54,15 @@ public class PushSubscriptionController {
 
 	@PostMapping("/push/unsubscribe")
 	@ResponseBody
-	public Map<String, Boolean> unsubscribe(@RequestBody Map<String, String> body) {
+	public Map<String, Boolean> unsubscribe(@RequestBody Map<String, String> body, Authentication auth) {
 		String endpoint = body.get("endpoint");
 		if (endpoint != null) {
-			subscriptionRepo.deleteByEndpoint(endpoint);
+			UserProfile profile = userService.getProfile(auth.getName());
+			subscriptionRepo.findByEndpoint(endpoint).ifPresent(sub -> {
+				if (sub.getUserProfile().getId().equals(profile.getId())) {
+					subscriptionRepo.deleteByEndpoint(endpoint);
+				}
+			});
 		}
 		return Map.of("success", true);
 	}

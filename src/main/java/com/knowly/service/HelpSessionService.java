@@ -36,6 +36,8 @@ import com.knowly.repository.RatingRepository;
 import com.knowly.repository.SkillRepository;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import com.knowly.service.PushNotificationService;
+
 
 
 @Service
@@ -461,17 +463,12 @@ public class HelpSessionService {
 		sessionRepo.save(session);
 
 		// Capture variables for push notification after transaction commits
-		UserProfile recipient = null;
-		if (currentUser.getId().equals(session.getRequester().getId())) {
-			recipient = session.getHelper();
-		} else if (session.getHelper() != null && currentUser.getId().equals(session.getHelper().getId())) {
-			recipient = session.getRequester();
-		}
+		final UserProfile recipient = resolveRecipient(session, currentUser);
 
 		if (recipient != null) {
 			String senderName = currentUser.getUser() != null ? currentUser.getUser().getName() : "Someone";
 			String messagePreview = text.trim().length() > 50 ? text.trim().substring(0, 47) + "..." : text.trim();
-			String sessionId = session.getSessionId();
+			String sessionIdValue = session.getSessionId();
 			boolean isRequestAccepted = isFirstExpertReply;
 
 			// Register push notification to fire after transaction commits
@@ -486,7 +483,7 @@ public class HelpSessionService {
 							recipient,
 							title,
 							body,
-							"/chat/" + sessionId
+							"/chat/" + sessionIdValue
 					);
 				}
 			});
@@ -539,6 +536,15 @@ public class HelpSessionService {
 
 		// Delete the session
 		sessionRepo.delete(session);
+	}
+
+	private UserProfile resolveRecipient(HelpSession session, UserProfile currentUser) {
+		if (currentUser.getId().equals(session.getRequester().getId()) && session.getHelper() != null) {
+			return session.getHelper();
+		} else if (session.getHelper() != null && currentUser.getId().equals(session.getHelper().getId())) {
+			return session.getRequester();
+		}
+		return null;
 	}
 
 	@Transactional

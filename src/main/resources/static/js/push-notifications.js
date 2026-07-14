@@ -2,11 +2,10 @@
 (function () {
 	'use strict';
 
-	function getCsrfToken() {
-		var tokenMeta = document.querySelector('meta[name="_csrf"]');
-		var headerMeta = document.querySelector('meta[name="_csrf_header"]');
-		if (!tokenMeta || !headerMeta) return null;
-		return { header: headerMeta.content, token: tokenMeta.content };
+	function getCookie(name) {
+		var value = '; ' + document.cookie;
+		var parts = value.split('; ' + name + '=');
+		if (parts.length === 2) return parts.pop().split(';').shift();
 	}
 
 	function urlBase64ToUint8Array(base64String) {
@@ -21,9 +20,9 @@
 	}
 
 	function postJson(url, body) {
-		var csrf = getCsrfToken();
+		var csrfToken = getCookie('XSRF-TOKEN');
 		var headers = { 'Content-Type': 'application/json' };
-		if (csrf) headers[csrf.header] = csrf.token;
+		if (csrfToken) headers['X-XSRF-TOKEN'] = csrfToken;
 		return fetch(url, {
 			method: 'POST',
 			headers: headers,
