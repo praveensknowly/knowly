@@ -329,7 +329,7 @@ public class HelpSessionService {
 
 		// Authorization check - user must be either requester or helper
 		if (!currentUser.getId().equals(session.getRequester().getId()) 
-				&& !currentUser.getId().equals(session.getHelper().getId())) {
+				&& (session.getHelper() == null || !currentUser.getId().equals(session.getHelper().getId()))) {
 			throw new UserNotFoundException("Access denied");
 		}
 
@@ -340,8 +340,8 @@ public class HelpSessionService {
 		dto.setStatus(statusForChat(session.getStatus()));
 		dto.setRequesterName(session.getRequester().getUser() != null ? session.getRequester().getUser().getName() : "Unknown");
 		dto.setRequesterProfilePicturepath(session.getRequester().getProfilePicturepath());
-		dto.setHelperName(session.getHelper().getUser() != null ? session.getHelper().getUser().getName() : "Unknown");
-		dto.setHelperProfilePicturepath(session.getHelper().getProfilePicturepath());
+		dto.setHelperName(session.getHelper() != null && session.getHelper().getUser() != null ? session.getHelper().getUser().getName() : "Unknown");
+		dto.setHelperProfilePicturepath(session.getHelper() != null ? session.getHelper().getProfilePicturepath() : null);
 		dto.setMyRole(currentUser.getId().equals(session.getRequester().getId()) ? "requester" : "helper");
 		dto.setSessionExpiresAt(session.getSessionExpiresAt());
 		if (session.getSessionExpiresAt() != null) {
@@ -361,7 +361,7 @@ public class HelpSessionService {
 			msgDto.setTimeLabel(formatRelativeTime(msg.getSentAt()));
 			msgDto.setDateLabel(formatRelativeDate(msg.getSentAt()));
 			msgDto.setSenderName(msg.getSender().getUser() != null ? msg.getSender().getUser().getName() : "Unknown");
-			msgDto.setFromHelper(msg.getSender().getId().equals(session.getHelper().getId()));
+			msgDto.setFromHelper(session.getHelper() != null && msg.getSender().getId().equals(session.getHelper().getId()));
 			msgDto.setMine(msg.getSender().getId().equals(currentUser.getId()));
 			messageDtos.add(msgDto);
 		}
@@ -390,7 +390,7 @@ public class HelpSessionService {
 
 		// Authorization check
 		if (!currentUser.getId().equals(session.getRequester().getId()) 
-				&& !currentUser.getId().equals(session.getHelper().getId())) {
+				&& (session.getHelper() == null || !currentUser.getId().equals(session.getHelper().getId()))) {
 			throw new UserNotFoundException("Access denied");
 		}
 
@@ -425,7 +425,7 @@ public class HelpSessionService {
 		message.setSentAt(now);
 
 		// Status transition logic: if expert sends first message, transition to ACTIVE
-		if (currentUser.getId().equals(session.getHelper().getId()) 
+		if (session.getHelper() != null && currentUser.getId().equals(session.getHelper().getId()) 
 				&& session.getFirstExpertReplyAt() == null) {
 			session.setFirstExpertReplyAt(now);
 			session.setStatus(HelpSessionStatus.ACTIVE);
@@ -444,7 +444,7 @@ public class HelpSessionService {
 				.orElseThrow(() -> new UserNotFoundException("Session not found"));
 
 		// Authorization check - only helper can complete the session
-		if (!currentUser.getId().equals(session.getHelper().getId())) {
+		if (session.getHelper() == null || !currentUser.getId().equals(session.getHelper().getId())) {
 			throw new UserNotFoundException("Only the helper can complete this session");
 		}
 
