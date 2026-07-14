@@ -194,6 +194,64 @@
                 <span class="set-toggle-slider"></span>
               </label>
             </div>
+
+            <!-- Push Notifications toggle -->
+            <div class="set-row" id="setPushRow">
+              <div class="set-row-text">
+                <span class="set-row-label">Push Notifications</span>
+                <span class="set-row-desc">Get notified in your browser for new sessions and messages.</span>
+              </div>
+              <label class="set-toggle" for="setPushToggle">
+                <input type="checkbox" id="setPushToggle" />
+                <span class="set-toggle-slider"></span>
+              </label>
+            </div>
+            <p class="set-row-status" id="setPushStatus" style="display:none;"></p>
+
+            <script src="/js/push-notifications.js"></script>
+            <script>
+              (function () {
+                'use strict';
+
+                var toggle = document.getElementById('setPushToggle');
+                var status = document.getElementById('setPushStatus');
+
+                function showStatus(message, isError) {
+                  status.textContent = message;
+                  status.style.display = 'block';
+                  status.style.color = isError ? '#DC2626' : '#10B981';
+                }
+
+                async function init() {
+                  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                    toggle.disabled = true;
+                    showStatus('Push notifications are not supported in this browser.', true);
+                    return;
+                  }
+                  toggle.checked = await window.KnowlyPush.isSubscribed();
+                }
+
+                toggle.addEventListener('change', async function () {
+                  toggle.disabled = true;
+                  try {
+                    if (toggle.checked) {
+                      await window.KnowlyPush.subscribe();
+                      showStatus('Push notifications enabled.', false);
+                    } else {
+                      await window.KnowlyPush.unsubscribe();
+                      showStatus('Push notifications disabled.', false);
+                    }
+                  } catch (err) {
+                    toggle.checked = !toggle.checked;
+                    showStatus(err.message || 'Something went wrong.', true);
+                  } finally {
+                    toggle.disabled = false;
+                  }
+                });
+
+                init();
+              })();
+            </script>
           </div>
         </div>
       </div>

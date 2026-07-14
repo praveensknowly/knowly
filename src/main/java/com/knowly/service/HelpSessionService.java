@@ -34,6 +34,8 @@ import com.knowly.repository.MessageRepository;
 import com.knowly.repository.ProfileRepository;
 import com.knowly.repository.RatingRepository;
 import com.knowly.repository.SkillRepository;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 
 @Service
@@ -44,6 +46,7 @@ public class HelpSessionService {
 	private UserService userService;
 	private RatingRepository ratingRepo;
 	private MessageRepository messageRepo;
+	private PushNotificationService pushNotificationService;
 
 	@Autowired
 	@Lazy
@@ -52,7 +55,7 @@ public class HelpSessionService {
 
 	public HelpSessionService(ProfileRepository profileRepo, HelpSessionRepository sessionRepo,
 			SkillRepository skillRepo, UserService userService, RatingRepository ratingRepo,
-			MessageRepository messageRepo) {
+			MessageRepository messageRepo, PushNotificationService pushNotificationService) {
 		super();
 		this.profileRepo = profileRepo;
 		this.sessionRepo = sessionRepo;
@@ -60,6 +63,7 @@ public class HelpSessionService {
 		this.userService = userService;
 		this.ratingRepo = ratingRepo;
 		this.messageRepo = messageRepo;
+		this.pushNotificationService = pushNotificationService;
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -96,7 +100,26 @@ public class HelpSessionService {
 		session.setSkill(skillRepo.findById(dto.getSkillId()).orElseThrow(()-> new RuntimeException("Skill not found")));
 		session.getMessages().add(message);
 		sessionRepo.save(session);
-		
+
+		// Capture variables for push notification after transaction commits
+		UserProfile helper = session.getHelper();
+		String senderName = sender.getUser() != null ? sender.getUser().getName() : "Someone";
+		String subject = session.getSubject();
+		String sessionId = session.getSessionId();
+
+		// Register push notification to fire after transaction commits
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				pushNotificationService.notifyUser(
+					helper,
+					"New Help Request",
+					senderName + " needs help with: " + subject,
+					"/helping"
+				);
+			}
+		});
+
 	}
 
 	public List<HelpingSessionDto> findForHelper(String email) {
@@ -425,8 +448,9 @@ public class HelpSessionService {
 		message.setSentAt(now);
 
 		// Status transition logic: if expert sends first message, transition to ACTIVE
-		if (session.getHelper() != null && currentUser.getId().equals(session.getHelper().getId()) 
-				&& session.getFirstExpertReplyAt() == null) {
+		boolean isFirstExpertReply = session.getHelper() != null && currentUser.getId().equals(session.getHelper().getId())
+				&& session.getFirstExpertReplyAt() == null;
+		if (isFirstExpertReply) {
 			session.setFirstExpertReplyAt(now);
 			session.setStatus(HelpSessionStatus.ACTIVE);
 			session.setSessionExpiresAt(now.plusMinutes(22));
@@ -435,6 +459,38 @@ public class HelpSessionService {
 
 		messageRepo.save(message);
 		sessionRepo.save(session);
+
+		// Capture variables for push notification after transaction commits
+		UserProfile recipient = null;
+		if (currentUser.getId().equals(session.getRequester().getId())) {
+			recipient = session.getHelper();
+		} else if (session.getHelper() != null && currentUser.getId().equals(session.getHelper().getId())) {
+			recipient = session.getRequester();
+		}
+
+		if (recipient != null) {
+			String senderName = currentUser.getUser() != null ? currentUser.getUser().getName() : "Someone";
+			String messagePreview = text.trim().length() > 50 ? text.trim().substring(0, 47) + "..." : text.trim();
+			String sessionId = session.getSessionId();
+			boolean isRequestAccepted = isFirstExpertReply;
+
+			// Register push notification to fire after transaction commits
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					String title = isRequestAccepted ? "Request Accepted" : "New Message";
+					String body = isRequestAccepted
+							? senderName + " accepted your help request"
+							: senderName + ": " + messagePreview;
+					pushNotificationService.notifyUser(
+							recipient,
+							title,
+							body,
+							"/chat/" + sessionId
+					);
+				}
+			});
+		}
 	}
 
 	@Transactional
