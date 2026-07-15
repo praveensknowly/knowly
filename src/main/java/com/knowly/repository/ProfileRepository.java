@@ -21,4 +21,9 @@ public interface ProfileRepository extends JpaRepository<UserProfile, String> {
 
     @Query("SELECT p FROM UserProfile p WHERE p.user.id != :userId ORDER BY p.user.createdAt DESC")
     List<UserProfile> findRecentProfiles(@Param("userId") String userId, Pageable pageable);
+
+    @Query("SELECT DISTINCT p FROM UserProfile p WHERE p.user.id != :userId AND " +
+           "(LOWER(p.user.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(p.user.email) LIKE LOWER(CONCAT('%', :query, '%')))")
+    List<UserProfile> searchByNameOrEmail(@Param("query") String query, @Param("userId") String userId, Pageable pageable);
 }

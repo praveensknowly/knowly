@@ -43,4 +43,62 @@
         : '';
     }, { passive: true });
   }
+
+  /* ============================================================
+     FEEDBACK FORM
+  ============================================================ */
+  const feedbackTextarea = $('feedbackMessage');
+  const feedbackBtn = $('feedbackSubmit');
+  const feedbackError = $('feedbackError');
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  if (feedbackBtn && feedbackTextarea) {
+    feedbackBtn.addEventListener('click', async () => {
+      const message = feedbackTextarea.value.trim();
+      feedbackError.style.display = 'none';
+
+      if (!message) {
+        feedbackError.textContent = 'Please enter a message before sending.';
+        feedbackError.style.display = 'block';
+        return;
+      }
+
+      feedbackBtn.disabled = true;
+      feedbackBtn.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('/settings/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+          },
+          body: JSON.stringify({ message })
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+          feedbackError.textContent = text.replace('error: ', '') || 'Something went wrong.';
+          feedbackError.style.display = 'block';
+        } else {
+          feedbackTextarea.value = '';
+          if (window.Toast) {
+            window.Toast.show('Thanks for your feedback!', 'success');
+          }
+        }
+      } catch (err) {
+        feedbackError.textContent = 'Failed to send feedback. Please try again.';
+        feedbackError.style.display = 'block';
+      } finally {
+        feedbackBtn.disabled = false;
+        feedbackBtn.textContent = 'Send Feedback';
+      }
+    });
+  }
 })();

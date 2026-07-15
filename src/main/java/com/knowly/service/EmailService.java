@@ -21,7 +21,43 @@ public class EmailService {
     @Value("${resend.from.email}")
     private String resendFromEmail;
 
+    @Value("${contact.support.email}")
+    private String supportEmail;
+
     private final RestTemplate restTemplate = new RestTemplate();
+
+    public void sendFeedbackEmail(String fromName, String fromEmail, String message) {
+        String url = "https://api.resend.com/emails";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(resendApiKey);
+
+        String htmlBody = "<p>New feedback submitted on Knowly.</p>"
+                + "<p><strong>From:</strong> " + escapeHtml(fromName) + " (" + escapeHtml(fromEmail) + ")</p>"
+                + "<p><strong>Message:</strong></p>"
+                + "<p>" + escapeHtml(message).replace("\n", "<br/>") + "</p>";
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("from", "Knowly <" + resendFromEmail + ">");
+        body.put("to", List.of(supportEmail));
+        body.put("reply_to", fromEmail);
+        body.put("subject", "Knowly Feedback from " + fromName);
+        body.put("html", htmlBody);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        try {
+            restTemplate.postForEntity(url, request, String.class);
+        } catch (RestClientException e) {
+            throw new RuntimeException("Failed to send feedback email via Resend", e);
+        }
+    }
+
+    private String escapeHtml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
 
     public void sendVerificationEmail(String toEmail, String code) {
         String url = "https://api.resend.com/emails";

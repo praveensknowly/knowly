@@ -422,4 +422,83 @@
       });
   }
 
+  /* ============================================================
+     TERMS & CONDITIONS MODAL
+  ============================================================ */
+  var termsOverlay   = $('termsModalOverlay');
+  var openTermsLink  = $('openTermsLink');
+  var openPrivacyLink = $('openPrivacyLink');
+  var closeTermsBtn  = $('closeTermsModal');
+  var modalTitle     = $('termsModalTitle');
+  var modalAgreeBox  = $('modalAgreeCheckbox');
+  var acceptBtn      = $('acceptTermsBtn');
+  var mainTermsBox   = $('terms'); // the real signup checkbox
+
+  function openTermsModal(title) {
+      if (!termsOverlay) return;
+      if (modalTitle && title) modalTitle.textContent = title;
+      termsOverlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      // reset the modal's own confirmation checkbox each time it opens
+      if (modalAgreeBox) modalAgreeBox.checked = false;
+      if (acceptBtn) acceptBtn.disabled = true;
+  }
+
+  function closeTermsModal() {
+      if (!termsOverlay) return;
+      termsOverlay.style.display = 'none';
+      document.body.style.overflow = '';
+  }
+
+  if (openTermsLink) {
+      openTermsLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          openTermsModal('Terms of Service');
+      });
+  }
+
+  if (openPrivacyLink) {
+      openPrivacyLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          openTermsModal('Privacy Policy');
+      });
+  }
+
+  if (closeTermsBtn) {
+      closeTermsBtn.addEventListener('click', closeTermsModal);
+  }
+
+  if (termsOverlay) {
+      // click outside the modal box closes it
+      termsOverlay.addEventListener('click', function (e) {
+          if (e.target === termsOverlay) closeTermsModal();
+      });
+  }
+
+  document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && termsOverlay && termsOverlay.style.display === 'flex') {
+          closeTermsModal();
+      }
+  });
+
+  if (modalAgreeBox && acceptBtn) {
+      modalAgreeBox.addEventListener('change', function () {
+          acceptBtn.disabled = !modalAgreeBox.checked;
+      });
+  }
+
+  if (acceptBtn) {
+      acceptBtn.addEventListener('click', function () {
+          // ticking Accept in the modal also ticks the real signup checkbox
+          if (mainTermsBox) {
+              mainTermsBox.checked = true;
+              var termsErrEl = $('termsError');
+              if (termsErrEl) termsErrEl.textContent = '';
+              var termsWrap = $('field-terms');
+              if (termsWrap) termsWrap.classList.remove('error');
+          }
+          closeTermsModal();
+      });
+  }
+
 })();

@@ -389,7 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
   ========================================================= */
 
   function init() {
-    initNavbar();
     initReveal();
     initCompletionBar();
     initSkillStars();

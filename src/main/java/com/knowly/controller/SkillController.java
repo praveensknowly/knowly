@@ -75,8 +75,7 @@ public class SkillController {
 		User user = userService.findByEmail(auth.getName());
 		model.addAttribute("user", user);
 		if (query != null && !query.isBlank()) {
-			
-			model.addAttribute("dtos", skillService.findAllProfiles(query));
+			model.addAttribute("dtos", skillService.findAllProfiles(query, auth.getName()));
 		}
 		model.addAttribute("query", query);
 		return "Search";

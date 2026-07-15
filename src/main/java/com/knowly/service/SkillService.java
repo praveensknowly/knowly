@@ -107,6 +107,32 @@ public class SkillService {
 	            .map(SearchProfileMapper::toSearchProfileDto)
 	            .toList();
 	}
+
+	// Searches by skill name AND by person's name/email, merged with no duplicates.
+	// currentUserEmail is used to exclude the logged-in user from their own results.
+	@Transactional
+	public List<SearchProfileDto> findAllProfiles(String query, String currentUserEmail) {
+	    User currentUser = userRepo.findByEmail(currentUserEmail)
+	            .orElseThrow(() -> new UserNotFoundException("User not Found"));
+
+	    Pageable skillPageable = PageRequest.of(0, 20, Sort.by("skillScore").descending());
+	    List<UserProfile> bySkill = skillRepo
+	            .findBySearchKeyContainingIgnoreCaseOrderBySkillScoreDesc(query, skillPageable)
+	            .getContent()
+	            .stream()
+	            .map(Skill::getUserProfile)
+	            .filter(p -> !p.getUser().getId().equals(currentUser.getId()))
+	            .toList();
+
+	    Pageable namePageable = PageRequest.of(0, 20);
+	    List<UserProfile> byNameOrEmail = profileRepo
+	            .searchByNameOrEmail(query, currentUser.getId(), namePageable);
+
+	    return java.util.stream.Stream.concat(bySkill.stream(), byNameOrEmail.stream())
+	            .distinct()
+	            .map(SearchProfileMapper::toSearchProfileDto)
+	            .toList();
+	}
 	public Set<Skill> findAll(String email) {
 		User user=userRepo.findByEmail(email).orElseThrow(()->new UserNotFoundException("User not Found"));
 		

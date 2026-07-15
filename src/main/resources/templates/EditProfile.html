@@ -488,19 +488,23 @@
             </div>
 
             <!-- ── 5. ACCOUNT SECURITY ── -->
-            <div class="ep-card reveal" style="--delay: 5" th:if="${profile != null and profile.user != null and profile.user.provider == 'LOCAL'}">
+            <div class="ep-card reveal" style="--delay: 5" th:if="${profile != null and profile.user != null}">
               <div class="ep-card-title-row">
                 <div>
                   <h2 class="ep-card-title">Account Security</h2>
-                  <p class="ep-card-sub">
+                  <p class="ep-card-sub" th:if="${profile.user.provider == 'LOCAL'}">
                     Confirm your current password to make changes. You can also change your password here.
+                  </p>
+                  <p class="ep-card-sub" th:if="${profile.user.provider != 'LOCAL'}">
+                    You signed up with <span th:text="${profile.user.provider}">Google</span>, so no password is set yet.
+                    Set one below if you'd also like to log in with your email and password.
                   </p>
                 </div>
               </div>
 
               <div class="ep-info-grid">
-                <!-- Current Password -->
-                <div class="ep-field ep-field-full">
+                <!-- Current Password (only shown for accounts that already have one) -->
+                <div class="ep-field ep-field-full" th:if="${profile.user.provider == 'LOCAL'}">
                   <label class="ep-label" for="currentPassword">Current Password <span class="ep-required">*</span></label>
                   <div class="ep-input-icon-wrap">
                     <svg
@@ -529,14 +533,14 @@
 
                 <!-- New Password -->
                 <div class="ep-field">
-                  <label class="ep-label" for="newPassword">New Password (optional)</label>
+                  <label class="ep-label" for="newPassword" th:text="${profile.user.provider == 'LOCAL'} ? 'New Password (optional)' : 'Set Password'">New Password (optional)</label>
                   <input
                     type="password"
                     id="newPassword"
                     name="newPassword"
                     class="ep-input"
                     minlength="6"
-                    placeholder="Leave blank to keep current password"
+                    th:placeholder="${profile.user.provider == 'LOCAL'} ? 'Leave blank to keep current password' : 'Create a password (min. 6 characters)'"
                   />
                   <p class="ep-field-error" id="newPasswordError" role="alert"></p>
                 </div>

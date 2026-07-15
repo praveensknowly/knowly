@@ -255,9 +255,54 @@
             </script>
           </div>
         </div>
+
+        <!-- ══════ CONTACT KNOWLY ══════ -->
+        <div class="set-card reveal">
+          <div class="set-card-title-row">
+            <div>
+              <h2 class="set-card-title">Contact Knowly</h2>
+              <p class="set-card-sub">Reach out to us directly.</p>
+            </div>
+          </div>
+
+          <ul class="set-contact-list">
+            <li class="set-contact-item">
+              <span class="set-contact-label">Email</span>
+              <a class="set-contact-value" th:href="'mailto:' + ${supportEmail}" th:text="${supportEmail}">support@praveensknowly.in</a>
+            </li>
+            <li class="set-contact-item" th:if="${supportPhone != null and !#strings.isEmpty(supportPhone)}">
+              <span class="set-contact-label">Phone</span>
+              <a class="set-contact-value" th:href="'tel:' + ${supportPhone}" th:text="${supportPhone}">+91 00000 00000</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ══════ FEEDBACK ══════ -->
+        <div class="set-card reveal">
+          <div class="set-card-title-row">
+            <div>
+              <h2 class="set-card-title">Feedback</h2>
+              <p class="set-card-sub">Tell us what's working, or what isn't.</p>
+            </div>
+          </div>
+
+          <div class="set-feedback-form">
+            <textarea
+              id="feedbackMessage"
+              class="set-feedback-textarea"
+              rows="4"
+              maxlength="2000"
+              placeholder="Share your feedback..."
+            ></textarea>
+            <p id="feedbackError" class="set-feedback-error" style="display:none;"></p>
+            <button id="feedbackSubmit" type="button" class="set-btn set-btn-primary">Send Feedback</button>
+          </div>
+        </div>
       </div>
     </main>
 
+    <div id="toastRoot" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+    <script th:src="@{/js/toast.js}"></script>
     <script th:src="@{/js/Settings.js}"></script>
   </body>
 </html>

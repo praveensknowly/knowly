@@ -17,52 +17,7 @@
 	<!-- ═══════════════════════════════════════════════════════════
      NAVBAR
 ═══════════════════════════════════════════════════════════ -->
-	<nav class="pf-nav" id="pfNav">
-		<div class="pf-nav-inner">
-
-			<a th:href="@{/}" class="pf-nav-logo" aria-label="Knowly home"> <span
-				class="pf-logo-know">Know</span><span class="pf-logo-ly">ly</span>
-			</a>
-
-			<ul class="pf-nav-links" id="pfNavLinks">
-				<li><a th:href="@{/home}">Home</a></li>
-				<li><a th:href="@{/search}">Search Experts</a></li>
-				<li><a th:href="@{/helping}">Helping</a></li>
-				<li><a th:href="@{/learning}">Learning</a></li>
-			</ul>
-
-			<div class="pf-nav-actions">
-				<a th:href="@{/notifications}" class="pf-nav-icon-btn"
-					aria-label="Notifications"> <svg viewBox="0 0 24 24" width="20"
-						height="20" fill="none" stroke="currentColor" stroke-width="1.7"
-						aria-hidden="true">
-          <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"
-							stroke-linecap="round" stroke-linejoin="round" />
-          <path d="M13.7 21a2 2 0 01-3.4 0" stroke-linecap="round" />
-        </svg>
-				</a> <a th:href="@{/profile}" class="avatar avatar-md"
-					aria-label="My profile"> <span class="avatar-initial"
-					th:text="${user.name != null and !#strings.isEmpty(user.name) ? #strings.substring(user.name, 0, 1).toUpperCase() : 'J'}">J</span>
-				</a>
-			</div>
-
-			<button class="pf-nav-toggle" id="pfNavToggle"
-				aria-label="Toggle navigation menu" aria-expanded="false">
-				<span></span><span></span><span></span>
-			</button>
-		</div>
-
-		<!-- Mobile drawer -->
-		<ul class="pf-nav-mobile" id="pfNavMobile">
-			<li><a th:href="@{/home}">Home</a></li>
-			<li><a th:href="@{/search}">Search Experts</a></li>
-			<li><a th:href="@{/helping}">Helping</a></li>
-			<li><a th:href="@{/learning}">Learning</a></li>
-			<li><a th:href="@{/notifications}">Notifications</a></li>
-			<li><a th:href="@{/profile/edit}" class="pf-btn pf-btn-primary">Edit
-					Profile</a></li>
-		</ul>
-	</nav>
+	<div th:replace="~{fragments/navbar :: navbar('')}"></div>
 
 	<!-- ═══════════════════════════════════════════════════════════
      MAIN
