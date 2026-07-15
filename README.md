@@ -89,7 +89,7 @@ cp .env.example .env
 ./mvnw spring-boot:run
 ```
 
-The app will be available at `http://localhost:8080`.
+The app will be available at `app.praveensknowly.in`.
 
 ## Architecture Highlights
 
