@@ -58,9 +58,9 @@ This wasn't left as a demo — it went through a full, self-run security and fun
 > _Add 2–3 screenshots here — homepage, expert search, and a chat/session view work well._
 
 ```
-![Homepage](docs/screenshots/homepage.png)
-![Expert Search](docs/screenshots/search.png)
-![Live Chat](docs/screenshots/chat.png)
+<img width="959" height="539" alt="image" src="https://github.com/user-attachments/assets/7a7fbddb-0ed5-4029-a90e-177576f6b4d7" />
+<img width="958" height="539" alt="image" src="https://github.com/user-attachments/assets/e1830659-fd3d-4b83-a6ea-da75d754b9e6" />
+<img width="958" height="532" alt="image" src="https://github.com/user-attachments/assets/bb2785eb-ef8f-4654-b63f-d36f43053aee" />
 ```
 
 ## Getting Started
@@ -75,7 +75,7 @@ This wasn't left as a demo — it went through a full, self-run security and fun
 
 ```bash
 # Clone the repo
-git clone https://github.com/<your-username>/knowly.git
+git clone https://github.com/praveensknowly/knowly.git
 cd knowly
 
 # Configure environment variables
@@ -101,5 +101,5 @@ The app will be available at `http://localhost:8080`.
 
 Built by **Praveen** — open to backend/full-stack opportunities.
 
-[LinkedIn](#praveen9391<img width="2400" height="3000" alt="knowly-linkedin-post" src="https://github.com/user-attachments/assets/43cfc627-7d8d-49de-8740-a8945b4eae05" />
-) · [Portfolio](#praveen9391) · [Email](#praveensknowly@gmail.com)
+[LinkedIn](#praveen9391)  · [Portfolio](#praveensknowly@gmail.com) · [Email](#praveenrajannapareddy15@gmail.com)<img width="2400" height="3000" alt="knowly-linkedin-post" src="https://github.com/user-attachments/assets/43cfc627-7d8d-49de-8740-a8945b4eae05" />
+
