@@ -18,15 +18,18 @@ public class SecurityConfig {
 	private final PasswordEncoder passEncoder;
 	private final MyUserDetailsService userDetailsService;
 	private final CustomOAuth2UserService customOAuth2UserService;
+	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
 	@Value("${app.remember-me-key}")
 	private String rememberMeKey;
 
 	public SecurityConfig(PasswordEncoder passEncoder, MyUserDetailsService userDetailsService,
-	                       CustomOAuth2UserService customOAuth2UserService) {
+	                       CustomOAuth2UserService customOAuth2UserService,
+	                       OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
 		this.passEncoder = passEncoder;
 		this.userDetailsService = userDetailsService;
 		this.customOAuth2UserService = customOAuth2UserService;
+		this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
 	}
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,7 +39,8 @@ public class SecurityConfig {
 
 	        .csrf(csrf -> csrf
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .ignoringRequestMatchers("/signup", "/send-otp", "/verify-otp")
+            .ignoringRequestMatchers("/signup", "/send-otp", "/verify-otp",
+                                     "/forgot-password/send-otp", "/forgot-password/reset")
         )
 
 	        .authorizeHttpRequests(auth -> auth
@@ -46,6 +50,8 @@ public class SecurityConfig {
 	                "/send-otp",
 	                "/verify-otp",
 	                "/login",
+	                "/forgot-password",
+	                "/forgot-password/**",
 	                "/oauth2/**",
 	                "/login/oauth2/**",
 	                "/css/**",
@@ -68,7 +74,7 @@ public class SecurityConfig {
 	        .oauth2Login(oauth2 -> oauth2
 	                .loginPage("/login")
 	                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-	                .defaultSuccessUrl("/home", true)
+	                .successHandler(oAuth2LoginSuccessHandler)
 	                .failureUrl("/login?error")
 	        )
 			.rememberMe(r -> r

@@ -86,6 +86,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             profileRepository.save(profile);
         }
 
+        attributes.put("isNewSignup", isNew);   // add this line, right before the final return
         return new DefaultOAuth2User(oauth2User.getAuthorities(), attributes, "email");
     }
 

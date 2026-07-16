@@ -162,4 +162,36 @@ public class UserService {
 		Pageable pageable = PageRequest.of(0, 5);
 		return profileRepo.findRecentProfiles(currentUser.getId(), pageable);
 	}
+
+	@Transactional
+	public void setInitialPassword(String email, String newPassword, String confirmPassword) {
+		User user = findByEmail(email);
+
+		if (user.getPassword() != null) {
+			return; // already set elsewhere — nothing to do, ignore silently
+		}
+		if (newPassword == null || newPassword.isBlank()) {
+			return; // treated as "skip"
+		}
+		if (!newPassword.equals(confirmPassword)) {
+			throw new IllegalArgumentException("Password and confirm password do not match.");
+		}
+		if (newPassword.length() < 6) {
+			throw new IllegalArgumentException("Password must be at least 6 characters long.");
+		}
+		user.setPassword(passwordEncoder.encode(newPassword));
+		userRepo.save(user);
+	}
+
+	@Transactional
+	public boolean resetPassword(String email, String newPassword) {
+		var userOpt = userRepo.findByEmail(email);
+		if (userOpt.isEmpty() || !"LOCAL".equals(userOpt.get().getProvider())) {
+			return false; // no account, or it's a Google/GitHub account with no password to reset
+		}
+		User user = userOpt.get();
+		user.setPassword(passwordEncoder.encode(newPassword));
+		userRepo.save(user);
+		return true;
+	}
 }
