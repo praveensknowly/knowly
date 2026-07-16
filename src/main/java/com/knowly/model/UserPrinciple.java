@@ -1,5 +1,6 @@
 package com.knowly.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -8,7 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.knowly.entity.User;
 
-public class UserPrinciple implements UserDetails{
+public class UserPrinciple implements UserDetails, Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private final User user;
 	
 	public UserPrinciple(User user) {
