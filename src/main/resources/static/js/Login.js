@@ -75,6 +75,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (password.value !== '') validatePassword();
   });
 
+  // ---------- OAuth button click guard ----------
+  document.querySelectorAll('#googleBtn, #githubBtn').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      if (btn.classList.contains('is-loading')) {
+        e.preventDefault(); // block a second click while the first navigation is in flight
+        return;
+      }
+      btn.classList.add('is-loading');
+    });
+  });
+
   // ---------- Submit ----------
   form.addEventListener('submit', function (e) {
     e.preventDefault();

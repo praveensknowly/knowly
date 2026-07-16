@@ -87,8 +87,8 @@ public class UserService {
 		User user = this.findByEmail(email);
 		UserProfile userProfile=user.getProfile();
 
-		// Password confirmation gate for LOCAL users
-		if ("LOCAL".equals(user.getProvider())) {
+		// Password confirmation gate for users who have a password set
+		if (user.getPassword() != null) {
 			if (dto.getCurrentPassword() == null || dto.getCurrentPassword().isBlank()) {
 				throw new IllegalArgumentException("Current password is required to make changes.");
 			}
