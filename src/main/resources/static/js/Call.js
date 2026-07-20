@@ -9,12 +9,22 @@
 
   stompClient.connect({}, () => {
     stompClient.subscribe('/user/queue/signal', msg => handleSignal(JSON.parse(msg.body)));
+  }, (error) => {
+    console.error('WebSocket/STOMP connection failed:', error);
   });
 
   document.getElementById('startCallBtn').addEventListener('click', () => {
     isCaller = true;
+    document.getElementById('startCallBtn').disabled = true;
+    document.getElementById('startCallBtn').textContent = '📞 Calling…';
     stompClient.send('/app/call/start', {}, JSON.stringify({ sessionId }));
   });
+
+  function resetCallButton() {
+    const btn = document.getElementById('startCallBtn');
+    btn.disabled = false;
+    btn.textContent = '📞 Call';
+  }
 
   async function handleSignal(msg) {
     switch (msg.type) {
@@ -26,6 +36,7 @@
         break;
       case 'callee-ready':
         // Caler receives this when callee is ready - now create and send offer
+        resetCallButton();
         await setupPeerConnection();
         const offer = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offer);
@@ -128,6 +139,7 @@
   }
 
   function endCallLocal() {
+    resetCallButton();
     if (peerConnection) {
       peerConnection.close();
       peerConnection = null;

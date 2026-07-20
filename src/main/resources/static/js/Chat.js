@@ -372,35 +372,100 @@
 
 /* ── Voice recording ── */
 (function () {
-  let mediaRecorder, chunks = [];
+  let mediaRecorder, chunks = [], audioCtx, analyser, animationId, stream, recStartTime, timerInterval;
 
   const voiceRecordBtn = document.getElementById('voiceRecordBtn');
+  const recorder = document.getElementById('voiceRecorder');
+  const panel = document.getElementById('voiceRecordingPanel');
+  const canvas = document.getElementById('voiceWaveCanvas');
+  const timerEl = document.getElementById('voiceRecTimer');
+  const stopBtn = document.getElementById('voiceStopBtn');
+  const cancelBtn = document.getElementById('voiceCancelBtn');
   if (!voiceRecordBtn) return;
+
+  const ctx2d = canvas.getContext('2d');
 
   function getCsrfToken() {
     const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
     return match ? decodeURIComponent(match[1]) : null;
   }
 
-  voiceRecordBtn.addEventListener('click', async () => {
-    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        chunks = [];
-        mediaRecorder.ondataavailable = e => chunks.push(e.data);
-        mediaRecorder.onstop = uploadVoiceNote;
-        mediaRecorder.start();
-        voiceRecordBtn.textContent = '⏹️';
-      } catch (e) {
-        console.error('Failed to start recording:', e);
-        alert('Could not access microphone. Please allow microphone access.');
-      }
-    } else {
-      mediaRecorder.stop();
-      voiceRecordBtn.textContent = '🎤';
+  voiceRecordBtn.addEventListener('click', startRecording);
+  stopBtn.addEventListener('click', () => stopRecording(true));
+  cancelBtn.addEventListener('click', () => stopRecording(false));
+
+  async function startRecording() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (e) {
+      console.error('Failed to access microphone:', e);
+      alert('Could not access microphone. Please allow microphone access.');
+      return;
     }
-  });
+
+    mediaRecorder = new MediaRecorder(stream);
+    chunks = [];
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      cleanupAudioVisual();
+      if (mediaRecorder._shouldUpload) uploadVoiceNote();
+      stream.getTracks().forEach(t => t.stop());
+    };
+    mediaRecorder.start();
+
+    // Swap button for the recording panel
+    voiceRecordBtn.style.display = 'none';
+    panel.style.display = 'flex';
+
+    // Timer
+    recStartTime = Date.now();
+    timerInterval = setInterval(() => {
+      const secs = Math.floor((Date.now() - recStartTime) / 1000);
+      timerEl.textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+    }, 250);
+
+    // Waveform via AnalyserNode
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    source.connect(analyser);
+    drawWaveform();
+  }
+
+  function drawWaveform() {
+    const bufferLength = analyser.frequencyBinCount;
+    const data = new Uint8Array(bufferLength);
+
+    function render() {
+      animationId = requestAnimationFrame(render);
+      analyser.getByteFrequencyData(data);
+
+      ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+      const barWidth = canvas.width / bufferLength;
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (data[i] / 255) * canvas.height;
+        ctx2d.fillStyle = '#EF4444';
+        ctx2d.fillRect(i * barWidth, canvas.height - barHeight, barWidth - 1, barHeight);
+      }
+    }
+    render();
+  }
+
+  function cleanupAudioVisual() {
+    if (animationId) cancelAnimationFrame(animationId);
+    if (audioCtx) audioCtx.close();
+    clearInterval(timerInterval);
+    ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+    panel.style.display = 'none';
+    voiceRecordBtn.style.display = 'inline-flex';
+  }
+
+  function stopRecording(shouldUpload) {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+    mediaRecorder._shouldUpload = shouldUpload;
+    mediaRecorder.stop();
+  }
 
   function uploadVoiceNote() {
     const blob = new Blob(chunks, { type: 'audio/webm' });
@@ -412,7 +477,9 @@
       method: 'POST',
       body: formData,
       headers: { 'X-XSRF-TOKEN': getCsrfToken() }
-    }).then(() => location.reload()).catch(e => {
+    }).then(response => {
+      location.href = response.url;
+    }).catch(e => {
       console.error('Failed to upload voice note:', e);
       alert('Failed to send voice message. Please try again.');
     });

@@ -40,7 +40,8 @@ public class SecurityConfig {
 	        .csrf(csrf -> csrf
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .ignoringRequestMatchers("/signup", "/send-otp", "/verify-otp",
-                                     "/forgot-password/send-otp", "/forgot-password/reset")
+                                     "/forgot-password/send-otp", "/forgot-password/reset",
+                                     "/ws/**")
         )
 
 	        .authorizeHttpRequests(auth -> auth
