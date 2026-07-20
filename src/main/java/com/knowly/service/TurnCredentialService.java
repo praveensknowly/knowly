@@ -1,5 +1,7 @@
 package com.knowly.service;
 
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,11 @@ public class TurnCredentialService {
         if (turnUrl == null || turnUrl.isBlank() ||
             turnUsername == null || turnUsername.isBlank() ||
             turnCredential == null || turnCredential.isBlank()) {
-            return new TurnCredentials("", "", "");
+            return new TurnCredentials(List.of(), "", "");
         }
-        return new TurnCredentials(turnUrl, turnUsername, turnCredential);
+        List<String> urls = Arrays.asList(turnUrl.split(","));
+        return new TurnCredentials(urls, turnUsername, turnCredential);
     }
 
-    public record TurnCredentials(String url, String username, String credential) {}
+    public record TurnCredentials(List<String> urls, String username, String credential) {}
 }

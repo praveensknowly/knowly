@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 <title>Chat — Knowly</title>
 <th:block th:replace="~{fragments/styles :: styles('Chat.css')}"></th:block>
 </head>
@@ -81,7 +83,7 @@
                 <img th:if="${m.type == 'Image'}" th:src="@{${m.attachmentUrl}}" class="chat-attachment-img" />
                 <video th:if="${m.type == 'Video'}" th:src="@{${m.attachmentUrl}}" controls class="chat-attachment-video"></video>
                 <audio th:if="${m.type == 'Voice'}" th:src="@{${m.attachmentUrl}}" controls></audio>
-                <a th:if="${m.type == 'File'}" th:href="@{${m.attachmentUrl}}" th:text="${m.attachmentOriginalName}" download>file</a>
+                <a th:if="${m.type == 'File'}" th:href="@{${m.attachmentUrl}}" th:text="${m.attachmentOriginalName}" target="_blank" rel="noopener">file</a>
                 <p th:if="${m.type == 'Text'}" class="chat-bubble-text" th:text="${m.text}">Message text</p>
                 <p th:if="${m.type != 'Text' and !#strings.isEmpty(m.text)}" class="chat-bubble-caption" th:text="${m.text}"></p>
                 <span class="chat-bubble-time" th:text="${m.timeLabel}">5 min ago</span>

@@ -2,6 +2,7 @@
   const sessionId = document.currentScript.getAttribute('data-session-id');
   let stompClient, peerConnection, localStream, currentCallId, callTimerInterval;
   let isCaller = false;
+  let pendingCandidates = [];
 
   const socket = new SockJS('/ws');
   stompClient = Stomp.over(socket);
@@ -46,15 +47,25 @@
         currentCallId = msg.callId;
         await setupPeerConnection();
         await peerConnection.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+        for (const c of pendingCandidates) await peerConnection.addIceCandidate(new RTCIceCandidate(c));
+        pendingCandidates = [];
         const answer = await peerConnection.createAnswer();
         await peerConnection.setLocalDescription(answer);
         stompClient.send('/app/call/answer', {}, JSON.stringify({ callId: currentCallId, sdp: answer }));
         break;
       case 'answer':
         await peerConnection.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+        for (const c of pendingCandidates) await peerConnection.addIceCandidate(new RTCIceCandidate(c));
+        pendingCandidates = [];
         break;
       case 'ice-candidate':
-        if (msg.candidate) await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+        if (msg.candidate) {
+          if (peerConnection && peerConnection.remoteDescription) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+          } else {
+            pendingCandidates.push(msg.candidate);
+          }
+        }
         break;
       case 'call-ended':
         endCallLocal();
@@ -96,8 +107,8 @@
       { urls: 'stun:stun.l.google.com:19302' }
     ];
 
-    if (turn.url && turn.username && turn.credential) {
-      iceServers.push({ urls: turn.url, username: turn.username, credential: turn.credential });
+    if (turn.urls && turn.urls.length > 0 && turn.username && turn.credential) {
+      turn.urls.forEach(u => iceServers.push({ urls: u, username: turn.username, credential: turn.credential }));
     }
 
     peerConnection = new RTCPeerConnection({ iceServers });
@@ -140,6 +151,7 @@
 
   function endCallLocal() {
     resetCallButton();
+    pendingCandidates = [];
     if (peerConnection) {
       peerConnection.close();
       peerConnection = null;

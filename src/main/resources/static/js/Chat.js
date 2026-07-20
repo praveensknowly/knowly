@@ -386,8 +386,12 @@
   const ctx2d = canvas.getContext('2d');
 
   function getCsrfToken() {
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : null;
+    const el = document.querySelector('meta[name="_csrf"]');
+    return el ? el.content : null;
+  }
+  function getCsrfHeaderName() {
+    const el = document.querySelector('meta[name="_csrf_header"]');
+    return el ? el.content : 'X-CSRF-TOKEN';
   }
 
   voiceRecordBtn.addEventListener('click', startRecording);
@@ -443,9 +447,12 @@
 
       ctx2d.clearRect(0, 0, canvas.width, canvas.height);
       const barWidth = canvas.width / bufferLength;
+      const gradient = ctx2d.createLinearGradient(0, canvas.height, 0, 0);
+      gradient.addColorStop(0, '#2563EB');
+      gradient.addColorStop(1, '#10B981');
+      ctx2d.fillStyle = gradient;
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (data[i] / 255) * canvas.height;
-        ctx2d.fillStyle = '#EF4444';
         ctx2d.fillRect(i * barWidth, canvas.height - barHeight, barWidth - 1, barHeight);
       }
     }
@@ -476,7 +483,7 @@
     fetch(window.location.pathname + '/message/attachment', {
       method: 'POST',
       body: formData,
-      headers: { 'X-XSRF-TOKEN': getCsrfToken() }
+      headers: { [getCsrfHeaderName()]: getCsrfToken() }
     }).then(response => {
       location.href = response.url;
     }).catch(e => {

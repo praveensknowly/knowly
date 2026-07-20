@@ -332,7 +332,7 @@ public class HelpSessionController {
 		if (message.getAttachmentPath() == null) {
 			return ResponseEntity.notFound().build();
 		}
-		if (message.getAttachmentMimeType() == null) {
+		if (message.getAttachmentMimeType() == null || message.getAttachmentMimeType().isBlank()) {
 			return ResponseEntity.notFound().build();
 		}
 
