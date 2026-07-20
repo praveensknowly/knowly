@@ -17,14 +17,16 @@
   document.getElementById('startCallBtn').addEventListener('click', () => {
     isCaller = true;
     document.getElementById('startCallBtn').disabled = true;
-    document.getElementById('startCallBtn').textContent = '📞 Calling…';
+    const label = document.querySelector('.btn-call-label');
+    if (label) label.textContent = 'Calling…';
     stompClient.send('/app/call/start', {}, JSON.stringify({ sessionId }));
   });
 
   function resetCallButton() {
     const btn = document.getElementById('startCallBtn');
     btn.disabled = false;
-    btn.textContent = '📞 Call';
+    const label = document.querySelector('.btn-call-label');
+    if (label) label.textContent = 'Call';
   }
 
   async function handleSignal(msg) {

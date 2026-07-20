@@ -510,6 +510,20 @@
     padding: var(--space-3) var(--space-4);
   }
 
+  .chat-header-inner {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+  }
+
+  .chat-header-left {
+    width: 100%;
+  }
+
+  .chat-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .chat-title {
     font-size: var(--fs-md);
   }
@@ -534,6 +548,26 @@
   .chat-send {
     width: 40px;
     height: 40px;
+  }
+
+  .btn-call-label { display: none; }
+
+  .chat-status-label { display: none; }
+
+  .chat-complete-btn {
+    padding: var(--space-2) var(--space-2);
+    font-size: var(--fs-xs);
+  }
+
+  .chat-attachment-audio {
+    width: 100%;
+    max-width: 260px;
+    display: block;
+  }
+
+  .chat-content-wrapper {
+    min-height: 100%;
+    justify-content: flex-end;
   }
 }
 
