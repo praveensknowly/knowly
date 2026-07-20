@@ -85,4 +85,31 @@ public class EmailService {
             throw new RuntimeException("Failed to send email via Resend", e);
         }
     }
+
+    public void sendNotificationEmail(String toEmail, String toName, String title, String body, String url) {
+        String apiUrl = "https://api.resend.com/emails";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(resendApiKey);
+
+        String htmlBody = "<p>Hello " + escapeHtml(toName) + ",</p>"
+                + "<p><strong>" + escapeHtml(title) + "</strong></p>"
+                + "<p>" + escapeHtml(body).replace("\n", "<br/>") + "</p>"
+                + "<p><a href=\"" + escapeHtml(url) + "\">View on Knowly</a></p>";
+
+        Map<String, Object> emailBody = new HashMap<>();
+        emailBody.put("from", "Knowly <" + resendFromEmail + ">");
+        emailBody.put("to", List.of(toEmail));
+        emailBody.put("subject", title);
+        emailBody.put("html", htmlBody);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(emailBody, headers);
+
+        try {
+            restTemplate.postForEntity(apiUrl, request, String.class);
+        } catch (RestClientException e) {
+            throw new RuntimeException("Failed to send notification email via Resend", e);
+        }
+    }
 }

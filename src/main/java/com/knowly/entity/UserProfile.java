@@ -35,6 +35,10 @@ public class UserProfile implements Serializable {
     
     private LocalDate dob;
 
+    private LocalDateTime lastActiveAt;
+
+    private LocalDateTime lastEmailedAt;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
@@ -122,6 +126,22 @@ public class UserProfile implements Serializable {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public LocalDateTime getLastActiveAt() {
+        return lastActiveAt;
+    }
+
+    public void setLastActiveAt(LocalDateTime lastActiveAt) {
+        this.lastActiveAt = lastActiveAt;
+    }
+
+    public LocalDateTime getLastEmailedAt() {
+        return lastEmailedAt;
+    }
+
+    public void setLastEmailedAt(LocalDateTime lastEmailedAt) {
+        this.lastEmailedAt = lastEmailedAt;
     }
 
     public User getUser() {

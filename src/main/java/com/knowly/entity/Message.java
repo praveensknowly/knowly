@@ -33,8 +33,20 @@ public class Message {
 	@JoinColumn(name="sender_id")
 	private UserProfile sender;
 	
-	@Column(columnDefinition = "TEXT",nullable = false)
+	@Column(columnDefinition = "TEXT")
 	private String message;
+
+	@Column(name = "attachment_path")
+	private String attachmentPath;
+
+	@Column(name = "attachment_original_name")
+	private String attachmentOriginalName;
+
+	@Column(name = "attachment_mime_type")
+	private String attachmentMimeType;
+
+	private Long attachmentSize;
+
 	@CreationTimestamp
 	private LocalDateTime sentAt;
 	private boolean isRead;
@@ -85,6 +97,38 @@ public class Message {
 	public void setRead(boolean isRead) {
 		this.isRead = isRead;
 	}
-	
+
+	public String getAttachmentPath() {
+		return attachmentPath;
+	}
+
+	public void setAttachmentPath(String attachmentPath) {
+		this.attachmentPath = attachmentPath;
+	}
+
+	public String getAttachmentOriginalName() {
+		return attachmentOriginalName;
+	}
+
+	public void setAttachmentOriginalName(String attachmentOriginalName) {
+		this.attachmentOriginalName = attachmentOriginalName;
+	}
+
+	public String getAttachmentMimeType() {
+		return attachmentMimeType;
+	}
+
+	public void setAttachmentMimeType(String attachmentMimeType) {
+		this.attachmentMimeType = attachmentMimeType;
+	}
+
+	public Long getAttachmentSize() {
+		return attachmentSize;
+	}
+
+	public void setAttachmentSize(Long attachmentSize) {
+		this.attachmentSize = attachmentSize;
+	}
+
 
 }

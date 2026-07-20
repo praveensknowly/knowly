@@ -1,14 +1,17 @@
 package com.knowly.repository;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import com.knowly.entity.User;
@@ -26,4 +29,9 @@ public interface ProfileRepository extends JpaRepository<UserProfile, String> {
            "(LOWER(p.user.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "LOWER(p.user.email) LIKE LOWER(CONCAT('%', :query, '%')))")
     List<UserProfile> searchByNameOrEmail(@Param("query") String query, @Param("userId") String userId, Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserProfile p SET p.lastActiveAt = :now WHERE p.id = :profileId")
+    void touchLastActive(@Param("profileId") String profileId, @Param("now") LocalDateTime now);
 }

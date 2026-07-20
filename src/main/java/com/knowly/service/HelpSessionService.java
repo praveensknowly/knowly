@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.knowly.dto.ChatMessageDto;
 import com.knowly.dto.ChatSessionDto;
@@ -49,6 +50,7 @@ public class HelpSessionService {
 	private RatingRepository ratingRepo;
 	private MessageRepository messageRepo;
 	private PushNotificationService pushNotificationService;
+	private FileStorageService fileStorageService;
 
 	@Autowired
 	@Lazy
@@ -57,7 +59,8 @@ public class HelpSessionService {
 
 	public HelpSessionService(ProfileRepository profileRepo, HelpSessionRepository sessionRepo,
 			SkillRepository skillRepo, UserService userService, RatingRepository ratingRepo,
-			MessageRepository messageRepo, PushNotificationService pushNotificationService) {
+			MessageRepository messageRepo, PushNotificationService pushNotificationService,
+			FileStorageService fileStorageService) {
 		super();
 		this.profileRepo = profileRepo;
 		this.sessionRepo = sessionRepo;
@@ -66,6 +69,7 @@ public class HelpSessionService {
 		this.ratingRepo = ratingRepo;
 		this.messageRepo = messageRepo;
 		this.pushNotificationService = pushNotificationService;
+		this.fileStorageService = fileStorageService;
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -383,6 +387,11 @@ public class HelpSessionService {
 			ChatMessageDto msgDto = new ChatMessageDto();
 			msgDto.setMessageId(msg.getMessageId());
 			msgDto.setText(msg.getMessage());
+			msgDto.setType(msg.getType() != null ? msg.getType().name() : "Text");
+			if (msg.getAttachmentPath() != null) {
+				msgDto.setAttachmentUrl("/chat/attachment/" + msg.getMessageId());
+				msgDto.setAttachmentOriginalName(msg.getAttachmentOriginalName());
+			}
 			msgDto.setTimeLabel(formatRelativeTime(msg.getSentAt()));
 			msgDto.setDateLabel(formatRelativeDate(msg.getSentAt()));
 			msgDto.setSenderName(msg.getSender().getUser() != null ? msg.getSender().getUser().getName() : "Unknown");
@@ -479,6 +488,100 @@ public class HelpSessionService {
 					String body = isRequestAccepted
 							? senderName + " accepted your help request"
 							: senderName + ": " + messagePreview;
+					pushNotificationService.notifyUser(
+							recipient,
+							title,
+							body,
+							"/chat/" + sessionIdValue
+					);
+				}
+			});
+		}
+	}
+
+	@Transactional
+	public void sendAttachmentMessage(String sessionId, String email, MultipartFile file, MessageType type, String caption) {
+		UserProfile currentUser = userService.getProfile(email);
+		HelpSession session = sessionRepo.findByIdWithDetails(sessionId)
+				.orElseThrow(() -> new UserNotFoundException("Session not found"));
+
+		// Authorization check
+		if (!currentUser.getId().equals(session.getRequester().getId())
+				&& (session.getHelper() == null || !currentUser.getId().equals(session.getHelper().getId()))) {
+			throw new UserNotFoundException("Access denied");
+		}
+
+		// Check if session is expired or ignored before allowing message
+		LocalDateTime now = LocalDateTime.now();
+		if (session.getStatus() == HelpSessionStatus.EXPIRED || session.getStatus() == HelpSessionStatus.IGNORED) {
+			throw new IllegalStateException("Session has expired: " + session.getExpiredReason());
+		}
+
+		// Check PENDING expiry (22 hours from creation)
+		if (session.getStatus() == HelpSessionStatus.PENDING) {
+			if (now.isAfter(session.getCreatedAt().plusHours(22))) {
+				self.expireSession(session, HelpSessionStatus.IGNORED, "Expert did not respond within 22 hours");
+				throw new IllegalStateException("Session has expired: Expert did not respond within 22 hours");
+			}
+		}
+
+		// Check ACTIVE expiry (22 minutes from first expert reply)
+		if (session.getStatus() == HelpSessionStatus.ACTIVE && session.getSessionExpiresAt() != null) {
+			if (now.isAfter(session.getSessionExpiresAt())) {
+				self.expireSession(session, HelpSessionStatus.EXPIRED, "Session time completed");
+				throw new IllegalStateException("Session has expired: Session time completed");
+			}
+		}
+
+		FileStorageService.StoredAttachment stored = fileStorageService.storeChatAttachment(file, type);
+
+		Message message = new Message();
+		message.setMessage(caption); // may be null/blank
+		message.setType(type);
+		message.setSender(currentUser);
+		message.setSession(session);
+		message.setRead(false);
+		message.setAttachmentPath(stored.storedName());
+		message.setAttachmentOriginalName(stored.originalName());
+		message.setAttachmentMimeType(stored.mimeType());
+		message.setAttachmentSize(stored.size());
+		message.setSentAt(now);
+
+		// Status transition logic: if expert sends first message, transition to ACTIVE
+		boolean isFirstExpertReply = session.getHelper() != null && currentUser.getId().equals(session.getHelper().getId())
+				&& session.getFirstExpertReplyAt() == null;
+		if (isFirstExpertReply) {
+			session.setFirstExpertReplyAt(now);
+			session.setStatus(HelpSessionStatus.ACTIVE);
+			session.setSessionExpiresAt(now.plusMinutes(22));
+			session.setStartedAt(now);
+		}
+
+		messageRepo.save(message);
+		sessionRepo.save(session);
+
+		// Capture variables for push notification after transaction commits
+		final UserProfile recipient = resolveRecipient(session, currentUser);
+
+		if (recipient != null) {
+			String senderName = currentUser.getUser() != null ? currentUser.getUser().getName() : "Someone";
+			String preview = switch (type) {
+				case Image -> "📷 Photo";
+				case Video -> "🎥 Video";
+				case Voice -> "🎤 Voice message";
+				default -> "📎 " + stored.originalName();
+			};
+			String sessionIdValue = session.getSessionId();
+			boolean isRequestAccepted = isFirstExpertReply;
+
+			// Register push notification to fire after transaction commits
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					String title = isRequestAccepted ? "Request Accepted" : "New Message";
+					String body = isRequestAccepted
+							? senderName + " accepted your help request"
+							: senderName + ": " + preview;
 					pushNotificationService.notifyUser(
 							recipient,
 							title,

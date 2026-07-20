@@ -77,7 +77,18 @@
       updateCharCount();
       autoResize();
     });
-    
+
+    if (chatInput && chatForm) {
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (chatInput.value.trim().length > 0) {
+            chatForm.requestSubmit();
+          }
+        }
+      });
+    }
+
     // Initial count
     updateCharCount();
   }
@@ -357,4 +368,53 @@
   
   // Poll every 5 seconds
   setInterval(pollForNewMessages, 5000);
+})();
+
+/* ── Voice recording ── */
+(function () {
+  let mediaRecorder, chunks = [];
+
+  const voiceRecordBtn = document.getElementById('voiceRecordBtn');
+  if (!voiceRecordBtn) return;
+
+  function getCsrfToken() {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  voiceRecordBtn.addEventListener('click', async () => {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        chunks = [];
+        mediaRecorder.ondataavailable = e => chunks.push(e.data);
+        mediaRecorder.onstop = uploadVoiceNote;
+        mediaRecorder.start();
+        voiceRecordBtn.textContent = '⏹️';
+      } catch (e) {
+        console.error('Failed to start recording:', e);
+        alert('Could not access microphone. Please allow microphone access.');
+      }
+    } else {
+      mediaRecorder.stop();
+      voiceRecordBtn.textContent = '🎤';
+    }
+  });
+
+  function uploadVoiceNote() {
+    const blob = new Blob(chunks, { type: 'audio/webm' });
+    const formData = new FormData();
+    formData.append('file', blob, 'voice-note.webm');
+    formData.append('type', 'Voice');
+
+    fetch(window.location.pathname + '/message/attachment', {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-XSRF-TOKEN': getCsrfToken() }
+    }).then(() => location.reload()).catch(e => {
+      console.error('Failed to upload voice note:', e);
+      alert('Failed to send voice message. Please try again.');
+    });
+  }
 })();

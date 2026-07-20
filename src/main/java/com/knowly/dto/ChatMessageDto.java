@@ -3,6 +3,9 @@ package com.knowly.dto;
 public class ChatMessageDto {
 	private String messageId;
 	private String text;
+	private String type;
+	private String attachmentUrl;
+	private String attachmentOriginalName;
 	private String timeLabel;
 	private String dateLabel;
 	private String senderName;
@@ -63,5 +66,29 @@ public class ChatMessageDto {
 
 	public void setFromHelper(boolean fromHelper) {
 		isFromHelper = fromHelper;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getAttachmentUrl() {
+		return attachmentUrl;
+	}
+
+	public void setAttachmentUrl(String attachmentUrl) {
+		this.attachmentUrl = attachmentUrl;
+	}
+
+	public String getAttachmentOriginalName() {
+		return attachmentOriginalName;
+	}
+
+	public void setAttachmentOriginalName(String attachmentOriginalName) {
+		this.attachmentOriginalName = attachmentOriginalName;
 	}
 }

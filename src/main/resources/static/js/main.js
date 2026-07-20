@@ -196,4 +196,31 @@
     });
   });
 
+  /* ============================================
+     HEARTBEAT FOR PRESENCE TRACKING
+     ============================================ */
+  (function () {
+    const HEARTBEAT_INTERVAL_MS = 30000; // 30s
+
+    function getCsrfToken() {
+      const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+      return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    function sendHeartbeat() {
+      if (document.visibilityState !== "visible") return;
+      fetch("/api/heartbeat", {
+        method: "POST",
+        headers: { "X-XSRF-TOKEN": getCsrfToken() }
+      }).catch(() => {});
+    }
+
+    sendHeartbeat(); // immediately on load
+    setInterval(sendHeartbeat, HEARTBEAT_INTERVAL_MS);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") sendHeartbeat();
+    });
+  })();
+
 })();

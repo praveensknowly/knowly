@@ -36,15 +36,16 @@
       </div>
       <div class="chat-header-right">
         <div th:if="${error}" class="chat-error-banner" th:text="${error}">Error message</div>
+        <button id="startCallBtn" class="btn-call" type="button">📞 Call</button>
         <div class="chat-status-badge" th:classappend="'chat-status-badge--' + ${#strings.toLowerCase(chat.status)}"
             th:attr="data-status=${chat.status}, data-expires-at-ms=${chat.sessionExpiresAtMs != null ? chat.sessionExpiresAtMs : ''}, data-expired-reason=${chat.expiredReason != null ? chat.expiredReason : ''}">
           <span class="chat-status-dot"></span>
           <span class="chat-status-text" th:text="${chat.status}">Open</span>
           <span class="chat-countdown" style="display: none;"></span>
         </div>
-        <form th:if="${chat.myRole == 'helper' and #strings.equalsIgnoreCase(chat.status, 'active')}" 
-              th:action="@{/chat/{sessionId}/complete(sessionId=${chat.sessionId})}" 
-              method="post" 
+        <form th:if="${chat.myRole == 'helper' and #strings.equalsIgnoreCase(chat.status, 'active')}"
+              th:action="@{/chat/{sessionId}/complete(sessionId=${chat.sessionId})}"
+              method="post"
               class="chat-complete-form">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <button type="submit" class="chat-complete-btn">Complete</button>
@@ -77,7 +78,12 @@
                 </div>
               </div>
               <div class="chat-bubble-content">
-                <p class="chat-bubble-text" th:text="${m.text}">Message text</p>
+                <img th:if="${m.type == 'Image'}" th:src="@{${m.attachmentUrl}}" class="chat-attachment-img" />
+                <video th:if="${m.type == 'Video'}" th:src="@{${m.attachmentUrl}}" controls class="chat-attachment-video"></video>
+                <audio th:if="${m.type == 'Voice'}" th:src="@{${m.attachmentUrl}}" controls></audio>
+                <a th:if="${m.type == 'File'}" th:href="@{${m.attachmentUrl}}" th:text="${m.attachmentOriginalName}" download>file</a>
+                <p th:if="${m.type == 'Text'}" class="chat-bubble-text" th:text="${m.text}">Message text</p>
+                <p th:if="${m.type != 'Text' and !#strings.isEmpty(m.text)}" class="chat-bubble-caption" th:text="${m.text}"></p>
                 <span class="chat-bubble-time" th:text="${m.timeLabel}">5 min ago</span>
               </div>
             </div>
@@ -88,12 +94,39 @@
   Your message couldn't be sent — the session may have expired or the message was invalid.
 </div>
       <div class="chat-composer">
+        <div class="chat-attach-bar">
+          <form th:action="@{/chat/{sessionId}/message/attachment(sessionId=${chat.sessionId})}" method="post" enctype="multipart/form-data" style="display:inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="hidden" name="type" value="Image" />
+            <label>
+              <input type="file" name="file" accept="image/*" hidden onchange="this.form.submit()">
+              🖼️
+            </label>
+          </form>
+          <form th:action="@{/chat/{sessionId}/message/attachment(sessionId=${chat.sessionId})}" method="post" enctype="multipart/form-data" style="display:inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="hidden" name="type" value="Video" />
+            <label>
+              <input type="file" name="file" accept="video/*" hidden onchange="this.form.submit()">
+              🎥
+            </label>
+          </form>
+          <form th:action="@{/chat/{sessionId}/message/attachment(sessionId=${chat.sessionId})}" method="post" enctype="multipart/form-data" style="display:inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="hidden" name="type" value="File" />
+            <label>
+              <input type="file" name="file" accept=".pdf,.doc,.docx,.xlsx,.pptx,.zip,.txt" hidden onchange="this.form.submit()">
+              📎
+            </label>
+          </form>
+          <button type="button" id="voiceRecordBtn">🎤</button>
+        </div>
         <form th:action="@{/chat/{sessionId}/message(sessionId=${chat.sessionId})}" method="post" class="chat-form">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <div class="chat-input-wrapper">
-            <textarea name="message" 
-                      class="chat-input" 
-                      placeholder="Type a message..." 
+            <textarea name="message"
+                      class="chat-input"
+                      placeholder="Type a message..."
                       rows="1"
                       maxlength="1000"
                       required></textarea>
@@ -184,6 +217,26 @@
     </form>
   </div>
 
+  <!-- Call UI Elements -->
+  <audio id="remoteAudio" autoplay></audio>
+
+  <div id="incomingCallModal" class="modal-backdrop" style="display:none;">
+    <div class="modal-content">
+      <p id="incomingCallText"></p>
+      <button id="acceptCallBtn">Accept</button>
+      <button id="rejectCallBtn">Reject</button>
+    </div>
+  </div>
+
+  <div id="activeCallBar" style="display:none;">
+    <span id="callTimer">00:00</span>
+    <button id="muteBtn">Mute</button>
+    <button id="hangupBtn">Hang up</button>
+  </div>
+
   <script th:src="@{/js/Chat.js}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  <script th:src="@{/js/Call.js}" th:data-session-id="${chat.sessionId}"></script>
 </body>
 </html>

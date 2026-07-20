@@ -2,12 +2,21 @@ package com.knowly.controller;
 
 
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-
+import java.security.Principal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import org.springframework.stereotype.Controller;
@@ -24,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -36,9 +46,16 @@ import com.knowly.dto.HelpingSessionDto;
 
 import com.knowly.dto.LearningSessionDto;
 
+import com.knowly.entity.Message;
+
 import com.knowly.entity.User;
+import com.knowly.entity.UserProfile;
+
+import com.knowly.enums.MessageType;
 
 import com.knowly.exceptions.UserNotFoundException;
+
+import com.knowly.repository.MessageRepository;
 
 import com.knowly.service.HelpSessionService;
 
@@ -60,15 +77,22 @@ public class HelpSessionController {
 
 	private final RatingService ratingService;
 
+	private final MessageRepository messageRepo;
+
+	@Value("${chat.upload-dir}")
+	private String chatUploadDir;
 
 
-	public HelpSessionController(HelpSessionService helpSessionService, UserService userService, RatingService ratingService) {
+
+	public HelpSessionController(HelpSessionService helpSessionService, UserService userService, RatingService ratingService, MessageRepository messageRepo) {
 
 		this.helpSessionService = helpSessionService;
 
 		this.userService = userService;
 
 		this.ratingService = ratingService;
+
+		this.messageRepo = messageRepo;
 
 	}
 
@@ -293,6 +317,50 @@ public class HelpSessionController {
 	public Map<String, Integer> getMessageCount(@PathVariable String sessionId, Authentication auth) {
 		ChatSessionDto chat = helpSessionService.getChatSession(sessionId, auth.getName());
 		return Map.of("count", chat.getMessages().size());
+	}
+
+	@GetMapping("/chat/attachment/{messageId}")
+	public ResponseEntity<Resource> getAttachment(@PathVariable String messageId, Principal principal) throws IOException {
+		Message message = messageRepo.findById(messageId).orElseThrow();
+		UserProfile requester = message.getSession().getRequester();
+		UserProfile helper = message.getSession().getHelper();
+		UserProfile current = userService.getProfile(principal.getName());
+
+		if (!current.getId().equals(requester.getId()) && !current.getId().equals(helper.getId())) {
+			return ResponseEntity.status(403).build();
+		}
+		if (message.getAttachmentPath() == null) {
+			return ResponseEntity.notFound().build();
+		}
+		if (message.getAttachmentMimeType() == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		Path path = Paths.get(chatUploadDir).resolve(message.getAttachmentPath()).normalize();
+		Resource resource = new UrlResource(path.toUri());
+		return ResponseEntity.ok()
+				.contentType(MediaType.parseMediaType(message.getAttachmentMimeType()))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + message.getAttachmentOriginalName() + "\"")
+				.body(resource);
+	}
+
+	@PostMapping("/chat/{sessionId}/message/attachment")
+	public String sendAttachment(@PathVariable String sessionId,
+							  @RequestParam("file") MultipartFile file,
+							  @RequestParam("type") MessageType type,
+							  @RequestParam(value = "caption", required = false) String caption,
+							  Principal principal) {
+		try {
+			helpSessionService.sendAttachmentMessage(sessionId, principal.getName(), file, type, caption);
+			return "redirect:/chat/" + sessionId;
+		} catch (IllegalStateException e) {
+			return "redirect:/chat/" + sessionId + "?expired=true";
+		} catch (IllegalArgumentException e) {
+			return "redirect:/chat/" + sessionId + "?error=true";
+		} catch (Exception e) {
+			logger.error("Failed to send attachment for session {}", sessionId, e);
+			return "redirect:/chat/" + sessionId + "?error=true";
+		}
 	}
 
 

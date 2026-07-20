@@ -194,4 +194,8 @@ public class UserService {
 		userRepo.save(user);
 		return true;
 	}
+
+	public void touchLastActive(String profileId) {
+		profileRepo.touchLastActive(profileId, LocalDateTime.now());
+	}
 }
